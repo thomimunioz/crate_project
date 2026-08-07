@@ -39,8 +39,12 @@ export async function markSeen(track: EnrichedTrack): Promise<void> {
   await db.tracks.put({ ...track, status: 'seen' })
 }
 
-/** IDs ya vistos (para ocultar en próximas búsquedas). */
-export async function seenIds(): Promise<Set<string>> {
+/**
+ * Todos los IDs que ya pasaron por el índice, en cualquier estado.
+ * Incluye a propósito los saved y rejected: si ya lo guardaste lo tenés, y si lo
+ * descartaste no lo querés ver. Es lo que alimenta "no me muestres lo que ya vi".
+ */
+export async function knownIds(): Promise<Set<string>> {
   const ids = (await db.tracks.toCollection().primaryKeys()) as string[]
   return new Set(ids)
 }
@@ -48,6 +52,15 @@ export async function seenIds(): Promise<Set<string>> {
 export async function save(track: EnrichedTrack): Promise<Affinity> {
   await db.tracks.put({ ...track, status: 'saved', updatedAt: stamp() })
   return bumpAffinity(track, +1)
+}
+
+/**
+ * Saca un track del crate y revierte exactamente el +1 que sumó al guardarlo.
+ * No es lo mismo que rechazar: vuelve a neutral en vez de restar interés.
+ */
+export async function remove(track: EnrichedTrack): Promise<Affinity> {
+  await db.tracks.put({ ...track, status: 'seen', updatedAt: stamp() })
+  return bumpAffinity(track, -1)
 }
 
 export async function reject(track: EnrichedTrack): Promise<Affinity> {

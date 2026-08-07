@@ -11,9 +11,14 @@ import * as crate from '@/db/crateIndex'
 import { purgeExpired } from '@/db/cache'
 import { analyzeAudio } from '@/api/backend'
 
+export type View = 'search' | 'crate'
+
 interface CrateState {
+  view: View
   query: SearchQuery
   results: EnrichedTrack[]
+  /** el crate real: saved + analyzed. Se carga on demand. */
+  crateTracks: EnrichedTrack[]
   loading: boolean
   analyzing: string | null
   error?: string
@@ -22,17 +27,22 @@ interface CrateState {
   ready: boolean
 
   init: () => Promise<void>
+  setView: (v: View) => Promise<void>
   patchQuery: (q: Partial<SearchQuery>) => void
   search: () => Promise<void>
+  loadCrate: () => Promise<void>
   save: (t: EnrichedTrack) => Promise<void>
+  remove: (t: EnrichedTrack) => Promise<void>
   reject: (t: EnrichedTrack) => Promise<void>
   analyze: (t: EnrichedTrack) => Promise<void>
   toggleHideSeen: () => void
 }
 
 export const useCrate = create<CrateState>((set, get) => ({
+  view: 'search',
   query: { text: '' },
   results: [],
+  crateTracks: [],
   loading: false,
   analyzing: null,
   affinity: emptyAffinity(),
@@ -43,10 +53,22 @@ export const useCrate = create<CrateState>((set, get) => ({
     void purgeExpired() // en background: no vale la pena bloquear el arranque
     const affinity = await crate.getAffinity()
     set({ affinity, ready: true })
+    await get().loadCrate()
+  },
+
+  async setView(view) {
+    set({ view })
+    if (view === 'crate') await get().loadCrate()
   },
 
   patchQuery(q) {
     set({ query: { ...get().query, ...q } })
+  },
+
+  async loadCrate() {
+    const crateTracks = await crate.getCrate()
+    crateTracks.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+    set({ crateTracks })
   },
 
   async search() {
@@ -54,10 +76,10 @@ export const useCrate = create<CrateState>((set, get) => ({
     if (!query.text.trim()) return
     set({ loading: true, error: undefined })
     try {
-      const seen = await crate.seenIds() // capturar ANTES de marcar
+      const known = await crate.knownIds() // capturar ANTES de marcar
       let results = await runSearch(query, affinity)
       await Promise.all(results.map((t) => crate.markSeen(t)))
-      if (hideSeen) results = results.filter((t) => !seen.has(t.crateId))
+      if (hideSeen) results = results.filter((t) => !known.has(t.crateId))
       set({ results })
     } catch (e) {
       set({ error: e instanceof Error ? e.message : String(e) })
@@ -68,17 +90,32 @@ export const useCrate = create<CrateState>((set, get) => ({
 
   async save(t) {
     const affinity = await crate.save(t)
+    const saved: EnrichedTrack = { ...t, status: 'saved' }
+    set({
+      affinity,
+      results: get().results.map((r) => (r.crateId === t.crateId ? saved : r)),
+      crateTracks: [saved, ...get().crateTracks.filter((r) => r.crateId !== t.crateId)],
+    })
+  },
+
+  async remove(t) {
+    const affinity = await crate.remove(t)
     set({
       affinity,
       results: get().results.map((r) =>
-        r.crateId === t.crateId ? { ...r, status: 'saved' } : r,
+        r.crateId === t.crateId ? { ...r, status: 'seen' } : r,
       ),
+      crateTracks: get().crateTracks.filter((r) => r.crateId !== t.crateId),
     })
   },
 
   async reject(t) {
     const affinity = await crate.reject(t)
-    set({ affinity, results: get().results.filter((r) => r.crateId !== t.crateId) })
+    set({
+      affinity,
+      results: get().results.filter((r) => r.crateId !== t.crateId),
+      crateTracks: get().crateTracks.filter((r) => r.crateId !== t.crateId),
+    })
   },
 
   async analyze(t) {
@@ -88,7 +125,10 @@ export const useCrate = create<CrateState>((set, get) => ({
     try {
       const result = await analyzeAudio(src.url)
       const merged = await crate.saveAnalysis(t, result)
-      set({ results: get().results.map((r) => (r.crateId === t.crateId ? merged : r)) })
+      set({
+        results: get().results.map((r) => (r.crateId === t.crateId ? merged : r)),
+        crateTracks: get().crateTracks.map((r) => (r.crateId === t.crateId ? merged : r)),
+      })
     } catch (e) {
       set({ error: e instanceof Error ? e.message : String(e) })
     } finally {
