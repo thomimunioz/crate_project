@@ -8,11 +8,13 @@ import type { EnrichedTrack } from '@/core/entities'
 import type { Affinity } from '@/core/affinity'
 import { emptyAffinity, learn } from '@/core/affinity'
 import type { AnalyzeResult } from '@/api/backend'
+import type { CacheRow } from './cache'
 import { analyzed } from '@/core/provenance'
 
 class CrateDB extends Dexie {
   tracks!: Table<EnrichedTrack, string>
   meta!: Table<{ key: string; value: unknown }, string>
+  cache!: Table<CacheRow, string>
 
   constructor() {
     super('crate')
@@ -21,6 +23,8 @@ class CrateDB extends Dexie {
       tracks: 'crateId, status, entity.year, updatedAt, *entity.genres',
       meta: 'key',
     })
+    // v2: cache de catálogo (Discogs/MusicBrainz). Ver db/cache.ts
+    this.version(2).stores({ cache: 'key, expiresAt' })
   }
 }
 

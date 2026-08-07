@@ -17,7 +17,15 @@ import { inferMoodFromText, instrumentsFromText } from '@/core/taxonomy'
 import { confirmed, inferred } from '@/core/provenance'
 import { sourcesFor, discogs, musicbrainz } from '@/sources'
 
-const ENRICH_LIMIT = 24 // TODO(F1): throttlear/cachear enrichment; MusicBrainz = 1 req/seg.
+/**
+ * Cuántos candidatos se enriquecen por búsqueda.
+ *
+ * El enrichment está serializado por fuente (ver sources/throttle.ts), así que
+ * cada candidato cuesta ~1.1s de Discogs en frío. No se baja el número: enriquecer
+ * menos es tener menos resultados con créditos y rareza, que es lo que alimenta el
+ * score. El cache (db/cache.ts) hace que la segunda pasada sea instantánea.
+ */
+const ENRICH_LIMIT = 24
 
 // ---------- discover ----------
 export async function discover(query: SearchQuery): Promise<SourceItem[]> {
