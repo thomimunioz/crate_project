@@ -2,7 +2,7 @@
  * Internet Archive — discos viejos digitalizados, legal. advancedsearch.php es CORS-friendly.
  * Ver docs/SOURCES.md
  */
-import type { SourceItem, SearchQuery } from '@/core/entities'
+import type { SourceItem } from '@/core/entities'
 import type { DiscoverySource } from './types'
 
 const BASE = 'https://archive.org/advancedsearch.php'

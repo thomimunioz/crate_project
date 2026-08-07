@@ -5,6 +5,8 @@ import { fileURLToPath, URL } from 'node:url'
 
 // En dev, /api se proxea al backend FastAPI (evita CORS local y esconde el origen del backend).
 export default defineConfig({
+  // Las env vars viven en el .env de la raíz, compartido con el backend. Ver .env.example
+  envDir: '..',
   plugins: [
     react(),
     VitePWA({
