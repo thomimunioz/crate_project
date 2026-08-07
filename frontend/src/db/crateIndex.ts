@@ -1,0 +1,88 @@
+/**
+ * Crate-index local en IndexedDB (Dexie). Estados: seen / saved / analyzed / rejected.
+ * El crate real = saved + analyzed. `seen` habilita "no me muestres lo que ya vi".
+ * Ver docs/ENTITY_MODEL.md
+ */
+import Dexie, { type Table } from 'dexie'
+import type { EnrichedTrack } from '@/core/entities'
+import type { Affinity } from '@/core/affinity'
+import { emptyAffinity, learn } from '@/core/affinity'
+import type { AnalyzeResult } from '@/api/backend'
+import { analyzed } from '@/core/provenance'
+
+class CrateDB extends Dexie {
+  tracks!: Table<EnrichedTrack, string>
+  meta!: Table<{ key: string; value: unknown }, string>
+
+  constructor() {
+    super('crate')
+    this.version(1).stores({
+      // índices: pk crateId, filtrables status/year/updatedAt, multiEntry en géneros
+      tracks: 'crateId, status, entity.year, updatedAt, *entity.genres',
+      meta: 'key',
+    })
+  }
+}
+
+export const db = new CrateDB()
+
+const stamp = (): string => new Date().toISOString()
+
+/** Registra un track como visto (sin pisar un saved/analyzed existente). */
+export async function markSeen(track: EnrichedTrack): Promise<void> {
+  const existing = await db.tracks.get(track.crateId)
+  if (existing) return
+  await db.tracks.put({ ...track, status: 'seen' })
+}
+
+/** IDs ya vistos (para ocultar en próximas búsquedas). */
+export async function seenIds(): Promise<Set<string>> {
+  const ids = (await db.tracks.toCollection().primaryKeys()) as string[]
+  return new Set(ids)
+}
+
+export async function save(track: EnrichedTrack): Promise<Affinity> {
+  await db.tracks.put({ ...track, status: 'saved', updatedAt: stamp() })
+  return bumpAffinity(track, +1)
+}
+
+export async function reject(track: EnrichedTrack): Promise<Affinity> {
+  await db.tracks.put({ ...track, status: 'rejected', updatedAt: stamp() })
+  return bumpAffinity(track, -1)
+}
+
+/** Fusiona el resultado del análisis de audio como metadata propia (con provenance). */
+export async function saveAnalysis(
+  track: EnrichedTrack,
+  result: AnalyzeResult,
+): Promise<EnrichedTrack> {
+  const merged: EnrichedTrack = {
+    ...track,
+    bpm: result.bpm ? analyzed(result.bpm.value, result.bpm.confidence) : track.bpm,
+    key: result.key ? analyzed(result.key.value, result.key.confidence) : track.key,
+    instruments: result.instruments
+      ? analyzed(result.instruments.value, result.instruments.confidence)
+      : track.instruments,
+    status: track.status === 'saved' ? 'saved' : 'analyzed',
+    updatedAt: stamp(),
+  }
+  await db.tracks.put(merged)
+  return merged
+}
+
+/** El crate real: lo que guardaste o analizaste. */
+export async function getCrate(): Promise<EnrichedTrack[]> {
+  return db.tracks.where('status').anyOf('saved', 'analyzed').toArray()
+}
+
+export async function getAffinity(): Promise<Affinity> {
+  const row = await db.meta.get('affinity')
+  return (row?.value as Affinity | undefined) ?? emptyAffinity()
+}
+
+async function bumpAffinity(track: EnrichedTrack, weight: number): Promise<Affinity> {
+  const current = await getAffinity()
+  const next = learn(current, track, weight)
+  await db.meta.put({ key: 'affinity', value: next })
+  return next
+}

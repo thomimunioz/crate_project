@@ -1,0 +1,39 @@
+# ---- secrets ----
+.env
+.env.local
+*.local
+
+# ---- node / frontend ----
+node_modules/
+frontend/dist/
+frontend/dev-dist/
+frontend/.vite/
+*.log
+npm-debug.log*
+
+# ---- python / backend ----
+backend/.venv/
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# ---- dsp temp / cache ----
+backend/tmp/
+backend/cache/
+*.wav
+*.mp3
+*.m4a
+*.part
+
+# ---- editor / os ----
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# ---- claude code (local) ----
+.claude/settings.local.json

@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-crate-bg text-crate-ink font-sans antialiased;
+    background-image: theme('backgroundImage.grain');
+  }
+}
+
+@layer components {
+  /* motivo de pantallita de sampler para los datos */
+  .lcd {
+    @apply bg-crate-lcd text-crate-lcdInk font-mono rounded-md;
+    box-shadow: 0 0 0 1px rgba(240, 178, 74, 0.25);
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-md border border-crate-line bg-crate-panel px-2 py-1 text-xs;
+  }
+  .eyebrow {
+    @apply font-mono text-[11px] uppercase tracking-[0.14em] text-crate-faint;
+  }
+}
