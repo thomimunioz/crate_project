@@ -6,9 +6,14 @@
 import type { Credit } from '@/core/entities'
 import type { CatalogCandidate, CatalogRelease } from './types'
 import { proxyGet } from '@/api/backend'
+import { cached, WEEK_MS } from '@/db/cache'
+import { createLimiter } from './throttle'
 
 const API = 'https://api.discogs.com'
 const TOKEN = import.meta.env.VITE_DISCOGS_TOKEN
+
+/** ~60 req/min autenticado. Search y release comparten el mismo límite. */
+const limit = createLimiter(1_100)
 
 function withToken(url: string): string {
   const sep = url.includes('?') ? '&' : '?'
@@ -17,24 +22,31 @@ function withToken(url: string): string {
 
 /** Busca releases candidatos para el fuzzy match (liviano). */
 export async function searchReleases(artist: string, title: string): Promise<CatalogCandidate[]> {
-  const q = encodeURIComponent(`${artist} ${title}`.trim())
-  const url = withToken(`${API}/database/search?q=${q}&type=release&per_page=10`)
-  const data = await proxyGet<any>(url)
-  return (data.results ?? []).map((r: any): CatalogCandidate => {
-    const [ra, rt] = String(r.title ?? '').split(' - ')
-    return {
-      discogsId: r.id,
-      artist: (ra ?? '').trim(),
-      title: (rt ?? r.title ?? '').trim(),
-      year: r.year ? Number(r.year) : undefined,
-      matchText: r.title ?? '',
-    }
+  // la clave no lleva el token: es cache de catálogo, no de credenciales
+  return cached(`discogs:search:${artist}|${title}`.toLowerCase(), WEEK_MS, async () => {
+    const q = encodeURIComponent(`${artist} ${title}`.trim())
+    const url = withToken(`${API}/database/search?q=${q}&type=release&per_page=10`)
+    const data = await limit(() => proxyGet<any>(url))
+    return (data.results ?? []).map((r: any): CatalogCandidate => {
+      const [ra, rt] = String(r.title ?? '').split(' - ')
+      return {
+        discogsId: r.id,
+        artist: (ra ?? '').trim(),
+        title: (rt ?? r.title ?? '').trim(),
+        year: r.year ? Number(r.year) : undefined,
+        matchText: r.title ?? '',
+      }
+    })
   })
 }
 
 /** Trae el release completo: créditos (instrumentos), género/estilo, país, want/have. */
 export async function getRelease(discogsId: number): Promise<CatalogRelease> {
-  const data = await proxyGet<any>(withToken(`${API}/releases/${discogsId}`))
+  return cached(`discogs:release:${discogsId}`, WEEK_MS, () => fetchRelease(discogsId))
+}
+
+async function fetchRelease(discogsId: number): Promise<CatalogRelease> {
+  const data = await limit(() => proxyGet<any>(withToken(`${API}/releases/${discogsId}`)))
   const credits: Credit[] = (data.extraartists ?? []).map((a: any): Credit => ({
     name: a.name,
     role: a.role,

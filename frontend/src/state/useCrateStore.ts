@@ -8,6 +8,7 @@ import type { Affinity } from '@/core/affinity'
 import { emptyAffinity } from '@/core/affinity'
 import { runSearch } from '@/pipeline'
 import * as crate from '@/db/crateIndex'
+import { purgeExpired } from '@/db/cache'
 import { analyzeAudio } from '@/api/backend'
 
 interface CrateState {
@@ -39,6 +40,7 @@ export const useCrate = create<CrateState>((set, get) => ({
   ready: false,
 
   async init() {
+    void purgeExpired() // en background: no vale la pena bloquear el arranque
     const affinity = await crate.getAffinity()
     set({ affinity, ready: true })
   },
