@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import type { EnrichedTrack } from '@/core/entities'
 import { useCrate } from '@/state/useCrateStore'
 import { ResultCard } from './ResultCard'
+import { PlaylistImport } from './PlaylistImport'
 
 /** Texto sobre el que filtra la búsqueda local: todo lo que sabemos del track. */
 function haystack(t: EnrichedTrack): string {
@@ -38,15 +39,20 @@ export function CrateView() {
 
   if (crateTracks.length === 0) {
     return (
-      <p className="text-crate-soft">
-        Tu crate está vacío. Guardá algo con <span className="text-crate-amber">♡</span> desde una
-        búsqueda y aparece acá.
-      </p>
+      <div className="flex flex-col gap-4">
+        <p className="text-crate-soft">
+          Tu crate está vacío. Guardá algo con <span className="text-crate-amber">♡</span> desde
+          una búsqueda, o arrancá importando una playlist tuya.
+        </p>
+        <PlaylistImport />
+      </div>
     )
   }
 
   return (
     <div className="flex flex-col gap-4">
+      <PlaylistImport />
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="eyebrow">
           {crateTracks.length} en el crate
