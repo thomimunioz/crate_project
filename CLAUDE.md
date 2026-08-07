@@ -202,10 +202,17 @@ uvicorn app.main:app --reload --port 8787
 Copiá `.env.example` → `.env` y completá las keys (YouTube Data API, Discogs token).
 En dev, Vite proxea `/api` → `http://localhost:8787` (ver `vite.config.ts`).
 
-> Estado actual: **scaffold de F1**. El core de dominio (entities, provenance, taxonomy,
-> score, fuzzy, affinity, DB) está escrito con lógica real de arranque. Los clients de
-> fuentes, el pipeline, la UI y el DSP están como skeletons tipados con TODOs claros.
-> Buscá `// TODO(F1)` en el código.
+> Estado actual: **F1 corriendo, sin validar con datos reales.** El core de dominio, el
+> pipeline completo (discover → normalize → enrich → score), los clients de fuentes, el
+> crate-index y la UI están escritos y compilan. El enrichment está throttleado por fuente
+> y cacheado en IndexedDB. Falta lo que necesita las API keys puestas: correr los casos de
+> prueba y calibrar. Buscá `// TODO(F1)` en el código para lo que queda.
+>
+> Lo próximo, en orden: (1) fan-out de queries de descubrimiento — hoy `buildQuery` en
+> `sources/youtube.ts` solo concatena strings y es donde vive o muere el producto;
+> (2) render progresivo de resultados, porque el enrichment serializado hace que una
+> búsqueda en frío tarde ~40s con un spinner y nada más; (3) calibrar los pesos del score
+> contra los casos de prueba.
 
 ---
 

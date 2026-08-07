@@ -17,12 +17,24 @@ Input (query + filtros + fuentes)
    → Personal crate    Seen / Saved / Analyzed / Rejected   (IndexedDB)
 ```
 
+**Ya hecho:**
+- Entorno levantando: frontend, backend, ffmpeg, `.env` único en la raíz.
+- Enrichment throttleado por fuente (`sources/throttle.ts`) y cacheado una semana en
+  IndexedDB (`db/cache.ts`). Antes se comía 429/503 y perdía créditos y rareza.
+- Vista del crate con filtro local, y sacar del crate revirtiendo la affinity.
+- **Import de playlists propias de YouTube** como semilla: resuelve el arranque en frío
+  de la affinity con curaduría deliberada en vez de clicks inferidos. Cuesta ~1 unidad
+  de quota cada 50 temas.
+
 **Sí o sí en F1:**
 - Entity model + provenance + confidence.
 - Seen / Saved / Analyzed / Rejected + **"no me muestres lo que ya vi"**.
 - CRATE Score + **Why this?** (explicable).
 - Botón "Analizar audio" (opt-in) con BPM/key + confidence.
-- Fuzzy matching YouTube ↔ Discogs.
+- Fuzzy matching YouTube ↔ Discogs — de esto depende también la affinity: si el cruce
+  falla, la entidad cae al fallback sin género ni sello y `learn()` casi no aprende nada.
+- Fan-out de queries de descubrimiento (hoy `buildQuery` solo concatena strings).
+- Render progresivo: mostrar resultados a medida que se enriquecen.
 - Estética base (vinilo japonés 70s).
 
 **Fuentes F1:** YouTube · Discogs · MusicBrainz · Internet Archive.
