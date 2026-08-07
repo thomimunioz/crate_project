@@ -25,19 +25,20 @@ function parseISODuration(iso: string): number | undefined {
   return (Number(h ?? 0) * 3600) + (Number(mm ?? 0) * 60) + Number(s ?? 0)
 }
 
+/** videos.list = 1 unidad y acepta hasta 50 ids por request. Barato: trae stats + duración. */
 async function fetchStats(ids: string[]): Promise<Map<string, any>> {
   const out = new Map<string, any>()
-  if (ids.length === 0) return out
-  // videos.list = 1 unidad; barato. Trae stats + duración.
-  const params = new URLSearchParams({
-    part: 'statistics,contentDetails,snippet',
-    id: ids.join(','),
-    key: KEY,
-  })
-  const res = await fetch(`${BASE}/videos?${params.toString()}`)
-  if (!res.ok) throw new Error(`YouTube videos.list ${res.status}`)
-  const data: any = await res.json()
-  for (const it of data.items ?? []) out.set(it.id, it)
+  for (let i = 0; i < ids.length; i += 50) {
+    const params = new URLSearchParams({
+      part: 'statistics,contentDetails,snippet',
+      id: ids.slice(i, i + 50).join(','),
+      key: KEY,
+    })
+    const res = await fetch(`${BASE}/videos?${params.toString()}`)
+    if (!res.ok) throw new Error(`YouTube videos.list ${res.status}`)
+    const data: any = await res.json()
+    for (const it of data.items ?? []) out.set(it.id, it)
+  }
   return out
 }
 
@@ -83,4 +84,61 @@ export const youtube: DiscoverySource = {
     const stats = await fetchStats(ids)
     return ids.map((id) => toItem(id, stats.get(id)))
   },
+}
+
+// ---------- import de playlists propias ----------
+
+/**
+ * Saca el playlistId de una URL de YouTube, o devuelve la entrada si ya es un ID.
+ * Acepta `?list=`, la forma /playlist?list= y el ID pelado.
+ */
+export function parsePlaylistId(input: string): string | null {
+  const trimmed = input.trim()
+  if (!trimmed) return null
+
+  const fromUrl = trimmed.match(/[?&]list=([A-Za-z0-9_-]+)/)
+  if (fromUrl) return fromUrl[1]
+
+  // un ID suelto: prefijos conocidos (PL/UU/LL/FL/OL) o el mix de "watch later"
+  return /^[A-Za-z0-9_-]{12,}$/.test(trimmed) ? trimmed : null
+}
+
+/**
+ * Trae todos los videos de una playlist como SourceItems.
+ *
+ * playlistItems.list cuesta 1 unidad contra las 100 de search.list, así que una
+ * playlist de 500 temas sale ~20 unidades entre paginado y stats. Es de lejos la
+ * forma más barata de sembrar el índice: son discos que ya elegiste a mano.
+ */
+export async function fetchPlaylist(playlistId: string): Promise<SourceItem[]> {
+  if (!KEY) throw new Error('Falta VITE_YOUTUBE_API_KEY')
+
+  const ids: string[] = []
+  let pageToken: string | undefined
+
+  do {
+    const params = new URLSearchParams({
+      part: 'contentDetails',
+      playlistId,
+      maxResults: '50',
+      key: KEY,
+    })
+    if (pageToken) params.set('pageToken', pageToken)
+
+    const res = await fetch(`${BASE}/playlistItems?${params.toString()}`)
+    if (!res.ok) {
+      const detail = res.status === 404 ? ' (¿la playlist es privada?)' : ''
+      throw new Error(`YouTube playlistItems ${res.status}${detail}`)
+    }
+    const data: any = await res.json()
+    for (const it of data.items ?? []) {
+      const id = it.contentDetails?.videoId
+      if (id) ids.push(id)
+    }
+    pageToken = data.nextPageToken
+  } while (pageToken)
+
+  const stats = await fetchStats(ids)
+  // los borrados/privados quedan sin stats: no sirven como entidad
+  return ids.filter((id) => stats.has(id)).map((id) => toItem(id, stats.get(id)))
 }

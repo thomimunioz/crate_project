@@ -14,8 +14,8 @@ export function ResultCard({ track }: Props) {
   const [preview, setPreview] = useState(false)
 
   const e = track.entity
-  const total = track.score?.total ?? 0
-  const reasons = track.score?.reasons ?? []
+  const score = track.score
+  const reasons = score?.reasons ?? []
   const yt = track.sources.find((s) => s.kind === 'youtube')
   const instruments = track.instruments?.value ?? []
   const inCrate = track.status === 'saved' || track.status === 'analyzed'
@@ -25,8 +25,16 @@ export function ResultCard({ track }: Props) {
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <span className="font-mono text-sm font-bold text-crate-amber">{scoreLabel(total)}</span>
-            <span className="font-mono text-sm text-crate-soft">— {total}</span>
+            {score ? (
+              <>
+                <span className="font-mono text-sm font-bold text-crate-amber">
+                  {scoreLabel(score.total)}
+                </span>
+                <span className="font-mono text-sm text-crate-soft">— {score.total}</span>
+              </>
+            ) : (
+              <span className="eyebrow">en tu crate</span>
+            )}
             {!e.confirmed && (
               <span className="chip text-crate-faint" title="No confirmado contra catálogo">
                 sin confirmar

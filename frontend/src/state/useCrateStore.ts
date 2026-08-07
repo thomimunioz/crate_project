@@ -6,7 +6,8 @@ import { create } from 'zustand'
 import type { EnrichedTrack, SearchQuery } from '@/core/entities'
 import type { Affinity } from '@/core/affinity'
 import { emptyAffinity } from '@/core/affinity'
-import { runSearch } from '@/pipeline'
+import { runSearch, importPlaylist } from '@/pipeline'
+import { parsePlaylistId } from '@/sources/youtube'
 import * as crate from '@/db/crateIndex'
 import { purgeExpired } from '@/db/cache'
 import { analyzeAudio } from '@/api/backend'
@@ -21,6 +22,8 @@ interface CrateState {
   crateTracks: EnrichedTrack[]
   loading: boolean
   analyzing: string | null
+  /** progreso del import de playlist; null si no hay uno corriendo */
+  importing: { done: number; total: number } | null
   error?: string
   affinity: Affinity
   hideSeen: boolean
@@ -31,6 +34,7 @@ interface CrateState {
   patchQuery: (q: Partial<SearchQuery>) => void
   search: () => Promise<void>
   loadCrate: () => Promise<void>
+  importPlaylist: (input: string) => Promise<void>
   save: (t: EnrichedTrack) => Promise<void>
   remove: (t: EnrichedTrack) => Promise<void>
   reject: (t: EnrichedTrack) => Promise<void>
@@ -45,6 +49,7 @@ export const useCrate = create<CrateState>((set, get) => ({
   crateTracks: [],
   loading: false,
   analyzing: null,
+  importing: null,
   affinity: emptyAffinity(),
   hideSeen: true,
   ready: false,
@@ -63,6 +68,26 @@ export const useCrate = create<CrateState>((set, get) => ({
 
   patchQuery(q) {
     set({ query: { ...get().query, ...q } })
+  },
+
+  async importPlaylist(input) {
+    const id = parsePlaylistId(input)
+    if (!id) {
+      set({ error: 'No pude leer el ID de esa playlist. Pegá la URL completa de YouTube.' })
+      return
+    }
+    set({ importing: { done: 0, total: 0 }, error: undefined })
+    try {
+      const tracks = await importPlaylist(id, (done, total) => set({ importing: { done, total } }))
+      // guardar de a uno: cada save aprende la affinity de ese track
+      for (const t of tracks) await crate.save(t)
+      set({ affinity: await crate.getAffinity() })
+      await get().loadCrate()
+    } catch (e) {
+      set({ error: e instanceof Error ? e.message : String(e) })
+    } finally {
+      set({ importing: null })
+    }
   },
 
   async loadCrate() {

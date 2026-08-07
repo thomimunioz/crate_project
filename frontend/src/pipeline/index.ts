@@ -16,6 +16,7 @@ import { computeCrateScore } from '@/core/score'
 import { inferMoodFromText, instrumentsFromText } from '@/core/taxonomy'
 import { confirmed, inferred } from '@/core/provenance'
 import { sourcesFor, discogs, musicbrainz } from '@/sources'
+import { fetchPlaylist } from '@/sources/youtube'
 
 /**
  * Cuántos candidatos se enriquecen por búsqueda.
@@ -174,9 +175,21 @@ async function enrichOne(c: Candidate): Promise<EnrichedTrack> {
   }
 }
 
-export async function enrich(candidates: Candidate[]): Promise<EnrichedTrack[]> {
-  const slice = candidates.slice(0, ENRICH_LIMIT)
-  const settled = await Promise.allSettled(slice.map(enrichOne))
+export interface EnrichOptions {
+  /** cuántos candidatos enriquecer. Por defecto ENRICH_LIMIT. */
+  limit?: number
+  onProgress?: (done: number, total: number) => void
+}
+
+export async function enrich(
+  candidates: Candidate[],
+  opts: EnrichOptions = {},
+): Promise<EnrichedTrack[]> {
+  const slice = candidates.slice(0, opts.limit ?? ENRICH_LIMIT)
+  let done = 0
+  const settled = await Promise.allSettled(
+    slice.map((c) => enrichOne(c).finally(() => opts.onProgress?.(++done, slice.length))),
+  )
   return settled.flatMap((r) => (r.status === 'fulfilled' ? [r.value] : []))
 }
 
@@ -197,4 +210,20 @@ export async function runSearch(query: SearchQuery, affinity: Affinity): Promise
   const candidates = normalize(items)
   const enriched = await enrich(candidates)
   return scoreAll(enriched, query, affinity)
+}
+
+/**
+ * Import de una playlist propia como semilla del crate.
+ *
+ * Son discos que ya elegiste a mano para samplear: es la mejor señal de affinity
+ * que existe, mucho mejor que los clicks de save/reject, y arranca el índice sin
+ * el problema de arranque en frío. Se enriquece la playlist entera, no un slice.
+ */
+export async function importPlaylist(
+  playlistId: string,
+  onProgress?: EnrichOptions['onProgress'],
+): Promise<EnrichedTrack[]> {
+  const items = await fetchPlaylist(playlistId)
+  const candidates = normalize(items)
+  return enrich(candidates, { limit: candidates.length, onProgress })
 }
