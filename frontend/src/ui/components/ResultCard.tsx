@@ -9,7 +9,7 @@ interface Props {
 }
 
 export function ResultCard({ track }: Props) {
-  const { save, reject, analyze, analyzing } = useCrate()
+  const { save, remove, reject, analyze, analyzing } = useCrate()
   const [showWhy, setShowWhy] = useState(false)
   const [preview, setPreview] = useState(false)
 
@@ -18,6 +18,7 @@ export function ResultCard({ track }: Props) {
   const reasons = track.score?.reasons ?? []
   const yt = track.sources.find((s) => s.kind === 'youtube')
   const instruments = track.instruments?.value ?? []
+  const inCrate = track.status === 'saved' || track.status === 'analyzed'
 
   return (
     <article className="rounded-xl border border-crate-line bg-crate-panel p-4 shadow-lg">
@@ -42,9 +43,23 @@ export function ResultCard({ track }: Props) {
           </p>
         </div>
         <div className="flex flex-none gap-1">
-          <button onClick={() => void save(track)} className="chip hover:border-crate-go" title="Guardar en tu crate">
-            ♡
-          </button>
+          {inCrate ? (
+            <button
+              onClick={() => void remove(track)}
+              className="chip border-crate-go text-crate-go"
+              title="Sacar del crate"
+            >
+              ♥
+            </button>
+          ) : (
+            <button
+              onClick={() => void save(track)}
+              className="chip hover:border-crate-go"
+              title="Guardar en tu crate"
+            >
+              ♡
+            </button>
+          )}
           <button onClick={() => void reject(track)} className="chip hover:border-crate-stop" title="No me interesa">
             ✕
           </button>
