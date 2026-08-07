@@ -6,9 +6,9 @@
   "description": "CRATE — buscador de crate-digging (PWA). Frontend React + Vite + TS.",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc -b --noEmit"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.51.0",
@@ -19,6 +19,7 @@
     "zustand": "^4.5.4"
   },
   "devDependencies": {
+    "@types/node": "^26.2.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",

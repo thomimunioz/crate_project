@@ -37,3 +37,6 @@ Thumbs.db
 
 # ---- claude code (local) ----
 .claude/settings.local.json
+
+# ---- typescript build artifacts ----
+*.tsbuildinfo
