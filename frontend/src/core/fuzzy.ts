@@ -13,7 +13,11 @@ const NOISE_PATTERNS: RegExp[] = [
   /\s{2,}/g,
 ]
 
-const SEP = /\s+[-–—~]\s+/ // separador artista - título
+// Separadores de "Artista - Título". Ojo: hay que partir ANTES de limpiar,
+// porque NOISE_PATTERNS borra ~ | / como decorado y se lleva el separador puesto.
+const SEP = /\s+[-–—~|/]\s+/
+// misma idea sin espacios alrededor: "横山みゆき/Miyuki Second"
+const TIGHT_SEP = /\s*[/|]\s*/
 
 export function cleanTitle(raw: string): string {
   let s = raw
@@ -27,14 +31,30 @@ export function extractYear(raw: string): number | undefined {
   return m ? Number(m[1]) : undefined
 }
 
-/** Separa "Artista - Título" heurísticamente. Devuelve el original limpio si no puede. */
+/**
+ * Separa "Artista - Título" heurísticamente. Devuelve el original limpio si no puede.
+ *
+ * Parte sobre el texto CRUDO y limpia cada mitad después: al revés, el limpiador
+ * se come los separadores decorativos y el artista se pierde. Medido sobre las
+ * playlists reales, ese orden dejaba a la mitad de los temas sin artista.
+ */
 export function splitArtistTitle(raw: string): { artist?: string; title?: string } {
-  const cleaned = cleanTitle(raw)
-  const parts = cleaned.split(SEP)
+  const parts = raw.split(SEP)
   if (parts.length >= 2) {
-    return { artist: parts[0].trim(), title: parts.slice(1).join(' - ').trim() }
+    const artist = cleanTitle(parts[0])
+    const title = cleanTitle(parts.slice(1).join(' - '))
+    if (artist && title) return { artist, title }
   }
-  return { title: cleaned }
+
+  const tight = raw.split(TIGHT_SEP)
+  if (tight.length === 2) {
+    const artist = cleanTitle(tight[0])
+    const title = cleanTitle(tight[1])
+    // el mínimo evita partir cosas como "AC/DC" cuando no hay separador real
+    if (artist.length >= 3 && title.length >= 3) return { artist, title }
+  }
+
+  return { title: cleanTitle(raw) }
 }
 
 /** Distancia de Levenshtein (iterativa, O(n·m) memoria O(min)). */
