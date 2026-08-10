@@ -71,6 +71,35 @@ Clients: [`frontend/src/sources/`](../frontend/src/sources/).
 - Texturas/one-shots CC **con BPM/key ya analizados** (API gratis). Útil, pero **no son
   "discos de otra gente"** → fuera del núcleo, queda como fuente opcional.
 
+## Medición real del cruce (agosto 2026, 80 temas de las playlists del usuario)
+
+El cruce contra catálogo es **el** cuello de botella de calidad: sin él no hay
+créditos, ni sello, ni want/have, o sea no hay CRATE Score ni affinity.
+
+| estrategia | match | nota |
+|---|---|---|
+| Discogs `q=` libre + Levenshtein concatenado | **14%** | el estado original |
+| Discogs `artist=` + `track=` estructurado | 26% | la mayoría son **falsos positivos** |
+| MusicBrainz `recording:` | **33%** | y los matches son correctos |
+
+Tres causas encontradas, ya corregida la primera:
+
+1. `splitArtistTitle` limpiaba antes de partir, y el limpiador se come `~ | /`
+   como decorado → 51% de los temas quedaban sin artista. **Corregido.**
+2. **Discogs busca releases (álbumes); los títulos de YouTube son tracks.**
+   Buscar "Breve vita, non felice" contra títulos de disco no puede funcionar.
+   Con `artist=`+`track=`, cuando Discogs no encuentra el track igual devuelve
+   otros discos del artista → matchea cualquier cosa del mismo autor.
+3. Levenshtein sobre `artista + título` concatenados lo domina el largo del
+   nombre del artista: "Ennio Morricone - Debora" matcheó "Ennio Morricone -
+   Amore" con 0.82 siendo otro tema.
+
+**Conclusión: MusicBrainz debería ser el primer salto** (identifica la grabación,
+que es el nivel correcto) y Discogs el segundo (enriquece ese release con
+créditos y rareza). MB además resuelve títulos sin artista, que con Discogs son
+imposibles. Contras: MB tiene **0% en city pop japonés** —justo el punto débil—,
+donde Discogs sí tiene catálogo. Son complementarias, no sustitutas.
+
 ## Gotchas transversales (leer sí o sí)
 
 1. **CORS:** algunas fuentes y todo scraping se bloquean desde el navegador → proxy fino en

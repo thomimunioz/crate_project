@@ -18,6 +18,7 @@ function haystack(t: EnrichedTrack): string {
     ...(t.instruments?.value ?? []),
     ...(t.mood?.value.feels ?? []),
     ...(t.mood?.value.textures ?? []),
+    ...(t.tags ?? []),
   ]
     .filter(Boolean)
     .join(' ')
@@ -36,6 +37,15 @@ export function CrateView() {
   }, [crateTracks, filter])
 
   const analyzed = crateTracks.filter((t) => t.status === 'analyzed').length
+
+  // tus tags, ordenados por cuántos temas tienen cada uno
+  const tagCounts = useMemo(() => {
+    const counts = new Map<string, number>()
+    for (const t of crateTracks) for (const tag of t.tags ?? []) {
+      counts.set(tag, (counts.get(tag) ?? 0) + 1)
+    }
+    return [...counts.entries()].sort((a, b) => b[1] - a[1])
+  }, [crateTracks])
 
   if (crateTracks.length === 0) {
     return (
@@ -66,6 +76,20 @@ export function CrateView() {
           className="w-full max-w-xs rounded-md border border-crate-line bg-crate-panel px-3 py-1.5 text-sm placeholder:text-crate-faint focus:border-crate-amber focus:outline-none"
         />
       </div>
+
+      {tagCounts.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {tagCounts.map(([tag, n]) => (
+            <button
+              key={tag}
+              onClick={() => setFilter(filter === tag ? '' : tag)}
+              className={`chip ${filter === tag ? 'border-crate-amber text-crate-amber' : 'hover:border-crate-soft'}`}
+            >
+              #{tag} <span className="text-crate-faint">{n}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       {shown.length === 0 ? (
         <p className="text-crate-soft">Nada en tu crate coincide con «{filter}».</p>

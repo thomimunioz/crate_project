@@ -55,6 +55,28 @@ export async function save(track: EnrichedTrack): Promise<Affinity> {
 }
 
 /**
+ * Guarda un track importado de una playlist, sumándole el tag.
+ *
+ * Los tags se acumulan pero la affinity NO: si el mismo tema está en JAZZ y en
+ * JAZZ FUSION, eso es solapamiento de categorías, no que te guste el doble.
+ * Un track = un +1, sin importar en cuántas playlists aparezca.
+ */
+export async function saveFromPlaylist(track: EnrichedTrack, tag: string): Promise<void> {
+  const existing = await db.tracks.get(track.crateId)
+  const base = existing ?? track
+  const tags = Array.from(new Set([...(base.tags ?? []), tag]))
+  const alreadyInCrate = existing?.status === 'saved' || existing?.status === 'analyzed'
+
+  await db.tracks.put({
+    ...base,
+    tags,
+    status: existing?.status === 'analyzed' ? 'analyzed' : 'saved',
+    updatedAt: stamp(),
+  })
+  if (!alreadyInCrate) await bumpAffinity(track, +1)
+}
+
+/**
  * Saca un track del crate y revierte exactamente el +1 que sumó al guardarlo.
  * No es lo mismo que rechazar: vuelve a neutral en vez de restar interés.
  */

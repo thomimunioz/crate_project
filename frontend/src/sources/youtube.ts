@@ -103,15 +103,34 @@ export function parsePlaylistId(input: string): string | null {
   return /^[A-Za-z0-9_-]{12,}$/.test(trimmed) ? trimmed : null
 }
 
+export interface PlaylistFetch {
+  /** título tal cual está en YouTube; se usa como tag */
+  title: string
+  items: SourceItem[]
+}
+
+/** "JAPANESE CITY POP SAMPLES" → "japanese city pop". El sufijo no aporta nada. */
+export function playlistTag(title: string): string {
+  const stripped = title.replace(/\bsamples?\b/gi, '').replace(/\s{2,}/g, ' ').trim()
+  return (stripped || title).toLowerCase()
+}
+
 /**
- * Trae todos los videos de una playlist como SourceItems.
+ * Trae todos los videos de una playlist como SourceItems, más su título.
  *
  * playlistItems.list cuesta 1 unidad contra las 100 de search.list, así que una
  * playlist de 500 temas sale ~20 unidades entre paginado y stats. Es de lejos la
  * forma más barata de sembrar el índice: son discos que ya elegiste a mano.
  */
-export async function fetchPlaylist(playlistId: string): Promise<SourceItem[]> {
+export async function fetchPlaylist(playlistId: string): Promise<PlaylistFetch> {
   if (!KEY) throw new Error('Falta VITE_YOUTUBE_API_KEY')
+
+  const metaRes = await fetch(
+    `${BASE}/playlists?part=snippet&id=${playlistId}&key=${KEY}`,
+  )
+  if (!metaRes.ok) throw new Error(`YouTube playlists ${metaRes.status}`)
+  const meta: any = await metaRes.json()
+  const title: string = meta.items?.[0]?.snippet?.title ?? playlistId
 
   const ids: string[] = []
   let pageToken: string | undefined
@@ -140,5 +159,6 @@ export async function fetchPlaylist(playlistId: string): Promise<SourceItem[]> {
 
   const stats = await fetchStats(ids)
   // los borrados/privados quedan sin stats: no sirven como entidad
-  return ids.filter((id) => stats.has(id)).map((id) => toItem(id, stats.get(id)))
+  const items = ids.filter((id) => stats.has(id)).map((id) => toItem(id, stats.get(id)))
+  return { title, items }
 }

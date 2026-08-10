@@ -83,6 +83,13 @@ export interface EnrichedTrack {
   mood?: Provenanced<Mood>
   instruments?: Provenanced<string[]>
   rarity: RaritySignals
+  /**
+   * Tu taxonomía, no la del catálogo. Sale del nombre de la playlist de origen.
+   * Deliberadamente aparte de entity.genres: "dark" no es un género de Discogs,
+   * es cómo VOS pensás ese disco a la hora de buscar un sample. Un track puede
+   * tener varios: estar en dos playlists no es una contradicción.
+   */
+  tags?: string[]
   score?: CrateScore
   status: CrateStatus
   firstSeenAt: string

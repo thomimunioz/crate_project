@@ -1,7 +1,8 @@
 /**
  * Discogs — enrichment (NO discovery). El catálogo de discos del mundo:
  * año, sello, país, género/estilo, RAREZA (want/have) y CRÉDITOS POR INSTRUMENTO.
- * Va por el proxy del backend (CORS de Discogs es inestable). Ver docs/SOURCES.md
+ * Va por el proxy del backend, que además le inyecta la auth: el consumer
+ * key/secret vive en el backend y nunca llega al bundle. Ver docs/SOURCES.md
  */
 import type { Credit } from '@/core/entities'
 import type { CatalogCandidate, CatalogRelease } from './types'
@@ -10,22 +11,15 @@ import { cached, WEEK_MS } from '@/db/cache'
 import { createLimiter } from './throttle'
 
 const API = 'https://api.discogs.com'
-const TOKEN = import.meta.env.VITE_DISCOGS_TOKEN
 
 /** ~60 req/min autenticado. Search y release comparten el mismo límite. */
 const limit = createLimiter(1_100)
 
-function withToken(url: string): string {
-  const sep = url.includes('?') ? '&' : '?'
-  return TOKEN ? `${url}${sep}token=${TOKEN}` : url
-}
-
 /** Busca releases candidatos para el fuzzy match (liviano). */
 export async function searchReleases(artist: string, title: string): Promise<CatalogCandidate[]> {
-  // la clave no lleva el token: es cache de catálogo, no de credenciales
   return cached(`discogs:search:${artist}|${title}`.toLowerCase(), WEEK_MS, async () => {
     const q = encodeURIComponent(`${artist} ${title}`.trim())
-    const url = withToken(`${API}/database/search?q=${q}&type=release&per_page=10`)
+    const url = `${API}/database/search?q=${q}&type=release&per_page=10`
     const data = await limit(() => proxyGet<any>(url))
     return (data.results ?? []).map((r: any): CatalogCandidate => {
       const [ra, rt] = String(r.title ?? '').split(' - ')
@@ -46,7 +40,7 @@ export async function getRelease(discogsId: number): Promise<CatalogRelease> {
 }
 
 async function fetchRelease(discogsId: number): Promise<CatalogRelease> {
-  const data = await limit(() => proxyGet<any>(withToken(`${API}/releases/${discogsId}`)))
+  const data = await limit(() => proxyGet<any>(`${API}/releases/${discogsId}`))
   const credits: Credit[] = (data.extraartists ?? []).map((a: any): Credit => ({
     name: a.name,
     role: a.role,
