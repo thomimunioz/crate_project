@@ -11,11 +11,13 @@ import type {
   SearchQuery,
 } from '@/core/entities'
 import type { Affinity } from '@/core/affinity'
-import { splitArtistTitle, extractYear, cleanTitle, bestMatch } from '@/core/fuzzy'
+import { splitArtistTitle, extractYear, cleanTitle, similarity } from '@/core/fuzzy'
 import { computeCrateScore } from '@/core/score'
 import { inferMoodFromText, instrumentsFromText } from '@/core/taxonomy'
-import { confirmed, inferred } from '@/core/provenance'
+import { confirmed as confirmedProv, inferred } from '@/core/provenance'
 import { sourcesFor, discogs, musicbrainz } from '@/sources'
+import type { CatalogCandidate, CatalogRelease } from '@/sources'
+import type { MbRecording } from '@/sources/musicbrainz'
 import { fetchPlaylist, playlistTag } from '@/sources/youtube'
 
 /**
@@ -69,6 +71,11 @@ export function normalize(items: SourceItem[]): Candidate[] {
 }
 
 // ---------- enrich ----------
+/** título del candidato, para desambiguar tracks dentro de un mismo release */
+function mb2title(c: Candidate): string {
+  return c.title ?? c.cleanedTitle
+}
+
 function slug(s: string): string {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 }
@@ -80,66 +87,104 @@ function daysSince(iso?: string): number | undefined {
   return Math.max(0, Math.round((Date.now() - then) / 86_400_000))
 }
 
+/**
+ * Elige el mejor release de Discogs comparando CAMPO CONTRA CAMPO.
+ *
+ * Concatenar artista+título y medir Levenshtein deja que el largo del nombre
+ * del artista domine: "Ennio Morricone - Debora" matcheaba "Ennio Morricone -
+ * Amore" con 0.82 siendo otro tema. Ver docs/SOURCES.md
+ */
+async function pickRelease(
+  candidates: CatalogCandidate[],
+  expectArtist: string,
+  expectRelease: string,
+  minScore: number,
+): Promise<{ release: CatalogRelease; score: number } | null> {
+  let best: { item: CatalogCandidate; score: number } | null = null
+  for (const cand of candidates) {
+    const score =
+      0.5 * similarity(expectArtist, cand.artist) + 0.5 * similarity(expectRelease, cand.title)
+    if (!best || score > best.score) best = { item: cand, score }
+  }
+  if (!best || best.score < minScore) return null
+  return { release: await discogs.getRelease(best.item.discogsId), score: best.score }
+}
+
+/**
+ * Enriquece un candidato en dos saltos:
+ *   1. MusicBrainz identifica la GRABACIÓN (el nivel en el que vive un título
+ *      de YouTube) y devuelve artista canónico, disco y año.
+ *   2. Discogs enriquece ESE disco: créditos por instrumento, sello, país y
+ *      want/have, que es de donde salen instrumentos y rareza para el score.
+ *
+ * Si MB no identifica, se cae al cruce por texto libre contra Discogs. Si Discogs
+ * falla pero MB identificó, igual queda una entidad usable: antes de esto, que
+ * fallara Discogs significaba quedarse sin nada.
+ */
 async function enrichOne(c: Candidate): Promise<EnrichedTrack> {
   const now = new Date().toISOString()
-  const searchText = `${c.artist ?? ''} ${c.title ?? c.cleanedTitle}`.trim()
+  const rawTitle = c.title ?? c.cleanedTitle
 
-  // 1) cruce con Discogs (fuzzy)
-  let entity: MusicEntity | null = null
-  let discogsWant: number | undefined
-  let discogsHave: number | undefined
+  let mb: MbRecording | null = null
   try {
-    const cands = await discogs.searchReleases(c.artist ?? '', c.title ?? c.cleanedTitle)
-    const match = bestMatch(
-      searchText,
-      cands.map((r) => ({ item: r, text: r.matchText })),
-    )
-    if (match) {
-      const rel = await discogs.getRelease(match.item.discogsId)
-      entity = {
-        crateId: `discogs:${rel.discogsId}`,
-        artist: rel.artist,
-        title: rel.title,
-        year: rel.year ?? c.year,
-        label: rel.label,
-        country: rel.country,
-        genres: rel.genres,
-        styles: rel.styles,
-        credits: rel.credits,
-        discogsId: rel.discogsId,
-        confirmed: match.score >= 0.8,
-      }
-      discogsWant = rel.want
-      discogsHave = rel.have
-      // 2) MBIDs (opcional, solo si confirmado)
-      if (entity.confirmed) {
-        try {
-          const mb = await musicbrainz.lookupRecording(entity.artist, entity.title)
-          if (mb) {
-            entity.recordingMbid = mb.recordingMbid
-            entity.releaseMbid = mb.releaseMbid
-          }
-        } catch {
-          /* MusicBrainz opcional: degradar con gracia */
-        }
-      }
-    }
+    mb = await musicbrainz.identifyRecording(c.artist, rawTitle)
   } catch {
-    /* Discogs falló: seguimos con lo que hay */
+    /* MusicBrainz opcional: degradar con gracia */
   }
 
-  // fallback: entidad sin confirmar a partir del candidate
-  if (!entity) {
-    entity = {
-      crateId: `guess:${slug(searchText) || c.source.nativeId}`,
-      artist: c.artist ?? 'Unknown',
-      title: c.title ?? c.cleanedTitle,
-      year: c.year,
-      genres: [],
-      styles: [],
-      credits: [],
-      confirmed: false,
+  const artistHint = mb?.artist ?? c.artist
+  let matched: { release: CatalogRelease; score: number } | null = null
+  try {
+    if (mb?.artist && mb.releaseTitle) {
+      matched = await pickRelease(
+        await discogs.searchRelease(mb.artist, mb.releaseTitle),
+        mb.artist,
+        mb.releaseTitle,
+        0.62,
+      )
     }
+    if (!matched && artistHint) {
+      const free = await discogs.searchReleases(artistHint, rawTitle)
+      matched = await pickRelease(free, artistHint, mb?.releaseTitle ?? rawTitle, 0.7)
+    }
+  } catch {
+    /* Discogs falló: seguimos con lo que haya dado MB */
+  }
+
+  /**
+   * Confirmar significa "creemos que esta es la obra real", y eso lo decide
+   * QUIEN identificó. Si MusicBrainz identificó, manda su confianza: que Discogs
+   * después encuentre ese disco solo prueba que los dos catálogos coinciden, no
+   * que la identificación haya sido buena. Un título suelto como "Rainy Day"
+   * matchea con cualquier cosa y Discogs lo corrobora prolijamente.
+   * Sin MusicBrainz, el cruce directo contra Discogs tiene que ser fuerte solo.
+   */
+  const confirmed = mb
+    ? mb.confidence >= 0.7 && matched !== null
+    : matched !== null && matched.score >= 0.85
+
+  const rel = matched?.release
+  const entity: MusicEntity = {
+    // La identidad es del TRACK, no del disco. El MBID de grabación ya es
+    // track-level; el id de Discogs es del release, así que tres cortes del
+    // mismo OST colapsarían en una sola clave y se pisarían en Dexie.
+    crateId: mb
+      ? `mb:${mb.recordingMbid}`
+      : rel
+        ? `discogs:${rel.discogsId}:${slug(mb2title(c))}`
+        : `guess:${slug(`${artistHint ?? ''} ${rawTitle}`) || c.source.nativeId}`,
+    artist: rel?.artist ?? mb?.artist ?? c.artist ?? 'Unknown',
+    title: mb?.title ?? c.title ?? c.cleanedTitle,
+    year: rel?.year ?? mb?.year ?? c.year,
+    label: rel?.label,
+    country: rel?.country,
+    genres: rel?.genres ?? [],
+    styles: rel?.styles ?? [],
+    credits: rel?.credits ?? [],
+    discogsId: rel?.discogsId,
+    recordingMbid: mb?.recordingMbid,
+    releaseMbid: mb?.releaseMbid,
+    confirmed,
   }
 
   // instrumentos: de créditos (catálogo) o del texto (parsed)
@@ -147,10 +192,10 @@ async function enrichOne(c: Candidate): Promise<EnrichedTrack> {
     .map((cr) => cr.instrument)
     .filter((x): x is string => Boolean(x))
   const instrumentsList = fromCredits.length
-    ? confirmed(Array.from(new Set(fromCredits)), 'discogs')
+    ? confirmedProv(Array.from(new Set(fromCredits)), 'discogs')
     : (() => {
         const fromText = instrumentsFromText(c.source.title)
-        return fromText.length ? confirmed(fromText, 'youtube_title', 0.5) : undefined
+        return fromText.length ? confirmedProv(fromText, 'youtube_title', 0.5) : undefined
       })()
 
   const mood = inferred(inferMoodFromText(c.source.title, entity.genres.concat(entity.styles)), 0.55)
@@ -159,13 +204,13 @@ async function enrichOne(c: Candidate): Promise<EnrichedTrack> {
     crateId: entity.crateId,
     entity,
     sources: [c.source],
-    bpm: c.bpm != null ? confirmed(c.bpm, 'youtube_title', 0.6) : undefined,
-    key: c.key ? confirmed(c.key, 'youtube_title', 0.5) : undefined,
+    bpm: c.bpm != null ? confirmedProv(c.bpm, 'youtube_title', 0.6) : undefined,
+    key: c.key ? confirmedProv(c.key, 'youtube_title', 0.5) : undefined,
     mood,
     instruments: instrumentsList,
     rarity: {
-      discogsWant,
-      discogsHave,
+      discogsWant: rel?.want,
+      discogsHave: rel?.have,
       youtubeViews: c.source.kind === 'youtube' ? c.source.views : undefined,
       uploadAgeDays: daysSince(c.source.publishedAt),
     },
