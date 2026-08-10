@@ -15,23 +15,50 @@ const API = 'https://api.discogs.com'
 /** ~60 req/min autenticado. Search y release comparten el mismo límite. */
 const limit = createLimiter(1_100)
 
-/** Busca releases candidatos para el fuzzy match (liviano). */
+/**
+ * Búsqueda estructurada por artista + título del disco.
+ *
+ * Es la forma correcta de pedirle a Discogs, que indexa RELEASES: una vez que
+ * MusicBrainz identificó en qué disco vive la grabación, buscamos ese disco.
+ * El `q=` libre de abajo queda solo como red de contención.
+ */
+export async function searchRelease(
+  artist: string,
+  releaseTitle: string,
+): Promise<CatalogCandidate[]> {
+  const key = `discogs:rel:${artist}|${releaseTitle}`.toLowerCase()
+  return cached(key, WEEK_MS, async () => {
+    const params = new URLSearchParams({
+      artist,
+      release_title: releaseTitle,
+      type: 'release',
+      per_page: '10',
+    })
+    const data = await limit(() => proxyGet<any>(`${API}/database/search?${params}`))
+    return (data.results ?? []).map(toCandidate)
+  })
+}
+
+/** Busca releases candidatos por texto libre. Fallback cuando MusicBrainz no identifica. */
 export async function searchReleases(artist: string, title: string): Promise<CatalogCandidate[]> {
   return cached(`discogs:search:${artist}|${title}`.toLowerCase(), WEEK_MS, async () => {
     const q = encodeURIComponent(`${artist} ${title}`.trim())
     const url = `${API}/database/search?q=${q}&type=release&per_page=10`
     const data = await limit(() => proxyGet<any>(url))
-    return (data.results ?? []).map((r: any): CatalogCandidate => {
-      const [ra, rt] = String(r.title ?? '').split(' - ')
-      return {
-        discogsId: r.id,
-        artist: (ra ?? '').trim(),
-        title: (rt ?? r.title ?? '').trim(),
-        year: r.year ? Number(r.year) : undefined,
-        matchText: r.title ?? '',
-      }
-    })
+    return (data.results ?? []).map(toCandidate)
   })
+}
+
+/** Discogs devuelve el título como "Artista - Disco"; lo partimos para comparar por campo. */
+function toCandidate(r: any): CatalogCandidate {
+  const [ra, rt] = String(r.title ?? '').split(' - ')
+  return {
+    discogsId: r.id,
+    artist: (ra ?? '').trim(),
+    title: (rt ?? r.title ?? '').trim(),
+    year: r.year ? Number(r.year) : undefined,
+    matchText: r.title ?? '',
+  }
 }
 
 /** Trae el release completo: créditos (instrumentos), género/estilo, país, want/have. */

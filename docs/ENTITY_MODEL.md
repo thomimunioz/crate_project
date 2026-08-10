@@ -28,13 +28,31 @@ Ver los tipos en [`frontend/src/core/entities.ts`](../frontend/src/core/entities
 YouTube te da títulos como `T. Yamashita ~ Sparkle (1982) [Vinyl Rip] HQ`. Discogs tiene
 `Tatsuro Yamashita – Sparkle`. El matcher tiene que ser tolerante:
 
-1. **Limpieza** — sacar ruido: `[Vinyl Rip]`, `HQ`, `(1982)`, `FULL ALBUM`, `official`,
-   `lyrics`, corchetes/paréntesis con basura, emojis, separadores raros (`~`, `|`, `//`).
-2. **Split artista / título** — heurísticas por separador (` - `, ` – `, ` ~ `).
-3. **Match** — Levenshtein / similitud sobre `artist + title` contra los resultados de Discogs;
-   se queda con el mejor por encima de un umbral, y **guarda el score de match como confidence**.
+1. **Split artista / título** — por separador (` - `, ` – `, ` ~ `, ` | `, ` / `). Se parte
+   **antes** de limpiar: el limpiador borra `~ | /` como decorado y se lleva puesto el
+   separador, dejando la mitad de los temas sin artista.
+2. **Limpieza** de cada mitad — `[Vinyl Rip]`, `HQ`, `(1982)`, `FULL ALBUM`, `official`, `lyrics`.
+3. **Identificación en MusicBrainz** — busca a nivel **grabación**, que es el nivel en el que
+   vive un título de YouTube. Devuelve artista canónico, disco y año. Exige score ≥ 85 y, si
+   el título traía artista, que coincida.
+4. **Enriquecimiento en Discogs** — con el disco ya identificado, búsqueda estructurada
+   `artist=` + `release_title=` para traer créditos por instrumento, sello, país y want/have.
+   El match se puntúa **campo contra campo**; concatenar deja que el largo del nombre del
+   artista domine la distancia.
 
-Implementación: [`frontend/src/core/fuzzy.ts`](../frontend/src/core/fuzzy.ts).
+Si MusicBrainz no identifica, se cae al cruce por texto libre contra Discogs. Si Discogs no
+encuentra el disco pero MB identificó, igual queda una entidad usable.
+
+Implementación: [`frontend/src/core/fuzzy.ts`](../frontend/src/core/fuzzy.ts) y
+[`frontend/src/pipeline/index.ts`](../frontend/src/pipeline/index.ts).
+
+> **La identidad es del track, no del disco.** El `crateId` usa el MBID de grabación, que es
+> track-level. Usar el id de release de Discogs colapsa todos los cortes de un mismo álbum
+> en una sola clave.
+
+> **Confirmar lo decide quien identificó.** Si MusicBrainz identificó, manda su confianza:
+> que Discogs después encuentre ese disco solo prueba que los dos catálogos coinciden, no que
+> la identificación haya sido buena. Y lo no confirmado **no le enseña a la affinity**.
 
 > Regla: si el fuzzy match no supera el umbral, la entidad queda como "sin confirmar" y su
 > metadata de catálogo NO se marca como `confirmed`. Mejor honesto que inventado.

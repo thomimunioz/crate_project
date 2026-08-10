@@ -54,9 +54,15 @@ function bpmBucket(bpm?: number): string | undefined {
 
 /**
  * Aprende de un track. weight = +1 al guardar/analizar, -1 al rechazar.
- * Inmutable: devuelve una copia nueva.
+ * Inmutable: devuelve una copia nueva. Los tracks sin confirmar no enseñan.
  */
 export function learn(prev: Affinity, track: EnrichedTrack, weight = 1): Affinity {
+  // Solo se aprende de entidades confirmadas. Un cruce dudoso trae género y
+  // sello del disco equivocado: medido sobre playlists reales, títulos sueltos
+  // como "Rainy Day" matchean con Reggae/Ska o Heavy Metal. Aprender de eso
+  // envenena el modelo de gusto, que es justo lo que hace personal al producto.
+  if (!track.entity.confirmed) return prev
+
   const a = structuredClone(prev)
   const e = track.entity
   e.genres.forEach((g) => bump(a.genres, g, weight))

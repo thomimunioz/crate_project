@@ -76,11 +76,23 @@ Clients: [`frontend/src/sources/`](../frontend/src/sources/).
 El cruce contra catálogo es **el** cuello de botella de calidad: sin él no hay
 créditos, ni sello, ni want/have, o sea no hay CRATE Score ni affinity.
 
-| estrategia | match | nota |
+| estrategia | cruce | nota |
 |---|---|---|
 | Discogs `q=` libre + Levenshtein concatenado | **14%** | el estado original |
 | Discogs `artist=` + `track=` estructurado | 26% | la mayoría son **falsos positivos** |
-| MusicBrainz `recording:` | **33%** | y los matches son correctos |
+| MusicBrainz `recording:` | 33% | y los matches son correctos |
+| **MusicBrainz identifica → Discogs enriquece** | **57%** | el pipeline actual |
+
+Resultado del pipeline actual sobre los mismos 80 temas: **57% identificados,
+44% con want/have, 31% con créditos por instrumento, 23% confirmados.** Que
+"confirmado" sea bastante menor que "identificado" es a propósito: se identifica
+más de lo que se afirma. Tarda 134s para 80 temas (1 llamada a MB + hasta 2 a
+Discogs por tema, serializadas por rate limit) → **el render progresivo pasa a
+ser obligatorio, no cosmético.**
+
+Puntos flojos que quedan: `dark` 13% y `japanese city pop` 38% de identificación
+con 0% de créditos. Son títulos sin artista o en kanji; MusicBrainz no los tiene
+y el fallback por texto libre contra Discogs tampoco alcanza.
 
 Tres causas encontradas, ya corregida la primera:
 
