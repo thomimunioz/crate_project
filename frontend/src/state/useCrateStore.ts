@@ -22,8 +22,8 @@ interface CrateState {
   crateTracks: EnrichedTrack[]
   loading: boolean
   analyzing: string | null
-  /** progreso del import de playlist; null si no hay uno corriendo */
-  importing: { done: number; total: number } | null
+  /** progreso del import; null si no hay uno corriendo */
+  importing: { label: string; done: number; total: number } | null
   error?: string
   affinity: Affinity
   hideSeen: boolean
@@ -34,7 +34,7 @@ interface CrateState {
   patchQuery: (q: Partial<SearchQuery>) => void
   search: () => Promise<void>
   loadCrate: () => Promise<void>
-  importPlaylist: (input: string) => Promise<void>
+  importPlaylists: (input: string) => Promise<void>
   save: (t: EnrichedTrack) => Promise<void>
   remove: (t: EnrichedTrack) => Promise<void>
   reject: (t: EnrichedTrack) => Promise<void>
@@ -70,21 +70,36 @@ export const useCrate = create<CrateState>((set, get) => ({
     set({ query: { ...get().query, ...q } })
   },
 
-  async importPlaylist(input) {
-    const id = parsePlaylistId(input)
-    if (!id) {
-      set({ error: 'No pude leer el ID de esa playlist. Pegá la URL completa de YouTube.' })
+  /** Acepta varias playlists, una URL por línea. */
+  async importPlaylists(input) {
+    const ids = input
+      .split(/[\n,]/)
+      .map((line) => parsePlaylistId(line))
+      .filter((id): id is string => Boolean(id))
+
+    if (ids.length === 0) {
+      set({ error: 'No pude leer ninguna playlist. Pegá las URLs completas, una por línea.' })
       return
     }
-    set({ importing: { done: 0, total: 0 }, error: undefined })
+
+    set({ importing: { label: 'leyendo…', done: 0, total: 0 }, error: undefined })
+    const failed: string[] = []
     try {
-      const tracks = await importPlaylist(id, (done, total) => set({ importing: { done, total } }))
-      // guardar de a uno: cada save aprende la affinity de ese track
-      for (const t of tracks) await crate.save(t)
+      for (const [i, id] of ids.entries()) {
+        const pos = ids.length > 1 ? ` (${i + 1}/${ids.length})` : ''
+        try {
+          const { tag, tracks } = await importPlaylist(id, (done, total) =>
+            set({ importing: { label: `${get().importing?.label ?? ''}`, done, total } }),
+          )
+          set({ importing: { label: tag + pos, done: 0, total: tracks.length } })
+          for (const track of tracks) await crate.saveFromPlaylist(track, tag)
+        } catch (e) {
+          failed.push(`${id}: ${e instanceof Error ? e.message : String(e)}`)
+        }
+      }
       set({ affinity: await crate.getAffinity() })
       await get().loadCrate()
-    } catch (e) {
-      set({ error: e instanceof Error ? e.message : String(e) })
+      if (failed.length) set({ error: `No se pudieron importar: ${failed.join(' · ')}` })
     } finally {
       set({ importing: null })
     }

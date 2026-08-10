@@ -19,6 +19,7 @@ export function ResultCard({ track }: Props) {
   const yt = track.sources.find((s) => s.kind === 'youtube')
   const instruments = track.instruments?.value ?? []
   const inCrate = track.status === 'saved' || track.status === 'analyzed'
+  const tags = track.tags ?? []
 
   return (
     <article className="rounded-xl border border-crate-line bg-crate-panel p-4 shadow-lg">
@@ -74,11 +75,16 @@ export function ResultCard({ track }: Props) {
         </div>
       </div>
 
-      {instruments.length > 0 && (
+      {(instruments.length > 0 || tags.length > 0) && (
         <div className="mt-3 flex flex-wrap gap-1.5">
           {instruments.map((i) => (
             <span key={i} className="chip text-crate-teal">
               {i}
+            </span>
+          ))}
+          {tags.map((t) => (
+            <span key={t} className="chip border-crate-amber/40 text-crate-amber" title="tag tuyo">
+              #{t}
             </span>
           ))}
         </div>

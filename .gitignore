@@ -1,6 +1,8 @@
 # ---- secrets ----
+# cualquier .env salvo el ejemplo: cubre .env.local, .env.backup-*, .env.prod…
 .env
-.env.local
+.env.*
+!.env.example
 *.local
 
 # ---- node / frontend ----

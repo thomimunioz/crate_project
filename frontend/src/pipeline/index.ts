@@ -16,7 +16,7 @@ import { computeCrateScore } from '@/core/score'
 import { inferMoodFromText, instrumentsFromText } from '@/core/taxonomy'
 import { confirmed, inferred } from '@/core/provenance'
 import { sourcesFor, discogs, musicbrainz } from '@/sources'
-import { fetchPlaylist } from '@/sources/youtube'
+import { fetchPlaylist, playlistTag } from '@/sources/youtube'
 
 /**
  * Cuántos candidatos se enriquecen por búsqueda.
@@ -222,8 +222,9 @@ export async function runSearch(query: SearchQuery, affinity: Affinity): Promise
 export async function importPlaylist(
   playlistId: string,
   onProgress?: EnrichOptions['onProgress'],
-): Promise<EnrichedTrack[]> {
-  const items = await fetchPlaylist(playlistId)
+): Promise<{ tag: string; tracks: EnrichedTrack[] }> {
+  const { title, items } = await fetchPlaylist(playlistId)
   const candidates = normalize(items)
-  return enrich(candidates, { limit: candidates.length, onProgress })
+  const tracks = await enrich(candidates, { limit: candidates.length, onProgress })
+  return { tag: playlistTag(title), tracks }
 }

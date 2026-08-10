@@ -2,40 +2,42 @@ import { useState } from 'react'
 import { useCrate } from '@/state/useCrateStore'
 
 /**
- * Import de una playlist propia de YouTube como semilla del crate.
- * Cuesta ~1 unidad de quota cada 50 temas, contra las 100 que cuesta una búsqueda.
+ * Import de playlists propias de YouTube como semilla del crate.
+ * Cuesta ~1 unidad de quota cada 50 temas, contra las 100 de una sola búsqueda.
  */
 export function PlaylistImport() {
-  const { importPlaylist, importing } = useCrate()
-  const [url, setUrl] = useState('')
+  const { importPlaylists, importing } = useCrate()
+  const [urls, setUrls] = useState('')
 
   const busy = importing !== null
   const pct = importing && importing.total > 0 ? (importing.done / importing.total) * 100 : 0
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!busy) void importPlaylist(url)
+    if (!busy) void importPlaylists(urls)
   }
 
   return (
     <form onSubmit={onSubmit} className="rounded-xl border border-crate-line bg-crate-panel p-4">
       <p className="eyebrow">sembrar el crate</p>
       <p className="mt-1 text-sm text-crate-soft">
-        Pegá una playlist tuya de YouTube. Los temas que ya elegiste a mano son la mejor señal
-        para que CRATE aprenda tu oído.
+        Pegá playlists tuyas de YouTube, una por línea. El nombre de cada una queda como tag:
+        es tu forma de agrupar, aparte de lo que diga el catálogo.
       </p>
 
-      <div className="mt-3 flex flex-wrap gap-2">
-        <input
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          disabled={busy}
-          placeholder="https://www.youtube.com/playlist?list=…"
-          className="min-w-0 flex-1 rounded-md border border-crate-line bg-crate-bg px-3 py-1.5 text-sm placeholder:text-crate-faint focus:border-crate-amber focus:outline-none disabled:opacity-50"
-        />
+      <textarea
+        value={urls}
+        onChange={(e) => setUrls(e.target.value)}
+        disabled={busy}
+        rows={3}
+        placeholder={'https://www.youtube.com/playlist?list=…\nhttps://www.youtube.com/playlist?list=…'}
+        className="mt-3 w-full resize-y rounded-md border border-crate-line bg-crate-bg px-3 py-2 font-mono text-xs placeholder:text-crate-faint focus:border-crate-amber focus:outline-none disabled:opacity-50"
+      />
+
+      <div className="mt-2 flex justify-end">
         <button
           type="submit"
-          disabled={busy || !url.trim()}
+          disabled={busy || !urls.trim()}
           className="chip hover:border-crate-amber disabled:opacity-50"
         >
           {busy ? 'importando…' : 'importar'}
@@ -52,8 +54,8 @@ export function PlaylistImport() {
           </div>
           <p className="eyebrow mt-1.5">
             {importing.total === 0
-              ? 'leyendo la playlist…'
-              : `cruzando contra Discogs · ${importing.done} de ${importing.total}`}
+              ? `${importing.label} · leyendo la playlist…`
+              : `${importing.label} · cruzando contra Discogs · ${importing.done} de ${importing.total}`}
           </p>
         </div>
       )}
