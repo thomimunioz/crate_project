@@ -61,9 +61,20 @@ Clients: [`frontend/src/sources/`](../frontend/src/sources/).
 ### SoundCloud
 - **Gotcha:** API prácticamente cerrada a apps nuevas hace años. Integración inestable.
 
-### Fingerprinting (AcoustID / ACRCloud)
-- **Aporte:** identificar un rip de YouTube y linkearlo al release real → cierra el fuzzy match.
-- **Gotcha:** requiere calcular fingerprint del audio (chromaprint). Fase 3.
+
+## 🟢 Implementado en backend (último recurso)
+
+### AcoustID (huella acústica)
+- **Aporte:** identifica la grabación **sin depender del texto** → devuelve MBID de grabación,
+  artista y título. Es la única salida para lo que el cruce por texto no puede resolver:
+  títulos en kanji y títulos sueltos sin artista (ver medición abajo).
+- **Dónde:** server-side, `POST /identify` (`backend/app/fingerprint.py`). No pasa por el proxy:
+  la key nunca sale del backend.
+- **Costo:** gratis, 3 req/seg por key. Necesita `fpcalc` (Chromaprint) instalado.
+- **Gotcha:** se huella un **fragmento** (120s desde el arranque), no el track entero, así que la
+  confidence se descuenta por cobertura. Si arrancás el fragmento en el medio del tema, la huella
+  deja de alinear con la de referencia. La cobertura de AcoustID depende de que alguien haya
+  subido esa grabación: para prensados oscuros puede no haber nada.
 
 ## Opcional / tangencial
 
@@ -92,7 +103,9 @@ ser obligatorio, no cosmético.**
 
 Puntos flojos que quedan: `dark` 13% y `japanese city pop` 38% de identificación
 con 0% de créditos. Son títulos sin artista o en kanji; MusicBrainz no los tiene
-y el fallback por texto libre contra Discogs tampoco alcanza.
+y el fallback por texto libre contra Discogs tampoco alcanza. **Para esos dos casos
+el texto ya no da más: es el laburo de la huella acústica** (`POST /identify`), que
+identifica la grabación sin leer el título. Falta medir cuánto sube el 57% con ella.
 
 Tres causas encontradas, ya corregida la primera:
 

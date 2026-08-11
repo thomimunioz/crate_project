@@ -202,17 +202,31 @@ uvicorn app.main:app --reload --port 8787
 Copiá `.env.example` → `.env` y completá las keys (YouTube Data API, Discogs token).
 En dev, Vite proxea `/api` → `http://localhost:8787` (ver `vite.config.ts`).
 
-> Estado actual: **F1 corriendo, sin validar con datos reales.** El core de dominio, el
-> pipeline completo (discover → normalize → enrich → score), los clients de fuentes, el
-> crate-index y la UI están escritos y compilan. El enrichment está throttleado por fuente
-> y cacheado en IndexedDB. Falta lo que necesita las API keys puestas: correr los casos de
-> prueba y calibrar. Buscá `// TODO(F1)` en el código para lo que queda.
+> Estado actual: **F1 funcionando y medido contra datos reales.** El pipeline
+> (discover → normalize → enrich → score) corre entero, con render progresivo,
+> throttling y cache. El cruce contra catálogo se midió sobre 80 temas de las
+> playlists del usuario y se reconstruyó en base a eso.
 >
-> Lo próximo, en orden: (1) fan-out de queries de descubrimiento — hoy `buildQuery` en
-> `sources/youtube.ts` solo concatena strings y es donde vive o muere el producto;
-> (2) render progresivo de resultados, porque el enrichment serializado hace que una
-> búsqueda en frío tarde ~40s con un spinner y nada más; (3) calibrar los pesos del score
-> contra los casos de prueba.
+> **Cómo se identifica una obra, en orden de fuerza:**
+> 1. **Pistas duras del snippet de YouTube** (`core/ytHints.ts`) — link a Discogs
+>    en la descripción, o canal `- Topic` con la metadata del distribuidor. Es un
+>    id o un dato de catálogo, no una interpretación: confirma sin fuzzy.
+> 2. **MusicBrainz** (`sources/musicbrainz.ts`) — única fuente que busca a nivel
+>    GRABACIÓN, que es el nivel de un título de YouTube.
+> 3. **Discogs** (`sources/discogs.ts`) — enriquece el disco ya identificado con
+>    créditos por instrumento, sello, país y want/have.
+>
+> Números medidos: 14% → **57% identificado**, 44% con want/have, 31% con
+> créditos, 23% confirmado. Se identifica más de lo que se afirma, a propósito.
+>
+> **Ojo con la quota de YouTube:** 10.000 unidades/día. `search.list` cuesta 100;
+> `playlistItems` y `videos` cuestan 1. Se agota más rápido de lo que parece. Por
+> eso existen las **vetas** (minar canales, 1 unidad cada 50 videos) y por eso el
+> siguiente paso grande es discovery vía yt-dlp, que no gasta quota.
+>
+> Lo próximo, en orden: (1) re-medir con quota fresca para ver cuánto subió con
+> las pistas duras; (2) discovery vía yt-dlp en el backend, para sacarse la quota
+> de encima; (3) calibrar los pesos del score contra los casos de prueba.
 
 ---
 

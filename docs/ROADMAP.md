@@ -18,23 +18,32 @@ Input (query + filtros + fuentes)
 ```
 
 **Ya hecho:**
-- Entorno levantando: frontend, backend, ffmpeg, `.env` único en la raíz.
+- Entorno levantando: frontend, backend, ffmpeg, `.env` único en la raíz. Los secretos
+  de Discogs viven en el backend, que inyecta la auth en el proxy: un `VITE_` se
+  inlinea en el bundle público.
 - Enrichment throttleado por fuente (`sources/throttle.ts`) y cacheado una semana en
   IndexedDB (`db/cache.ts`). Antes se comía 429/503 y perdía créditos y rareza.
 - Vista del crate con filtro local, y sacar del crate revirtiendo la affinity.
-- **Import de playlists propias de YouTube** como semilla: resuelve el arranque en frío
-  de la affinity con curaduría deliberada en vez de clicks inferidos. Cuesta ~1 unidad
-  de quota cada 50 temas.
+- **Import de playlists propias de YouTube** como semilla, con el nombre de cada
+  playlist como tag propio. Resuelve el arranque en frío de la affinity con curaduría
+  deliberada en vez de clicks inferidos.
+- **Cruce contra catálogo reconstruido** (14% → 57%): pistas duras del snippet →
+  MusicBrainz a nivel grabación → Discogs para enriquecer. Ver `docs/SOURCES.md`.
+- **Render progresivo**: las fichas se pintan al instante con lo que dio YouTube y se
+  completan en el lugar. El preview se puede escuchar mientras carga la metadata.
+- **Vetas**: minar los uploads de un canal del que ya guardaste. ~200 veces más barato
+  por tema que buscar.
 
 **Sí o sí en F1:**
 - Entity model + provenance + confidence.
 - Seen / Saved / Analyzed / Rejected + **"no me muestres lo que ya vi"**.
 - CRATE Score + **Why this?** (explicable).
 - Botón "Analizar audio" (opt-in) con BPM/key + confidence.
-- Fuzzy matching YouTube ↔ Discogs — de esto depende también la affinity: si el cruce
-  falla, la entidad cae al fallback sin género ni sello y `learn()` casi no aprende nada.
 - Fan-out de queries de descubrimiento (hoy `buildQuery` solo concatena strings).
-- Render progresivo: mostrar resultados a medida que se enriquecen.
+- Discovery vía yt-dlp en el backend: saca el techo de quota de YouTube.
+- Identificación por huella acústica (AcoustID): es lo único que resuelve los títulos
+  en kanji y los títulos sueltos sin artista, donde el texto no tiene con qué.
+- Calibrar los pesos del score contra los casos de prueba, con datos reales.
 - Estética base (vinilo japonés 70s).
 
 **Fuentes F1:** YouTube · Discogs · MusicBrainz · Internet Archive.
