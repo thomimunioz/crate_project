@@ -112,6 +112,26 @@ créditos y rareza). MB además resuelve títulos sin artista, que con Discogs s
 imposibles. Contras: MB tiene **0% en city pop japonés** —justo el punto débil—,
 donde Discogs sí tiene catálogo. Son complementarias, no sustitutas.
 
+## La señal que YouTube ya nos da (y que no leíamos)
+
+El `snippet` de `videos.list` trae **descripción, tags y canal** en la misma llamada
+de 1 unidad que ya hacemos para las views. Ahí adentro hay identificación exacta:
+
+- **Canales `- Topic`**: los genera YouTube desde el feed de las discográficas, con
+  formato fijo → `<tema> · <artista>`, disco, y `℗ <año> <sello>`. Es un dato de
+  catálogo disfrazado de descripción.
+- **Links directos a Discogs/MusicBrainz**: muchos diggers pegan el release. Es un
+  id, no una interpretación: se va derecho al release sin buscar ni comparar.
+- **Tags**: el artista en romaji, kanji y katakana a la vez. Es lo que abre la
+  puerta al catálogo japonés, donde el match por texto fracasa.
+
+Medido sobre playlists completas del usuario: 38% de los temas de city pop japonés
+vienen de un canal `- Topic` y 58% traen tags, **justo la playlist donde el cruce
+por texto daba 0% de créditos.** El problema nunca fue falta de datos.
+
+Implementación: [`frontend/src/core/ytHints.ts`](../frontend/src/core/ytHints.ts).
+Cuando hay pista dura, la entidad se marca `confirmed` sin pasar por el fuzzy.
+
 ## Gotchas transversales (leer sí o sí)
 
 1. **CORS:** algunas fuentes y todo scraping se bloquean desde el navegador → proxy fino en

@@ -61,6 +61,18 @@ function toCandidate(r: any): CatalogCandidate {
   }
 }
 
+/**
+ * Un master agrupa todas las ediciones de un disco. Cuando la descripción de
+ * YouTube linkea al master, saltamos a su release principal, que es el que tiene
+ * créditos y want/have.
+ */
+export async function masterMainRelease(masterId: number): Promise<number | null> {
+  return cached(`discogs:master:${masterId}`, WEEK_MS, async () => {
+    const data = await limit(() => proxyGet<any>(`${API}/masters/${masterId}`))
+    return typeof data.main_release === 'number' ? data.main_release : null
+  })
+}
+
 /** Trae el release completo: créditos (instrumentos), género/estilo, país, want/have. */
 export async function getRelease(discogsId: number): Promise<CatalogRelease> {
   return cached(`discogs:release:${discogsId}`, WEEK_MS, () => fetchRelease(discogsId))

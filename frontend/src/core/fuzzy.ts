@@ -42,7 +42,7 @@ export function splitArtistTitle(raw: string): { artist?: string; title?: string
   const parts = raw.split(SEP)
   if (parts.length >= 2) {
     const artist = cleanTitle(parts[0])
-    const title = cleanTitle(parts.slice(1).join(' - '))
+    const title = cleanTitle(dropTrailingMeta(parts.slice(1)).join(' - '))
     if (artist && title) return { artist, title }
   }
 
@@ -55,6 +55,19 @@ export function splitArtistTitle(raw: string): { artist?: string; title?: string
   }
 
   return { title: cleanTitle(raw) }
+}
+
+/**
+ * Saca los segmentos finales que son metadata y no parte del título:
+ * "Miracle Touch - 1986 - Japan" → "Miracle Touch". Los diggers los cuelgan
+ * al final separados igual que el artista, así que el split se los lleva.
+ */
+const TRAILING_META = /^(19[2-9]\d|20[0-2]\d|japan|usa|uk|brazil|brasil|france|italy|germany|jp|us|full album|lp|ep|vinyl)$/i
+
+function dropTrailingMeta(parts: string[]): string[] {
+  const out = [...parts]
+  while (out.length > 1 && TRAILING_META.test(out[out.length - 1].trim())) out.pop()
+  return out
 }
 
 /** Distancia de Levenshtein (iterativa, O(n·m) memoria O(min)). */
