@@ -82,6 +82,22 @@ const TEXTURE_HINTS: Record<Texture, string[]> = {
 }
 
 /** Inferencia barata de mood a partir de texto (título+desc+tags) y géneros. */
+/**
+ * Palabras que aparecen en nombres de género. Sirven para reconocer cuando un
+ * uploader las cuelga al final del título ("Distances [Haiti] Jazz, Soul,
+ * Balearic Fusion"), que es costumbre en los canales de digging.
+ * No es una taxonomía: es vocabulario para limpiar texto.
+ */
+export const GENRE_WORDS: ReadonlySet<string> = new Set([
+  'jazz', 'soul', 'funk', 'funky', 'rock', 'pop', 'fusion', 'disco', 'boogie',
+  'samba', 'mpb', 'bossa', 'nova', 'library', 'ambient', 'easy', 'listening',
+  'balearic', 'folk', 'blues', 'latin', 'brasil', 'brazil', 'brazilian',
+  'japanese', 'city', 'aor', 'rare', 'groove', 'grooves', 'breaks', 'psych',
+  'psychedelic', 'prog', 'progressive', 'electronic', 'synth', 'wave', 'lounge',
+  'cinematic', 'soundtrack', 'ost', 'gospel', 'reggae', 'afro', 'spiritual',
+  'modal', 'hammond', 'quiet', 'storm', 'smooth', 'downtempo', 'trip', 'hop',
+])
+
 export function inferMoodFromText(text: string, genres: string[] = []): Mood {
   const hay = `${text} ${genres.join(' ')}`.toLowerCase()
   const feels = (Object.keys(FEEL_HINTS) as Feel[]).filter((f) =>

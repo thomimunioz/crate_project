@@ -4,6 +4,8 @@
  * Ver docs/ENTITY_MODEL.md
  */
 
+import { GENRE_WORDS } from './taxonomy'
+
 // ruido típico de uploads de digging
 const NOISE_PATTERNS: RegExp[] = [
   /\[[^\]]*\]/g, // [Vinyl Rip], [HQ], [Full Album]
@@ -22,7 +24,24 @@ const TIGHT_SEP = /\s*[/|]\s*/
 export function cleanTitle(raw: string): string {
   let s = raw
   for (const p of NOISE_PATTERNS) s = s.replace(p, ' ')
-  return s.trim().replace(/\s{2,}/g, ' ')
+  return dropTrailingGenres(s.trim().replace(/\s{2,}/g, ' '))
+}
+
+/**
+ * Saca la lista de géneros que los canales de digging cuelgan al final:
+ * "Distances Jazz, Soul, Balearic Fusion" → "Distances".
+ *
+ * Exige DOS o más géneros seguidos al final. Con uno solo no se toca, porque
+ * hay discos que se llaman "Blue Jazz" y recortarlos sería peor que dejarlos.
+ */
+function dropTrailingGenres(s: string): string {
+  const tokens = s.split(/\s*,\s*|\s+/).filter(Boolean)
+  let end = tokens.length
+  while (end > 1 && GENRE_WORDS.has(tokens[end - 1].toLowerCase())) end--
+
+  const recortados = tokens.length - end
+  if (recortados < 2 || end === 0) return s
+  return tokens.slice(0, end).join(' ')
 }
 
 /** Extrae el año (19xx/20xx) si aparece en el texto original. */
