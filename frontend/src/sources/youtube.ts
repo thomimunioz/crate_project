@@ -58,6 +58,8 @@ function toItem(id: string, video: any): SourceItem {
     views: video?.statistics?.viewCount ? Number(video.statistics.viewCount) : undefined,
     publishedAt: sn.publishedAt,
     thumbnail: sn.thumbnails?.medium?.url,
+    description: sn.description,
+    tags: sn.tags,
     raw: video,
   }
 }

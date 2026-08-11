@@ -6,6 +6,7 @@
 import type { Provenanced } from './provenance'
 import type { Mood, Feel, Texture } from './taxonomy'
 import type { CrateScore } from './score'
+import type { YtHints } from './ytHints'
 
 export type SourceKind = 'youtube' | 'archive' | 'soundcloud' | 'bandcamp' | 'web'
 
@@ -23,6 +24,9 @@ export interface SourceItem {
   views?: number
   publishedAt?: string
   thumbnail?: string
+  /** Vienen en el mismo `snippet` que ya pedimos: no cuestan quota extra. */
+  description?: string
+  tags?: string[]
   raw?: unknown
 }
 
@@ -37,6 +41,8 @@ export interface Candidate {
   key?: string
   /** confianza del parseo/limpieza (0..1) */
   parseConfidence: number
+  /** lo que se pudo PROBAR desde la descripción/tags/canal, sin adivinar */
+  hints: YtHints
 }
 
 export interface Credit {

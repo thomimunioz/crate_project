@@ -12,6 +12,7 @@ import type {
 } from '@/core/entities'
 import type { Affinity } from '@/core/affinity'
 import { splitArtistTitle, extractYear, cleanTitle, similarity } from '@/core/fuzzy'
+import { extractHints } from '@/core/ytHints'
 import { computeCrateScore } from '@/core/score'
 import { inferMoodFromText, instrumentsFromText } from '@/core/taxonomy'
 import { confirmed as confirmedProv, inferred } from '@/core/provenance'
@@ -57,15 +58,22 @@ function parseKey(text: string): string | undefined {
 export function normalize(items: SourceItem[]): Candidate[] {
   return items.map((source): Candidate => {
     const { artist, title } = splitArtistTitle(source.title)
+    const hints = extractHints({
+      channelTitle: source.uploader,
+      description: source.description,
+      tags: source.tags,
+    })
     return {
       source,
       cleanedTitle: cleanTitle(source.title),
-      artist,
-      title,
-      year: extractYear(source.title),
+      // lo probado le gana a lo parseado del título
+      artist: hints.artist ?? artist,
+      title: hints.title ?? title,
+      year: hints.year ?? extractYear(source.title),
       bpm: parseBpm(source.title),
       key: parseKey(source.title),
-      parseConfidence: artist ? 0.7 : 0.4,
+      parseConfidence: hints.source !== 'none' ? hints.confidence : artist ? 0.7 : 0.4,
+      hints,
     }
   })
 }
@@ -125,30 +133,45 @@ async function enrichOne(c: Candidate): Promise<EnrichedTrack> {
   const now = new Date().toISOString()
   const rawTitle = c.title ?? c.cleanedTitle
 
+  const hints = c.hints
+
   let mb: MbRecording | null = null
   try {
-    mb = await musicbrainz.identifyRecording(c.artist, rawTitle)
+    mb = hints.recordingMbid
+      ? await musicbrainz.lookupByMbid(hints.recordingMbid) // el video trae el MBID: no hay nada que adivinar
+      : await musicbrainz.identifyRecording(c.artist, rawTitle)
   } catch {
     /* MusicBrainz opcional: degradar con gracia */
   }
 
-  const artistHint = mb?.artist ?? c.artist
+  const artistHint = hints.artist ?? mb?.artist ?? c.artist
+  const albumHint = hints.album ?? mb?.releaseTitle
+
   let matched: { release: CatalogRelease; score: number } | null = null
   try {
-    if (mb?.artist && mb.releaseTitle) {
+    // 1) el video linkea el release: una sola llamada, sin buscar ni comparar
+    const directId =
+      hints.discogsReleaseId ??
+      (hints.discogsMasterId ? await discogs.masterMainRelease(hints.discogsMasterId) : null)
+    if (directId) {
+      matched = { release: await discogs.getRelease(directId), score: 1 }
+    }
+    // 2) sabemos artista y disco: búsqueda estructurada
+    if (!matched && artistHint && albumHint) {
       matched = await pickRelease(
-        await discogs.searchRelease(mb.artist, mb.releaseTitle),
-        mb.artist,
-        mb.releaseTitle,
+        await discogs.searchRelease(artistHint, albumHint),
+        artistHint,
+        albumHint,
         0.62,
       )
     }
+    // 3) red de contención: texto libre
     if (!matched && artistHint) {
       const free = await discogs.searchReleases(artistHint, rawTitle)
-      matched = await pickRelease(free, artistHint, mb?.releaseTitle ?? rawTitle, 0.7)
+      matched = await pickRelease(free, artistHint, albumHint ?? rawTitle, 0.7)
     }
   } catch {
-    /* Discogs falló: seguimos con lo que haya dado MB */
+    /* Discogs falló: seguimos con lo que haya dado MB o las pistas */
   }
 
   /**
@@ -159,24 +182,30 @@ async function enrichOne(c: Candidate): Promise<EnrichedTrack> {
    * matchea con cualquier cosa y Discogs lo corrobora prolijamente.
    * Sin MusicBrainz, el cruce directo contra Discogs tiene que ser fuerte solo.
    */
-  const confirmed = mb
-    ? mb.confidence >= 0.7 && matched !== null
-    : matched !== null && matched.score >= 0.85
+  const proven = hints.source === 'catalog_link' || hints.source === 'topic_channel'
+  const confirmed = proven
+    ? true
+    : mb
+      ? mb.confidence >= 0.7 && matched !== null
+      : matched !== null && matched.score >= 0.85
 
   const rel = matched?.release
   const entity: MusicEntity = {
     // La identidad es del TRACK, no del disco. El MBID de grabación ya es
     // track-level; el id de Discogs es del release, así que tres cortes del
     // mismo OST colapsarían en una sola clave y se pisarían en Dexie.
-    crateId: mb
+    crateId: hints.recordingMbid
+      ? `mb:${hints.recordingMbid}`
+      : mb
       ? `mb:${mb.recordingMbid}`
       : rel
         ? `discogs:${rel.discogsId}:${slug(mb2title(c))}`
         : `guess:${slug(`${artistHint ?? ''} ${rawTitle}`) || c.source.nativeId}`,
-    artist: rel?.artist ?? mb?.artist ?? c.artist ?? 'Unknown',
-    title: mb?.title ?? c.title ?? c.cleanedTitle,
-    year: rel?.year ?? mb?.year ?? c.year,
-    label: rel?.label,
+    artist: hints.artist ?? rel?.artist ?? mb?.artist ?? c.artist ?? 'Unknown',
+    title: hints.title ?? mb?.title ?? c.title ?? c.cleanedTitle,
+    // el ℗ de la descripción es el año de la obra; el de Discogs puede ser de una reedición
+    year: hints.year ?? rel?.year ?? mb?.year ?? c.year,
+    label: rel?.label ?? hints.label,
     country: rel?.country,
     genres: rel?.genres ?? [],
     styles: rel?.styles ?? [],

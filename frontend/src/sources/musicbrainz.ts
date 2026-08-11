@@ -94,3 +94,26 @@ export async function identifyRecording(
     return null
   })
 }
+
+/**
+ * Lookup directo por MBID, cuando la descripción del video ya lo trae.
+ * No hay nada que adivinar: la confianza es máxima.
+ */
+export async function lookupByMbid(recordingMbid: string): Promise<MbRecording | null> {
+  return cached(`mb:id:${recordingMbid}`, WEEK_MS, async () => {
+    const data = await limit(() =>
+      proxyGet<any>(`${WS}/recording/${recordingMbid}?inc=artists+releases&fmt=json`),
+    )
+    if (!data?.id) return null
+    const release = data.releases?.[0]
+    return {
+      recordingMbid: data.id,
+      releaseMbid: release?.id,
+      artist: data['artist-credit']?.[0]?.name ?? '',
+      title: data.title ?? '',
+      releaseTitle: release?.title,
+      year: yearOf(data),
+      confidence: 0.98,
+    }
+  })
+}
