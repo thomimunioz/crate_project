@@ -132,6 +132,20 @@ por texto daba 0% de créditos.** El problema nunca fue falta de datos.
 Implementación: [`frontend/src/core/ytHints.ts`](../frontend/src/core/ytHints.ts).
 Cuando hay pista dura, la entidad se marca `confirmed` sin pasar por el fuzzy.
 
+## Vetas: minar canales en vez de buscar
+
+`search.list` cuesta **100 unidades**; los uploads de un canal cuestan **1 cada 50
+videos**. Por tema es ~200 veces más barato.
+
+Los uploads de un canal viven en una playlist implícita cuyo id es el del canal con
+`UC` cambiado por `UU`. Un canal del que ya guardaste varios temas es un **curador
+humano que hizo el digging antes que vos**, y su catálogo entero está sobre la
+tesis. La affinity cuenta de qué canales guardás (`affinity.channels`) y a partir
+de dos temas ese canal se ofrece como veta para minar entero.
+
+No entra al score —un hallazgo nuevo puede venir de cualquier lado—, es un vector
+de descubrimiento, no una señal de calidad.
+
 ## Gotchas transversales (leer sí o sí)
 
 1. **CORS:** algunas fuentes y todo scraping se bloquean desde el navegador → proxy fino en

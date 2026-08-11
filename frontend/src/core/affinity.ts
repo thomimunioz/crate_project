@@ -18,6 +18,12 @@ export interface Affinity {
   feels: Counter
   textures: Counter
   bpmBuckets: Counter
+  /**
+   * Canales de los que venís guardando. No entra al score —un hallazgo nuevo
+   * puede venir de cualquier lado— pero marca las VETAS: canales que ya
+   * demostraron tener tu material y que conviene minar enteros.
+   */
+  channels: Counter
   total: number
 }
 
@@ -33,6 +39,7 @@ export function emptyAffinity(): Affinity {
     feels: {},
     textures: {},
     bpmBuckets: {},
+    channels: {},
     total: 0,
   }
 }
@@ -75,6 +82,10 @@ export function learn(prev: Affinity, track: EnrichedTrack, weight = 1): Affinit
   bump(a.labels, e.label, weight)
   bump(a.artists, e.artist, weight)
   bump(a.bpmBuckets, bpmBucket(track.bpm?.value), weight)
+  // el canal se aprende aunque la entidad no esté confirmada… pero llegamos acá
+  // solo si lo está, así que una veta se gana con temas de verdad identificados
+  const yt = track.sources.find((s) => s.kind === 'youtube')
+  if (yt?.channelId) bump(a.channels, `${yt.channelId}|${yt.uploader ?? ''}`, weight)
   a.total += weight
   return a
 }

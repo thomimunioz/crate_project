@@ -6,7 +6,7 @@ import { create } from 'zustand'
 import type { EnrichedTrack, SearchQuery } from '@/core/entities'
 import type { Affinity } from '@/core/affinity'
 import { emptyAffinity } from '@/core/affinity'
-import { runSearch, importPlaylist } from '@/pipeline'
+import { runSearch, mineChannel, importPlaylist } from '@/pipeline'
 import { parsePlaylistId } from '@/sources/youtube'
 import * as crate from '@/db/crateIndex'
 import { purgeExpired } from '@/db/cache'
@@ -24,6 +24,8 @@ interface CrateState {
   analyzing: string | null
   /** progreso del cruce contra catálogo durante una búsqueda */
   enriching: { done: number; total: number } | null
+  /** nombre del canal que se está minando, si la vista viene de una veta */
+  mining: string | null
   /** progreso del import; null si no hay uno corriendo */
   importing: { label: string; done: number; total: number } | null
   error?: string
@@ -35,6 +37,7 @@ interface CrateState {
   setView: (v: View) => Promise<void>
   patchQuery: (q: Partial<SearchQuery>) => void
   search: () => Promise<void>
+  mine: (channelId: string, nombre: string) => Promise<void>
   loadCrate: () => Promise<void>
   importPlaylists: (input: string) => Promise<void>
   save: (t: EnrichedTrack) => Promise<void>
@@ -42,6 +45,46 @@ interface CrateState {
   reject: (t: EnrichedTrack) => Promise<void>
   analyze: (t: EnrichedTrack) => Promise<void>
   toggleHideSeen: () => void
+}
+
+type Corredor = (
+  query: SearchQuery,
+  affinity: Affinity,
+  opts: { skipSourceIds?: Set<string>; onPartial?: (t: EnrichedTrack[]) => void },
+) => Promise<EnrichedTrack[]>
+
+/**
+ * Cuerpo común de buscar y minar: las dos cosas traen candidatos y los pasan por
+ * el mismo pipeline, con render progresivo y descarte previo de lo ya visto.
+ */
+async function correr(
+  set: (partial: Partial<CrateState>) => void,
+  get: () => CrateState,
+  fuente: Corredor,
+): Promise<void> {
+  const { query, affinity, hideSeen } = get()
+  set({ loading: true, error: undefined, results: [], enriching: null })
+  try {
+    // descartar lo ya visto ANTES de enriquecer: no se gasta red en tirarlo después
+    const skipSourceIds = hideSeen ? await crate.knownSourceIds() : undefined
+    const results = await fuente(query, affinity, {
+      skipSourceIds,
+      onPartial: (parciales) =>
+        set({
+          results: parciales,
+          enriching: {
+            done: parciales.filter((t) => !t.pending).length,
+            total: parciales.length,
+          },
+        }),
+    })
+    await Promise.all(results.map((t) => crate.markSeen(t)))
+    set({ results })
+  } catch (e) {
+    set({ error: e instanceof Error ? e.message : String(e) })
+  } finally {
+    set({ loading: false, enriching: null })
+  }
 }
 
 export const useCrate = create<CrateState>((set, get) => ({
@@ -52,6 +95,7 @@ export const useCrate = create<CrateState>((set, get) => ({
   loading: false,
   analyzing: null,
   enriching: null,
+  mining: null,
   importing: null,
   affinity: emptyAffinity(),
   hideSeen: true,
@@ -115,32 +159,17 @@ export const useCrate = create<CrateState>((set, get) => ({
   },
 
   async search() {
-    const { query, affinity, hideSeen } = get()
-    if (!query.text.trim()) return
-    set({ loading: true, error: undefined, results: [], enriching: null })
-    try {
-      // descartar lo ya visto ANTES de enriquecer: no se gasta red en tirarlo después
-      const skipSourceIds = hideSeen ? await crate.knownSourceIds() : undefined
+    if (!get().query.text.trim()) return
+    set({ mining: null })
+    await correr(set, get, (query, affinity, opts) => runSearch(query, affinity, opts))
+  },
 
-      const results = await runSearch(query, affinity, {
-        skipSourceIds,
-        onPartial: (parciales) => {
-          set({
-            results: parciales,
-            enriching: {
-              done: parciales.filter((t) => !t.pending).length,
-              total: parciales.length,
-            },
-          })
-        },
-      })
-      await Promise.all(results.map((t) => crate.markSeen(t)))
-      set({ results })
-    } catch (e) {
-      set({ error: e instanceof Error ? e.message : String(e) })
-    } finally {
-      set({ loading: false, enriching: null })
-    }
+  /** Mina un canal entero: mismo pipeline, otra fuente de candidatos. */
+  async mine(channelId, nombre) {
+    set({ view: 'search', mining: nombre })
+    await correr(set, get, (query, affinity, opts) =>
+      mineChannel(channelId, query, affinity, opts),
+    )
   },
 
   async save(t) {

@@ -3,6 +3,7 @@ import type { EnrichedTrack } from '@/core/entities'
 import { useCrate } from '@/state/useCrateStore'
 import { ResultCard } from './ResultCard'
 import { PlaylistImport } from './PlaylistImport'
+import { Vetas } from './Vetas'
 
 /** Texto sobre el que filtra la búsqueda local: todo lo que sabemos del track. */
 function haystack(t: EnrichedTrack): string {
@@ -61,6 +62,7 @@ export function CrateView() {
 
   return (
     <div className="flex flex-col gap-4">
+      <Vetas />
       <PlaylistImport />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
