@@ -63,11 +63,14 @@ export function normalize(items: SourceItem[]): Candidate[] {
       description: source.description,
       tags: source.tags,
     })
+    // En Archive el `creator` suele ser el artista del disco; en YouTube es el
+    // canal, que no lo es (salvo los "- Topic", que ya resuelven los hints).
+    const artistaDeFuente = source.kind === 'archive' ? source.uploader : undefined
     return {
       source,
       cleanedTitle: cleanTitle(source.title),
-      // lo probado le gana a lo parseado del título
-      artist: hints.artist ?? artist,
+      // lo probado le gana a lo parseado del título, y eso al dato de la fuente
+      artist: hints.artist ?? artist ?? artistaDeFuente,
       title: hints.title ?? title,
       year: hints.year ?? extractYear(source.title),
       bpm: parseBpm(source.title),

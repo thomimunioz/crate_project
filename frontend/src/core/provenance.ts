@@ -12,10 +12,11 @@ export type MetaSource =
   | 'musicbrainz'
   | 'archive'
   | 'audio_analysis'
+  | 'acoustid'
   | 'inferred'
   | 'user'
 
-export type MetaMethod = 'parsed' | 'catalog' | 'analyzed' | 'inferred' | 'manual'
+export type MetaMethod = 'parsed' | 'catalog' | 'analyzed' | 'fingerprint' | 'inferred' | 'manual'
 
 export interface Provenanced<T> {
   value: T
@@ -49,6 +50,11 @@ export function analyzed<T>(value: T, confidence: number): Provenanced<T> {
   return prov(value, 'audio_analysis', 'analyzed', confidence)
 }
 
+/** Identificación por huella acústica (AcoustID). No depende del texto. */
+export function fingerprinted<T>(value: T, confidence: number): Provenanced<T> {
+  return prov(value, 'acoustid', 'fingerprint', confidence)
+}
+
 /** Dato deducido (ej. mood a partir de género + tags). */
 export function inferred<T>(value: T, confidence: number): Provenanced<T> {
   return prov(value, 'inferred', 'inferred', confidence)
@@ -66,9 +72,15 @@ export function provenanceLabel(p: Provenanced<unknown>): string {
     case 'catalog':
       return `de ${p.source === 'discogs' ? 'Discogs' : 'MusicBrainz'}`
     case 'parsed':
-      return 'del título'
+      return p.source === 'youtube_description'
+        ? 'de la descripción'
+        : p.source === 'youtube_tags'
+          ? 'de los tags'
+          : 'del título'
     case 'analyzed':
       return `analizado ${pct}%`
+    case 'fingerprint':
+      return `huella ${pct}%`
     case 'inferred':
       return `inferido ${pct}%`
     case 'manual':
