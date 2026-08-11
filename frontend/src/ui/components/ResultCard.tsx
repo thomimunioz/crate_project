@@ -20,13 +20,20 @@ export function ResultCard({ track }: Props) {
   const instruments = track.instruments?.value ?? []
   const inCrate = track.status === 'saved' || track.status === 'analyzed'
   const tags = track.tags ?? []
+  const pending = track.pending === true
 
   return (
-    <article className="rounded-xl border border-crate-line bg-crate-panel p-4 shadow-lg">
+    <article
+      className={`rounded-xl border bg-crate-panel p-4 shadow-lg transition-opacity ${
+        pending ? 'border-crate-line/50 opacity-60' : 'border-crate-line'
+      }`}
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            {score ? (
+            {pending ? (
+              <span className="eyebrow animate-pulse text-crate-amber">cruzando catálogo…</span>
+            ) : score ? (
               <>
                 <span className="font-mono text-sm font-bold text-crate-amber">
                   {scoreLabel(score.total)}
@@ -52,7 +59,7 @@ export function ResultCard({ track }: Props) {
           </p>
         </div>
         <div className="flex flex-none gap-1">
-          {inCrate ? (
+          {pending ? null : inCrate ? (
             <button
               onClick={() => void remove(track)}
               className="chip border-crate-go text-crate-go"
@@ -69,9 +76,15 @@ export function ResultCard({ track }: Props) {
               ♡
             </button>
           )}
-          <button onClick={() => void reject(track)} className="chip hover:border-crate-stop" title="No me interesa">
-            ✕
-          </button>
+          {!pending && (
+            <button
+              onClick={() => void reject(track)}
+              className="chip hover:border-crate-stop"
+              title="No me interesa"
+            >
+              ✕
+            </button>
+          )}
         </div>
       </div>
 
@@ -90,9 +103,15 @@ export function ResultCard({ track }: Props) {
         </div>
       )}
 
-      <div className="mt-3">
-        <AnalyzePanel track={track} analyzing={analyzing === track.crateId} onAnalyze={() => void analyze(track)} />
-      </div>
+      {!pending && (
+        <div className="mt-3">
+          <AnalyzePanel
+            track={track}
+            analyzing={analyzing === track.crateId}
+            onAnalyze={() => void analyze(track)}
+          />
+        </div>
+      )}
 
       {reasons.length > 0 && (
         <div className="mt-3">

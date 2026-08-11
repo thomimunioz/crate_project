@@ -49,6 +49,16 @@ export async function knownIds(): Promise<Set<string>> {
   return new Set(ids)
 }
 
+/**
+ * Ids de FUENTE ya vistos (el id de YouTube, no el crateId).
+ * El crateId recién se conoce después de cruzar contra catálogo; el de la fuente
+ * se sabe de entrada, así que permite descartar sin gastar red en enriquecer.
+ */
+export async function knownSourceIds(): Promise<Set<string>> {
+  const all = await db.tracks.toArray()
+  return new Set(all.flatMap((t) => t.sources.map((s) => s.id)))
+}
+
 export async function save(track: EnrichedTrack): Promise<Affinity> {
   await db.tracks.put({ ...track, status: 'saved', updatedAt: stamp() })
   return bumpAffinity(track, +1)
