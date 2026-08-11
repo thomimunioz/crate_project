@@ -126,7 +126,8 @@ export async function getCrate(): Promise<EnrichedTrack[]> {
 
 export async function getAffinity(): Promise<Affinity> {
   const row = await db.meta.get('affinity')
-  return (row?.value as Affinity | undefined) ?? emptyAffinity()
+  // los crates guardados antes de que existiera un contador nuevo no lo traen
+  return { ...emptyAffinity(), ...((row?.value as Partial<Affinity> | undefined) ?? {}) }
 }
 
 async function bumpAffinity(track: EnrichedTrack, weight: number): Promise<Affinity> {

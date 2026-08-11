@@ -75,6 +75,12 @@ export interface MusicEntity {
   recordingMbid?: string
   /** ¿el fuzzy match superó el umbral? Si no, no afirmamos catálogo como confirmado. */
   confirmed: boolean
+  /**
+   * Cómo se llegó a esta entidad. No todas las confirmaciones valen lo mismo:
+   * un link a Discogs en la descripción es un id, un match por texto es una
+   * apuesta. Se muestra en el "Why this?".
+   */
+  identifiedBy?: 'catalog_link' | 'topic_channel' | 'musicbrainz' | 'discogs'
 }
 
 export type CrateStatus = 'seen' | 'saved' | 'analyzed' | 'rejected'

@@ -164,3 +164,47 @@ export async function fetchPlaylist(playlistId: string): Promise<PlaylistFetch> 
   const items = ids.filter((id) => stats.has(id)).map((id) => toItem(id, stats.get(id)))
   return { title, items }
 }
+
+// ---------- minería de canales ----------
+
+/**
+ * Los uploads de un canal viven en una playlist implícita cuyo id es el del canal
+ * con "UC" cambiado por "UU". Traerla cuesta 1 unidad cada 50 videos, contra las
+ * 100 que cuesta UNA búsqueda: es ~200 veces más barato por tema.
+ *
+ * Es el mejor vector de descubrimiento que tenemos. Un canal del que ya guardaste
+ * varios temas es un curador humano que hizo el digging por vos, y su catálogo
+ * entero está sobre tu tesis.
+ */
+export async function fetchChannelUploads(channelId: string, max = 100): Promise<SourceItem[]> {
+  if (!KEY) throw new Error('Falta VITE_YOUTUBE_API_KEY')
+  if (!channelId.startsWith('UC')) throw new Error(`channelId inesperado: ${channelId}`)
+
+  const uploads = `UU${channelId.slice(2)}`
+  const ids: string[] = []
+  let pageToken: string | undefined
+
+  do {
+    const params = new URLSearchParams({
+      part: 'contentDetails',
+      playlistId: uploads,
+      maxResults: '50',
+      key: KEY,
+    })
+    if (pageToken) params.set('pageToken', pageToken)
+    const res = await fetch(`${BASE}/playlistItems?${params.toString()}`)
+    if (!res.ok) throw new Error(`YouTube uploads ${res.status}`)
+    const data: any = await res.json()
+    for (const it of data.items ?? []) {
+      const id = it.contentDetails?.videoId
+      if (id) ids.push(id)
+    }
+    pageToken = data.nextPageToken
+  } while (pageToken && ids.length < max)
+
+  const stats = await fetchStats(ids.slice(0, max))
+  return ids
+    .slice(0, max)
+    .filter((id) => stats.has(id))
+    .map((id) => toItem(id, stats.get(id)))
+}

@@ -19,7 +19,7 @@ function Tab({ id, label, count }: { id: View; label: string; count?: number }) 
 }
 
 function SearchView() {
-  const { results, loading, enriching, hideSeen, toggleHideSeen } = useCrate()
+  const { results, loading, enriching, mining, hideSeen, toggleHideSeen } = useCrate()
 
   return (
     <>
@@ -34,6 +34,10 @@ function SearchView() {
       </div>
 
       <FilterBar />
+
+      {mining && (
+        <p className="eyebrow text-crate-amber">⛏ minando el canal · {mining}</p>
+      )}
 
       {loading && (
         <p className="eyebrow animate-pulse">

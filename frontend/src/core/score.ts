@@ -64,6 +64,12 @@ function obscurityScore(t: EnrichedTrack, reasons: string[]): number {
   return s
 }
 
+/** De dónde salió la identificación, en castellano, para el "Why this?". */
+const COMO_SE_IDENTIFICO: Record<string, string> = {
+  catalog_link: 'el uploader linkeó el disco en Discogs',
+  topic_channel: 'canal oficial del sello (metadata del distribuidor)',
+}
+
 function richnessScore(t: EnrichedTrack): number {
   const e = t.entity
   let n = 0
@@ -148,6 +154,11 @@ export function computeCrateScore(
     historicalRelevance: historicalRelevanceScore(track, reasons),
     personalAffinity: affinityScore(track, affinity),
   }
+  const comoSeIdentifico = track.entity.identifiedBy
+    ? COMO_SE_IDENTIFICO[track.entity.identifiedBy]
+    : undefined
+  if (comoSeIdentifico) reasons.push(comoSeIdentifico)
+
   if (components.personalAffinity > 0.6) {
     reasons.push(`${Math.round(components.personalAffinity * 100)}% match con tu crate`)
   }

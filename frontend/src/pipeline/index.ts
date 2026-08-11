@@ -19,7 +19,7 @@ import { confirmed as confirmedProv, inferred } from '@/core/provenance'
 import { sourcesFor, discogs, musicbrainz } from '@/sources'
 import type { CatalogCandidate, CatalogRelease } from '@/sources'
 import type { MbRecording } from '@/sources/musicbrainz'
-import { fetchPlaylist, playlistTag } from '@/sources/youtube'
+import { fetchPlaylist, playlistTag, fetchChannelUploads } from '@/sources/youtube'
 
 /**
  * Cuántos candidatos se enriquecen por búsqueda.
@@ -214,6 +214,16 @@ async function enrichOne(c: Candidate): Promise<EnrichedTrack> {
     recordingMbid: mb?.recordingMbid,
     releaseMbid: mb?.releaseMbid,
     confirmed,
+    identifiedBy:
+      hints.source === 'catalog_link'
+        ? 'catalog_link'
+        : hints.source === 'topic_channel'
+          ? 'topic_channel'
+          : mb
+            ? 'musicbrainz'
+            : matched
+              ? 'discogs'
+              : undefined,
   }
 
   // instrumentos: de créditos (catálogo) o del texto (parsed)
@@ -350,8 +360,32 @@ export async function runSearch(
   affinity: Affinity,
   opts: SearchOptions = {},
 ): Promise<EnrichedTrack[]> {
+  return runOnItems(await discover(query), query, affinity, opts)
+}
+
+/**
+ * Mina los uploads de un canal entero.
+ *
+ * Un canal del que ya guardaste varios temas es un curador humano que hizo el
+ * digging por vos. Traerlo cuesta 1 unidad cada 50 videos contra las 100 de una
+ * sola búsqueda: por tema es ~200 veces más barato. Ver docs/SOURCES.md
+ */
+export async function mineChannel(
+  channelId: string,
+  query: SearchQuery,
+  affinity: Affinity,
+  opts: SearchOptions = {},
+): Promise<EnrichedTrack[]> {
+  return runOnItems(await fetchChannelUploads(channelId), query, affinity, opts)
+}
+
+async function runOnItems(
+  items: SourceItem[],
+  query: SearchQuery,
+  affinity: Affinity,
+  opts: SearchOptions,
+): Promise<EnrichedTrack[]> {
   const { onPartial, skipSourceIds } = opts
-  const items = await discover(query)
   const candidates = normalize(items)
     .filter((c) => !skipSourceIds?.has(c.source.id))
     .slice(0, ENRICH_LIMIT)
