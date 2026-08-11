@@ -97,6 +97,12 @@ export interface EnrichedTrack {
    */
   tags?: string[]
   score?: CrateScore
+  /**
+   * Transitorio: la ficha se está cruzando contra catálogo todavía. Sirve para
+   * mostrar lo que YouTube ya nos dio sin esperar los ~2s de red por tema.
+   * No se persiste: solo los resultados finales entran al índice.
+   */
+  pending?: boolean
   status: CrateStatus
   firstSeenAt: string
   updatedAt: string

@@ -22,6 +22,8 @@ interface CrateState {
   crateTracks: EnrichedTrack[]
   loading: boolean
   analyzing: string | null
+  /** progreso del cruce contra catálogo durante una búsqueda */
+  enriching: { done: number; total: number } | null
   /** progreso del import; null si no hay uno corriendo */
   importing: { label: string; done: number; total: number } | null
   error?: string
@@ -49,6 +51,7 @@ export const useCrate = create<CrateState>((set, get) => ({
   crateTracks: [],
   loading: false,
   analyzing: null,
+  enriching: null,
   importing: null,
   affinity: emptyAffinity(),
   hideSeen: true,
@@ -114,17 +117,29 @@ export const useCrate = create<CrateState>((set, get) => ({
   async search() {
     const { query, affinity, hideSeen } = get()
     if (!query.text.trim()) return
-    set({ loading: true, error: undefined })
+    set({ loading: true, error: undefined, results: [], enriching: null })
     try {
-      const known = await crate.knownIds() // capturar ANTES de marcar
-      let results = await runSearch(query, affinity)
+      // descartar lo ya visto ANTES de enriquecer: no se gasta red en tirarlo después
+      const skipSourceIds = hideSeen ? await crate.knownSourceIds() : undefined
+
+      const results = await runSearch(query, affinity, {
+        skipSourceIds,
+        onPartial: (parciales) => {
+          set({
+            results: parciales,
+            enriching: {
+              done: parciales.filter((t) => !t.pending).length,
+              total: parciales.length,
+            },
+          })
+        },
+      })
       await Promise.all(results.map((t) => crate.markSeen(t)))
-      if (hideSeen) results = results.filter((t) => !known.has(t.crateId))
       set({ results })
     } catch (e) {
       set({ error: e instanceof Error ? e.message : String(e) })
     } finally {
-      set({ loading: false })
+      set({ loading: false, enriching: null })
     }
   },
 

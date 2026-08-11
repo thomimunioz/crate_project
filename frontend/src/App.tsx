@@ -19,7 +19,7 @@ function Tab({ id, label, count }: { id: View; label: string; count?: number }) 
 }
 
 function SearchView() {
-  const { results, loading, hideSeen, toggleHideSeen } = useCrate()
+  const { results, loading, enriching, hideSeen, toggleHideSeen } = useCrate()
 
   return (
     <>
@@ -35,7 +35,13 @@ function SearchView() {
 
       <FilterBar />
 
-      {loading && <p className="eyebrow animate-pulse">diggeando…</p>}
+      {loading && (
+        <p className="eyebrow animate-pulse">
+          {enriching && enriching.total > 0
+            ? `cruzando contra catálogo · ${enriching.done} de ${enriching.total}`
+            : 'diggeando…'}
+        </p>
+      )}
 
       {!loading && results.length === 0 && (
         <p className="text-crate-soft">
@@ -46,7 +52,8 @@ function SearchView() {
 
       <div className="flex flex-col gap-4">
         {results.map((t) => (
-          <ResultCard key={t.crateId} track={t} />
+          // clave de la FUENTE: el crateId cambia cuando el cruce identifica la obra
+          <ResultCard key={t.sources[0]?.id ?? t.crateId} track={t} />
         ))}
       </div>
     </>

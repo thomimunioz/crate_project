@@ -253,6 +253,8 @@ export interface EnrichOptions {
   /** cuántos candidatos enriquecer. Por defecto ENRICH_LIMIT. */
   limit?: number
   onProgress?: (done: number, total: number) => void
+  /** se llama con cada track apenas termina de cruzarse, para render progresivo */
+  onTrack?: (track: EnrichedTrack) => void
 }
 
 export async function enrich(
@@ -262,7 +264,14 @@ export async function enrich(
   const slice = candidates.slice(0, opts.limit ?? ENRICH_LIMIT)
   let done = 0
   const settled = await Promise.allSettled(
-    slice.map((c) => enrichOne(c).finally(() => opts.onProgress?.(++done, slice.length))),
+    slice.map((c) =>
+      enrichOne(c)
+        .then((t) => {
+          opts.onTrack?.(t)
+          return t
+        })
+        .finally(() => opts.onProgress?.(++done, slice.length)),
+    ),
   )
   return settled.flatMap((r) => (r.status === 'fulfilled' ? [r.value] : []))
 }
@@ -278,11 +287,87 @@ export function scoreAll(
     .sort((a, b) => (b.score?.total ?? 0) - (a.score?.total ?? 0))
 }
 
-/** Corre el pipeline entero. La UI filtra los `seen` aparte (ver store). */
-export async function runSearch(query: SearchQuery, affinity: Affinity): Promise<EnrichedTrack[]> {
+/**
+ * Ficha provisional con lo que YouTube ya nos dio, antes de cruzar contra catálogo.
+ * El cruce tarda ~2s por tema y son decenas: mostrar esto de entrada es la
+ * diferencia entre una app que responde y 60 segundos de spinner.
+ */
+function placeholder(c: Candidate): EnrichedTrack {
+  const now = new Date().toISOString()
+  return {
+    crateId: `pending:${c.source.id}`,
+    entity: {
+      crateId: `pending:${c.source.id}`,
+      artist: c.artist ?? 'Buscando…',
+      title: c.title ?? c.cleanedTitle,
+      year: c.year,
+      genres: [],
+      styles: [],
+      credits: [],
+      confirmed: false,
+    },
+    sources: [c.source],
+    bpm: c.bpm != null ? confirmedProv(c.bpm, 'youtube_title', 0.6) : undefined,
+    key: c.key ? confirmedProv(c.key, 'youtube_title', 0.5) : undefined,
+    rarity: {
+      youtubeViews: c.source.kind === 'youtube' ? c.source.views : undefined,
+      uploadAgeDays: daysSince(c.source.publishedAt),
+    },
+    pending: true,
+    status: 'seen',
+    firstSeenAt: now,
+    updatedAt: now,
+  }
+}
+
+/**
+ * Ordena dejando arriba lo ya cruzado (por score) y abajo lo que falta, en el
+ * orden en que vino. Así las fichas suben a su lugar a medida que se completan,
+ * en vez de barajarse toda la lista en cada llegada.
+ */
+function orderPartial(
+  tracks: EnrichedTrack[],
+  query: SearchQuery,
+  affinity: Affinity,
+): EnrichedTrack[] {
+  const listos = tracks.filter((t) => !t.pending)
+  const faltan = tracks.filter((t) => t.pending)
+  return [...scoreAll(listos, query, affinity), ...faltan]
+}
+
+/**
+ * Corre el pipeline entero. La UI filtra los `seen` aparte (ver store).
+ * `onPartial` recibe la lista completa cada vez que una ficha se completa.
+ */
+export interface SearchOptions {
+  onPartial?: (tracks: EnrichedTrack[]) => void
+  /** ids de fuente a descartar sin enriquecer: "no me muestres lo que ya vi" */
+  skipSourceIds?: Set<string>
+}
+
+export async function runSearch(
+  query: SearchQuery,
+  affinity: Affinity,
+  opts: SearchOptions = {},
+): Promise<EnrichedTrack[]> {
+  const { onPartial, skipSourceIds } = opts
   const items = await discover(query)
   const candidates = normalize(items)
-  const enriched = await enrich(candidates)
+    .filter((c) => !skipSourceIds?.has(c.source.id))
+    .slice(0, ENRICH_LIMIT)
+
+  // clave estable: el crateId cambia cuando el cruce identifica la obra
+  const porFuente = new Map(candidates.map((c) => [c.source.id, placeholder(c)]))
+  const emitir = (): void => onPartial?.(orderPartial([...porFuente.values()], query, affinity))
+  emitir()
+
+  const enriched = await enrich(candidates, {
+    limit: candidates.length,
+    onTrack: (t) => {
+      porFuente.set(t.sources[0].id, t)
+      emitir()
+    },
+  })
   return scoreAll(enriched, query, affinity)
 }
 
