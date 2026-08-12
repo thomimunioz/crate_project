@@ -36,3 +36,42 @@ export async function analyzeAudio(
   if (!res.ok) throw new Error(`analyze ${res.status}`)
   return res.json() as Promise<AnalyzeResult>
 }
+
+export interface IdentifyCandidate {
+  acoustid: string
+  /** similitud de huella que devuelve AcoustID (0..1) */
+  score: number
+  /** score ajustado por cuánto audio se pudo huellar */
+  confidence: number
+  recording_mbid?: string | null
+  artist?: string | null
+  title?: string | null
+  /** álbumes donde aparece la grabación */
+  releases: string[]
+  duration_sec?: number | null
+}
+
+export interface IdentifyResult {
+  candidates: IdentifyCandidate[]
+  fingerprint_seconds: number
+  lookup_duration_sec: number
+}
+
+/**
+ * Identifica un track por HUELLA ACÚSTICA (Capa 2, opt-in).
+ *
+ * Es el desempate cuando el texto no alcanza: títulos en kanji o cirílico,
+ * títulos sueltos de una palabra, rips sin descripción. No lee el título.
+ */
+export async function identifyAudio(url: string): Promise<IdentifyResult> {
+  const res = await fetch(`${API_BASE}/identify`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url }),
+  })
+  if (!res.ok) {
+    const detalle = await res.json().catch(() => null)
+    throw new Error(detalle?.detail ?? `identify ${res.status}`)
+  }
+  return res.json() as Promise<IdentifyResult>
+}

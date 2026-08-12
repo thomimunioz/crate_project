@@ -68,6 +68,7 @@ function obscurityScore(t: EnrichedTrack, reasons: string[]): number {
 const COMO_SE_IDENTIFICO: Record<string, string> = {
   catalog_link: 'el uploader linkeó el disco en Discogs',
   topic_channel: 'canal oficial del sello (metadata del distribuidor)',
+  acoustid: 'identificado por huella acústica (no por el título)',
 }
 
 function richnessScore(t: EnrichedTrack): number {

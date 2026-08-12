@@ -64,3 +64,18 @@ class AnalyzeResult(BaseModel):
     identification: IdentifyResult | None = None
     # Por qué no se pudo identificar, si se pidió (falta fpcalc o falta la key).
     identification_error: str | None = None
+
+
+class DiscoverItem(BaseModel):
+    """Lo mínimo que devuelve la búsqueda sin quota. La metadata rica va aparte."""
+    video_id: str
+    title: str
+    uploader: str | None = None
+    channel_id: str | None = None
+    duration_sec: int | None = None
+    views: int | None = None
+
+
+class DiscoverResult(BaseModel):
+    query: str
+    items: list[DiscoverItem] = []

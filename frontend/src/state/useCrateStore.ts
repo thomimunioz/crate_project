@@ -6,7 +6,7 @@ import { create } from 'zustand'
 import type { EnrichedTrack, SearchQuery } from '@/core/entities'
 import type { Affinity } from '@/core/affinity'
 import { emptyAffinity } from '@/core/affinity'
-import { runSearch, mineChannel, importPlaylist } from '@/pipeline'
+import { runSearch, mineChannel, importPlaylist, identifyByFingerprint } from '@/pipeline'
 import { parsePlaylistId } from '@/sources/youtube'
 import * as crate from '@/db/crateIndex'
 import { purgeExpired } from '@/db/cache'
@@ -22,6 +22,8 @@ interface CrateState {
   crateTracks: EnrichedTrack[]
   loading: boolean
   analyzing: string | null
+  /** crateId del track que se está identificando por huella */
+  identifying: string | null
   /** progreso del cruce contra catálogo durante una búsqueda */
   enriching: { done: number; total: number } | null
   /** nombre del canal que se está minando, si la vista viene de una veta */
@@ -44,6 +46,7 @@ interface CrateState {
   remove: (t: EnrichedTrack) => Promise<void>
   reject: (t: EnrichedTrack) => Promise<void>
   analyze: (t: EnrichedTrack) => Promise<void>
+  identify: (t: EnrichedTrack) => Promise<void>
   toggleHideSeen: () => void
 }
 
@@ -94,6 +97,7 @@ export const useCrate = create<CrateState>((set, get) => ({
   crateTracks: [],
   loading: false,
   analyzing: null,
+  identifying: null,
   enriching: null,
   mining: null,
   importing: null,
@@ -200,6 +204,23 @@ export const useCrate = create<CrateState>((set, get) => ({
       results: get().results.filter((r) => r.crateId !== t.crateId),
       crateTracks: get().crateTracks.filter((r) => r.crateId !== t.crateId),
     })
+  },
+
+  /** Identifica por huella acústica: el desempate cuando el título no se puede leer. */
+  async identify(t) {
+    set({ identifying: t.crateId, error: undefined })
+    try {
+      const { query, affinity } = get()
+      const identificado = await identifyByFingerprint(t, query, affinity)
+      await crate.markSeen(identificado)
+      const reemplazar = (lista: EnrichedTrack[]): EnrichedTrack[] =>
+        lista.map((r) => (r.sources[0]?.id === t.sources[0]?.id ? identificado : r))
+      set({ results: reemplazar(get().results), crateTracks: reemplazar(get().crateTracks) })
+    } catch (e) {
+      set({ error: e instanceof Error ? e.message : String(e) })
+    } finally {
+      set({ identifying: null })
+    }
   },
 
   async analyze(t) {
