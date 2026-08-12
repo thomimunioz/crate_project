@@ -25,11 +25,14 @@ export function Vetas() {
   if (vetas.length === 0) return null
 
   return (
-    <div className="rounded-xl border border-crate-line bg-crate-panel p-4">
-      <p className="eyebrow">vetas</p>
-      <p className="mt-1 text-sm text-crate-soft">
-        Canales de los que ya guardaste. Minarlos trae su catálogo entero, y sale mucho más
-        barato que buscar.
+    <section className="panel p-4">
+      <div className="flex items-center gap-2">
+        <span className="tape">vetas</span>
+        <span className="eyebrow">1 unidad cada 50 videos</span>
+      </div>
+      <p className="mt-2.5 text-sm text-crate-soft">
+        Canales de los que ya guardaste: alguien hizo el digging antes que vos. Minarlos trae su
+        catálogo entero y sale mucho más barato que buscar.
       </p>
       <div className="mt-3 flex flex-wrap gap-1.5">
         {vetas.map((v) => (
@@ -37,13 +40,15 @@ export function Vetas() {
             key={v.channelId}
             disabled={loading}
             onClick={() => void mine(v.channelId, v.nombre)}
-            className="chip hover:border-crate-amber disabled:opacity-50"
+            className="chip-btn hover:border-crate-amber hover:text-crate-amber"
             title={`Minar los uploads de ${v.nombre}`}
           >
-            ⛏ {v.nombre} <span className="text-crate-faint">{v.n}</span>
+            <span aria-hidden>⛏</span>
+            <span className="max-w-[16ch] truncate">{v.nombre}</span>
+            <span className="font-mono text-crate-faint">{v.n}</span>
           </button>
         ))}
       </div>
-    </div>
+    </section>
   )
 }

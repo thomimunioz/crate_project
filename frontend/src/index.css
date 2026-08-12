@@ -3,27 +3,286 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    color-scheme: dark;
+  }
+
   html,
   body,
   #root {
     height: 100%;
   }
+
   body {
     @apply bg-crate-bg text-crate-ink font-sans antialiased;
-    background-image: theme('backgroundImage.grain');
+    /* grano + viñeta cálida: la luz cae al centro, como una foto de los 70 */
+    background-image: theme('backgroundImage.grain'), theme('backgroundImage.vignette');
+    background-attachment: fixed;
+  }
+
+  /* Foco SIEMPRE visible: se diggea con teclado tanto como con el mouse. */
+  :focus-visible {
+    outline: 2px solid theme('colors.crate.amber');
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: theme('colors.crate.amber');
+    color: theme('colors.crate.bg');
+  }
+
+  /* la barra de scroll también es parte de la consola */
+  * {
+    scrollbar-color: theme('colors.crate.line') transparent;
+    scrollbar-width: thin;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: theme('colors.crate.line');
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: theme('colors.crate.dust');
+    background-clip: content-box;
+  }
+
+  /* Nada se mueve si el sistema pidió que nada se mueva. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+    /* sin barrido, el cabezal se queda quieto: mejor mostrar la barra entera */
+    .scanbar::after {
+      width: 100% !important;
+      opacity: 0.45;
+    }
   }
 }
 
 @layer components {
+  /* ---------- pantallita de sampler ---------- */
+
   /* motivo de pantallita de sampler para los datos */
   .lcd {
-    @apply bg-crate-lcd text-crate-lcdInk font-mono rounded-md;
-    box-shadow: 0 0 0 1px rgba(240, 178, 74, 0.25);
+    @apply relative isolate overflow-hidden rounded-md bg-crate-lcd font-mono text-crate-lcdInk;
+    box-shadow: theme('boxShadow.lcdInset');
+    text-shadow: 0 0 8px rgba(242, 179, 73, 0.28);
   }
+  /* líneas de barrido: el vidrio del display */
+  .lcd::after {
+    content: '';
+    @apply pointer-events-none absolute inset-0 z-10;
+    background-image: theme('backgroundImage.scanlines');
+    opacity: 0.5;
+  }
+  /* brillo del tubo, arriba a la izquierda */
+  .lcd::before {
+    content: '';
+    @apply pointer-events-none absolute inset-0 z-10;
+    background: radial-gradient(120% 80% at 15% -10%, rgba(242, 179, 73, 0.1), transparent 60%);
+  }
+  .lcd > * {
+    @apply relative z-20;
+  }
+
+  /* LED de estado de la consola */
+  .led {
+    @apply inline-block h-1.5 w-1.5 flex-none rounded-full bg-crate-dust;
+  }
+  .led-on {
+    @apply bg-crate-amber;
+    box-shadow: 0 0 6px theme('colors.crate.amber');
+  }
+  .led-go {
+    @apply bg-crate-go;
+    box-shadow: 0 0 6px theme('colors.crate.go');
+  }
+
+  /* ---------- etiquetas y stickers ---------- */
+
   .chip {
-    @apply inline-flex items-center gap-1.5 rounded-md border border-crate-line bg-crate-panel px-2 py-1 text-xs;
+    @apply inline-flex items-center gap-1.5 rounded-md border border-crate-line bg-crate-panel px-2 py-1 text-xs transition-colors duration-150;
   }
+  /* chip que se puede apretar: la etiqueta se hunde un pelo */
+  .chip-btn {
+    @apply chip hover:border-crate-soft active:translate-y-px disabled:cursor-not-allowed disabled:opacity-45;
+  }
+  .chip-on {
+    @apply border-crate-amber bg-crate-amber/10 text-crate-amber;
+  }
+  /* un chip encendido no se apaga al pasarle el mouse por encima */
+  .chip-on:hover {
+    @apply border-crate-amber;
+  }
+
   .eyebrow {
     @apply font-mono text-[11px] uppercase tracking-[0.14em] text-crate-faint;
+  }
+
+  /* cinta de papel pegada sobre el panel: título de sección */
+  .tape {
+    @apply inline-block -rotate-1 rounded-[2px] px-2.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-crate-bg;
+    background: linear-gradient(175deg, #d8c69c 0%, #c3ae7f 100%);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
+  }
+
+  /* sticker de precio: el score, de un vistazo */
+  .sticker {
+    @apply relative grid flex-none place-items-center rounded-full font-mono font-bold leading-none;
+    background:
+      radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.28), transparent 58%),
+      var(--sticker-bg, theme('colors.crate.amber'));
+    color: var(--sticker-ink, theme('colors.crate.bg'));
+    box-shadow: theme('boxShadow.sticker');
+    transform: rotate(-5deg);
+  }
+  /* el troquelado del sticker */
+  .sticker::after {
+    content: '';
+    @apply pointer-events-none absolute rounded-full;
+    inset: 3px;
+    border: 1px dashed rgba(0, 0, 0, 0.3);
+  }
+
+  /* sello de goma de la tienda: guardado / analizado */
+  .sello {
+    @apply inline-flex select-none items-center gap-1 rounded-[3px] border-2 px-1.5 py-px font-mono text-[9px] font-bold uppercase tracking-[0.16em];
+    transform: rotate(-6deg);
+    opacity: 0.88;
+  }
+
+  /* ---------- la ficha ---------- */
+
+  .ficha {
+    @apply relative overflow-hidden rounded-lg border border-crate-line bg-crate-card transition-colors duration-200;
+    background-image: theme('backgroundImage.fibers'), theme('backgroundImage.grain');
+    box-shadow: theme('boxShadow.ficha');
+  }
+  /* canto de la ficha, teñido por el tier del score */
+  .ficha::before {
+    content: '';
+    @apply pointer-events-none absolute bottom-0 left-0 top-0 z-10 w-[3px];
+    background: var(--tier, theme('colors.crate.line'));
+    opacity: 0.7;
+  }
+  .ficha:hover {
+    @apply border-crate-dust;
+  }
+
+  /* separador punteado: el troquel entre bloques de la ficha */
+  .perf {
+    @apply border-t border-dashed border-crate-line/80;
+  }
+
+  /* hueco del esqueleto: polvo levantándose mientras se revela la ficha */
+  .skel {
+    @apply block rounded-sm bg-crate-line/70;
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(240, 178, 74, 0.16) 45%,
+      transparent 85%
+    );
+    background-size: 240% 100%;
+    @apply animate-shimmer;
+  }
+
+  /* miniatura: todas las tapas caen dentro de la misma paleta */
+  .tapa {
+    @apply h-full w-full object-cover transition-[filter,transform] duration-300;
+    filter: sepia(0.32) saturate(0.9) contrast(1.06) brightness(0.9);
+  }
+  .group:hover .tapa {
+    filter: sepia(0.08) saturate(1) contrast(1) brightness(1);
+  }
+
+  /* ---------- controles ---------- */
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-md border border-crate-line bg-crate-panel px-3 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-crate-soft transition-colors duration-150;
+  }
+  .btn:hover:not(:disabled) {
+    @apply border-crate-soft text-crate-ink;
+  }
+  .btn:active:not(:disabled) {
+    @apply translate-y-px;
+  }
+  .btn:disabled {
+    @apply cursor-not-allowed opacity-45;
+  }
+  .btn-amber {
+    @apply border-crate-amber bg-crate-amber font-bold text-crate-bg;
+    box-shadow: 0 2px 0 theme('colors.crate.amberDim');
+  }
+  .btn-amber:hover:not(:disabled) {
+    @apply border-crate-amber text-crate-bg brightness-110;
+  }
+  .btn-amber:active:not(:disabled) {
+    box-shadow: 0 0 0 theme('colors.crate.amberDim');
+  }
+
+  .field {
+    @apply w-full rounded-md border border-crate-line bg-crate-bg/70 px-3 py-2 text-sm text-crate-ink transition-colors duration-150 placeholder:text-crate-faint;
+  }
+  .field:hover {
+    @apply border-crate-dust;
+  }
+  .field:focus {
+    @apply border-crate-amber outline-none;
+  }
+
+  /* panel de consola: el marco de las secciones */
+  .panel {
+    @apply relative rounded-lg border border-crate-line bg-crate-panel;
+    background-image: theme('backgroundImage.grain');
+    box-shadow: theme('boxShadow.ficha');
+  }
+
+  /* ---------- medidores ---------- */
+
+  /* barra de confianza segmentada, como el vúmetro de un sampler */
+  .meter {
+    @apply relative block h-[5px] w-full overflow-hidden rounded-[2px] bg-black/55;
+    -webkit-mask-image: repeating-linear-gradient(to right, #000 0 4px, transparent 4px 6px);
+    mask-image: repeating-linear-gradient(to right, #000 0 4px, transparent 4px 6px);
+  }
+  .meter-fill {
+    @apply block h-full transition-[width] duration-500;
+    background: currentColor;
+  }
+
+  /* cabezal que barre mientras se cruza contra catálogo */
+  .scanbar {
+    @apply relative h-px w-full overflow-hidden bg-crate-line/70;
+  }
+  .scanbar::after {
+    content: '';
+    @apply absolute inset-y-0 left-0 w-1/3 animate-scan;
+    background: linear-gradient(90deg, transparent, theme('colors.crate.amber'), transparent);
+  }
+}
+
+@layer utilities {
+  /* overlay de grano fijo sobre toda la app */
+  .grain-overlay {
+    background-image: theme('backgroundImage.grainHeavy');
+  }
+  /* respeta el notch / la barra de gestos en la PWA */
+  .pb-safe {
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  }
+  .pt-safe {
+    padding-top: calc(0.75rem + env(safe-area-inset-top));
   }
 }
