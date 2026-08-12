@@ -34,21 +34,24 @@ export interface CrateScore {
  *    el 68% de los tracks trae want/have de Discogs. Antes ese componente
  *    devolvía el 0.3 neutro casi siempre; ahora discrimina de verdad, así que
  *    sube.
- * 2. **La obscuridad ya la filtró el descubrimiento.** El fan-out por escena
- *    (ver core/queries.ts) bajó la mediana de views de cientos de miles a
- *    ~400. Si casi todo lo que llega tiene pocas views, ordenar POR pocas
- *    views distingue poco: pasa a ser un desempate, no un eje.
+ * 2. **La obscuridad sigue siendo un eje, aunque el descubrimiento ya filtre.**
+ *    Bajarla fue un error que corrigió la medición: con obscurity en 0.12, una
+ *    búsqueda de MPB brasileño metía segundo a Sergio Mendes & Brasil '66 con
+ *    39.062 views. Es correcto para la query y está confirmado, pero es
+ *    exactamente lo que el usuario YA conoce. El fan-out baja la mediana a ~400
+ *    views, pero adentro del resultado siguen conviviendo 429 y 39.062: ahí
+ *    la obscuridad es lo único que los separa. Vuelve a 0.16.
  *
  * Rarity ≠ obscurity sigue valiendo: una obra rara de catálogo es otra cosa
  * que un upload que nadie miró. Ver docs/CRATE_SCORE.md.
  */
 export const DEFAULT_WEIGHTS: ScoreComponents = {
-  filterMatch: 0.26,
+  filterMatch: 0.24,
   rarity: 0.2,
-  obscurity: 0.12,
+  obscurity: 0.16,
   metadataRichness: 0.08,
   sourceQuality: 0.07,
-  historicalRelevance: 0.1,
+  historicalRelevance: 0.08,
   personalAffinity: 0.17,
 }
 
@@ -176,6 +179,31 @@ function filterMatchScore(t: EnrichedTrack, q: SearchQuery, reasons: string[]): 
   return clamp01(hits / checks)
 }
 
+/**
+ * Cuánto sabemos REALMENTE de la obra, 0.55..1.
+ *
+ * Sin esto, un upload del que no sabemos nada puntúa como joya solo por tener
+ * un año en el título y pocas views: medido, "Engelbert Humperdinck B9 -
+ * Wand'rin' Star" con 20 views entraba cuarto en una búsqueda de MPB brasileño,
+ * sin sello, sin géneros y sin cruce contra catálogo.
+ *
+ * El sweet spot y la obscuridad son señales sobre una OBRA. Si no sabemos qué
+ * obra es, no podemos afirmarlas con la misma fuerza. Es la misma regla que rige
+ * todo CRATE: no mezclar lo confirmado con lo inferido.
+ */
+function certeza(t: EnrichedTrack): number {
+  const e = t.entity
+  if (e.confirmed) return 1
+  const señales = [
+    e.discogsId != null,
+    e.recordingMbid != null,
+    e.genres.length > 0 || e.styles.length > 0,
+    e.label != null,
+    e.credits.length > 0,
+  ].filter(Boolean).length
+  return 0.55 + 0.09 * señales
+}
+
 export function computeCrateScore(
   track: EnrichedTrack,
   query: SearchQuery,
@@ -207,7 +235,11 @@ export function computeCrateScore(
     total += components[k] * weights[k]
     wsum += weights[k]
   }
-  return { total: Math.round((total / wsum) * 100), components, reasons }
+
+  const seguridad = certeza(track)
+  if (seguridad < 1) reasons.push('sin cruzar contra catálogo: el puntaje va descontado')
+
+  return { total: Math.round((total / wsum) * seguridad * 100), components, reasons }
 }
 
 /** Etiqueta para la UI según el score. */
