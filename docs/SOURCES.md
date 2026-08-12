@@ -92,18 +92,28 @@ créditos, ni sello, ni want/have, o sea no hay CRATE Score ni affinity.
 | Discogs `q=` libre + Levenshtein concatenado | **14%** | el estado original |
 | Discogs `artist=` + `track=` estructurado | 26% | la mayoría son **falsos positivos** |
 | MusicBrainz `recording:` | 33% | y los matches son correctos |
-| **MusicBrainz identifica → Discogs enriquece** | **57%** | el pipeline actual |
+| MusicBrainz identifica → Discogs enriquece | 57% | |
+| **+ pistas duras del snippet de YouTube** | **72%** | el pipeline actual |
 
-Resultado del pipeline actual sobre los mismos 80 temas: **57% identificados,
-44% con want/have, 31% con créditos por instrumento, 23% confirmados.** Que
-"confirmado" sea bastante menor que "identificado" es a propósito: se identifica
-más de lo que se afirma. Tarda 134s para 80 temas (1 llamada a MB + hasta 2 a
-Discogs por tema, serializadas por rate limit) → **el render progresivo pasa a
-ser obligatorio, no cosmético.**
+Resultado del pipeline actual sobre 79 temas de las 10 playlists: **72%
+identificados, 71% confirmados, 68% con want/have, 52% con créditos por
+instrumento.** El 46% se identifica por pista dura, sin fuzzy.
 
-Puntos flojos que quedan: `dark` 13% y `japanese city pop` 38% de identificación
-con 0% de créditos. Son títulos sin artista o en kanji; MusicBrainz no los tiene
-y el fallback por texto libre contra Discogs tampoco alcanza. **Para esos dos casos
+Ojo con un detalle que parece raro: en algunas playlists **confirmado > identificado**.
+Es correcto. "Identificado" cuenta los que tienen MBID o id de Discogs; una pista
+dura de canal `- Topic` da artista, disco, año y sello desde el feed del sello sin
+que exista match en catálogo. Sabemos qué es aunque no lo hayamos linkeado.
+
+`japanese city pop` pasó de 38% identificado y 0% créditos a **75% / 25%**, con 63%
+por pista dura: era la peor playlist y ahora está entre las mejores. La que queda
+floja es `dark` (38%).
+
+Lo que sigue sin identificar es exactamente lo que el texto no puede: títulos en
+cirílico, títulos sueltos de una palabra, y rips sin descripción. **Ese es el
+trabajo de la huella acústica**, no de más ajustes al matcher.
+
+Tarda ~148s para 79 temas (1 llamada a MB + hasta 2 a Discogs por tema,
+serializadas por rate limit) → por eso el render progresivo es obligatorio. **Para esos dos casos
 el texto ya no da más: es el laburo de la huella acústica** (`POST /identify`), que
 identifica la grabación sin leer el título. Falta medir cuánto sube el 57% con ella.
 
@@ -158,6 +168,27 @@ de dos temas ese canal se ofrece como veta para minar entero.
 
 No entra al score —un hallazgo nuevo puede venir de cualquier lado—, es un vector
 de descubrimiento, no una señal de calidad.
+
+## AcoustID (huella acústica) — el desempate cuando el texto no puede
+
+Chromaprint calcula una huella del audio y AcoustID la resuelve a un MBID de
+grabación. **No depende del texto**, así que es lo único que identifica títulos
+en kanji o títulos sueltos sin artista. Gratis para uso no comercial.
+
+Backend: `backend/app/fingerprint.py` + `POST /identify`. Reusa el mismo fragmento
+que baja el análisis de BPM/key: una descarga, dos usos. La key vive en el backend
+(`CRATE_ACOUSTID_KEY`) y nunca sale al browser.
+
+> **Gotcha que costó caro:** AcoustID separa los valores del parámetro `meta` por
+> **espacio**. Con `recordings+releasegroups` o `recordings,releasegroups` devuelve
+> el match con su score pero **sin nada de metadata**, y parece falta de cobertura.
+> Encima, en un POST form-encoded el `+` viaja como `%2B`, o sea un plus literal.
+> Verificado contra la API: solo `"recordings releasegroups"` trae las grabaciones.
+
+Ejemplo real: 山下達郎 — SPARKLE, cuyo título en kanji el cruce por texto no puede
+leer, sale identificado por sonido con score 0.958, su MBID y los discos donde
+aparece. La confianza pondera por cobertura: un match sobre un fragmento corto
+nunca sale como seguro.
 
 ## Gotchas transversales (leer sí o sí)
 
