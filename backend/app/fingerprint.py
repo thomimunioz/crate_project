@@ -164,7 +164,10 @@ def lookup(fingerprint: str, duration_sec: int, fingerprint_seconds: float) -> l
                     "client": key,
                     "duration": str(duration_sec),
                     "fingerprint": fingerprint,
-                    "meta": "recordings+releasegroups",
+                    # OJO: AcoustID separa los valores de `meta` por ESPACIO.
+                    # Con "+" o "," devuelve el match pero SIN metadata, y en
+                    # form-encoded el "+" viaja como %2B, o sea literal.
+                    "meta": "recordings releasegroups",
                 },
                 headers={"User-Agent": settings.app_user_agent},
             )
