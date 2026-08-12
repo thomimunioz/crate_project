@@ -25,14 +25,31 @@ export interface CrateScore {
   reasons: string[]
 }
 
+/**
+ * Pesos recalibrados con datos reales, no a ojo.
+ *
+ * Dos cosas cambiaron desde los valores iniciales y mueven la fórmula:
+ *
+ * 1. **La rareza dejó de ser un hueco.** Con el cruce contra catálogo al 72%,
+ *    el 68% de los tracks trae want/have de Discogs. Antes ese componente
+ *    devolvía el 0.3 neutro casi siempre; ahora discrimina de verdad, así que
+ *    sube.
+ * 2. **La obscuridad ya la filtró el descubrimiento.** El fan-out por escena
+ *    (ver core/queries.ts) bajó la mediana de views de cientos de miles a
+ *    ~400. Si casi todo lo que llega tiene pocas views, ordenar POR pocas
+ *    views distingue poco: pasa a ser un desempate, no un eje.
+ *
+ * Rarity ≠ obscurity sigue valiendo: una obra rara de catálogo es otra cosa
+ * que un upload que nadie miró. Ver docs/CRATE_SCORE.md.
+ */
 export const DEFAULT_WEIGHTS: ScoreComponents = {
-  filterMatch: 0.24,
-  rarity: 0.16,
-  obscurity: 0.16,
-  metadataRichness: 0.1,
-  sourceQuality: 0.08,
+  filterMatch: 0.26,
+  rarity: 0.2,
+  obscurity: 0.12,
+  metadataRichness: 0.08,
+  sourceQuality: 0.07,
   historicalRelevance: 0.1,
-  personalAffinity: 0.16,
+  personalAffinity: 0.17,
 }
 
 // épocas dulces para la estética del usuario (soul/jazz/city pop/MPB/library)
@@ -135,6 +152,26 @@ function filterMatchScore(t: EnrichedTrack, q: SearchQuery, reasons: string[]): 
     checks++
     if (t.key.value.toLowerCase().startsWith(q.key.toLowerCase())) hits++
   }
+
+  // Mood: los controles ya lo mandaban en la query y el score lo ignoraba.
+  // Cuenta a medias porque es metadata inferida, no confirmada: pedir "dusty"
+  // y que un disco no lo tenga no dice tanto como que no tenga el instrumento.
+  const feels = t.mood?.value.feels ?? []
+  const textures = t.mood?.value.textures ?? []
+  if (q.feels?.length) {
+    checks++
+    const matched = q.feels.filter((f) => feels.includes(f))
+    if (matched.length) {
+      hits += 0.5 + 0.5 * (matched.length / q.feels.length)
+      reasons.push(`${matched.join(' + ')} (el mood que pediste)`)
+    }
+  }
+  if (q.textures?.length) {
+    checks++
+    const matched = q.textures.filter((x) => textures.includes(x))
+    if (matched.length) hits += 0.5 + 0.5 * (matched.length / q.textures.length)
+  }
+
   if (checks === 0) return 0.6 // sin filtros duros: no penalizar
   return clamp01(hits / checks)
 }

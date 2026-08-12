@@ -33,10 +33,42 @@ import { fetchPlaylist, playlistTag, fetchChannelUploads } from '@/sources/youtu
 const ENRICH_LIMIT = 24
 
 // ---------- discover ----------
+/**
+ * Por cada resultado de una fuente secundaria entran estos de la principal.
+ *
+ * No es parejo a propósito: medido sobre resultados reales, YouTube identifica
+ * 72% contra catálogo e Internet Archive 1 de 9 —sus títulos casi nunca tienen
+ * forma "Artista - Tema"—. Repartir mitad y mitad sería cambiar buenos
+ * candidatos por malos.
+ */
+const CUOTA_FUENTE_PRINCIPAL = 3
+
 export async function discover(query: SearchQuery): Promise<SourceItem[]> {
   const sources = sourcesFor(query.sources)
   const settled = await Promise.allSettled(sources.map((s) => s.search(query)))
-  return settled.flatMap((r) => (r.status === 'fulfilled' ? r.value : []))
+  const porFuente = settled.map((r) => (r.status === 'fulfilled' ? r.value : []))
+  return intercalar(porFuente)
+}
+
+/**
+ * Intercala fuente por fuente antes del recorte de ENRICH_LIMIT.
+ *
+ * Antes se concatenaba, así que con YouTube devolviendo 48 candidatos el
+ * `slice(0, 24)` se comía uno solo y las demás fuentes nunca llegaban a
+ * enriquecerse.
+ */
+function intercalar(listas: SourceItem[][]): SourceItem[] {
+  const [principal = [], ...resto] = listas
+  const out: SourceItem[] = []
+  let i = 0
+  let j = 0
+  while (i < principal.length || resto.some((l) => j < l.length)) {
+    out.push(...principal.slice(i, i + CUOTA_FUENTE_PRINCIPAL))
+    i += CUOTA_FUENTE_PRINCIPAL
+    for (const lista of resto) if (lista[j]) out.push(lista[j])
+    j++
+  }
+  return out
 }
 
 // ---------- normalize ----------

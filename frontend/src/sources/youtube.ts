@@ -5,6 +5,7 @@
  */
 import type { SourceItem, SearchQuery } from '@/core/entities'
 import type { DiscoverySource } from './types'
+import { discoverIds } from '@/api/backend'
 import {
   planificarQueries,
   esBasura,
@@ -72,7 +73,23 @@ function toItem(id: string, video: any): SourceItem {
 }
 
 /** Una `search.list`: 100 unidades, 50 resultados (cuesta igual que pedir 20). */
+/**
+ * Ids para una query.
+ *
+ * Primero el backend con yt-dlp, que no gasta quota: con el fan-out de 3 lanes,
+ * una búsqueda pasa de 303 unidades a 3 (solo los `videos.list`). Si el backend
+ * no está levantado se cae a `search.list`, que anda por CORS desde el browser
+ * pero cuesta 100 unidades por query.
+ */
 async function buscarIds(q: string): Promise<string[]> {
+  try {
+    return await discoverIds(q, MAX_RESULTS_POR_BUSQUEDA)
+  } catch {
+    return buscarIdsConQuota(q)
+  }
+}
+
+async function buscarIdsConQuota(q: string): Promise<string[]> {
   const params = new URLSearchParams({
     part: 'snippet',
     q,
