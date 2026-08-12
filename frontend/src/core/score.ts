@@ -25,14 +25,34 @@ export interface CrateScore {
   reasons: string[]
 }
 
+/**
+ * Pesos recalibrados con datos reales, no a ojo.
+ *
+ * Dos cosas cambiaron desde los valores iniciales y mueven la fórmula:
+ *
+ * 1. **La rareza dejó de ser un hueco.** Con el cruce contra catálogo al 72%,
+ *    el 68% de los tracks trae want/have de Discogs. Antes ese componente
+ *    devolvía el 0.3 neutro casi siempre; ahora discrimina de verdad, así que
+ *    sube.
+ * 2. **La obscuridad sigue siendo un eje, aunque el descubrimiento ya filtre.**
+ *    Bajarla fue un error que corrigió la medición: con obscurity en 0.12, una
+ *    búsqueda de MPB brasileño metía segundo a Sergio Mendes & Brasil '66 con
+ *    39.062 views. Es correcto para la query y está confirmado, pero es
+ *    exactamente lo que el usuario YA conoce. El fan-out baja la mediana a ~400
+ *    views, pero adentro del resultado siguen conviviendo 429 y 39.062: ahí
+ *    la obscuridad es lo único que los separa. Vuelve a 0.16.
+ *
+ * Rarity ≠ obscurity sigue valiendo: una obra rara de catálogo es otra cosa
+ * que un upload que nadie miró. Ver docs/CRATE_SCORE.md.
+ */
 export const DEFAULT_WEIGHTS: ScoreComponents = {
   filterMatch: 0.24,
-  rarity: 0.16,
+  rarity: 0.2,
   obscurity: 0.16,
-  metadataRichness: 0.1,
-  sourceQuality: 0.08,
-  historicalRelevance: 0.1,
-  personalAffinity: 0.16,
+  metadataRichness: 0.08,
+  sourceQuality: 0.07,
+  historicalRelevance: 0.08,
+  personalAffinity: 0.17,
 }
 
 // épocas dulces para la estética del usuario (soul/jazz/city pop/MPB/library)
@@ -135,8 +155,53 @@ function filterMatchScore(t: EnrichedTrack, q: SearchQuery, reasons: string[]): 
     checks++
     if (t.key.value.toLowerCase().startsWith(q.key.toLowerCase())) hits++
   }
+
+  // Mood: los controles ya lo mandaban en la query y el score lo ignoraba.
+  // Cuenta a medias porque es metadata inferida, no confirmada: pedir "dusty"
+  // y que un disco no lo tenga no dice tanto como que no tenga el instrumento.
+  const feels = t.mood?.value.feels ?? []
+  const textures = t.mood?.value.textures ?? []
+  if (q.feels?.length) {
+    checks++
+    const matched = q.feels.filter((f) => feels.includes(f))
+    if (matched.length) {
+      hits += 0.5 + 0.5 * (matched.length / q.feels.length)
+      reasons.push(`${matched.join(' + ')} (el mood que pediste)`)
+    }
+  }
+  if (q.textures?.length) {
+    checks++
+    const matched = q.textures.filter((x) => textures.includes(x))
+    if (matched.length) hits += 0.5 + 0.5 * (matched.length / q.textures.length)
+  }
+
   if (checks === 0) return 0.6 // sin filtros duros: no penalizar
   return clamp01(hits / checks)
+}
+
+/**
+ * Cuánto sabemos REALMENTE de la obra, 0.55..1.
+ *
+ * Sin esto, un upload del que no sabemos nada puntúa como joya solo por tener
+ * un año en el título y pocas views: medido, "Engelbert Humperdinck B9 -
+ * Wand'rin' Star" con 20 views entraba cuarto en una búsqueda de MPB brasileño,
+ * sin sello, sin géneros y sin cruce contra catálogo.
+ *
+ * El sweet spot y la obscuridad son señales sobre una OBRA. Si no sabemos qué
+ * obra es, no podemos afirmarlas con la misma fuerza. Es la misma regla que rige
+ * todo CRATE: no mezclar lo confirmado con lo inferido.
+ */
+function certeza(t: EnrichedTrack): number {
+  const e = t.entity
+  if (e.confirmed) return 1
+  const señales = [
+    e.discogsId != null,
+    e.recordingMbid != null,
+    e.genres.length > 0 || e.styles.length > 0,
+    e.label != null,
+    e.credits.length > 0,
+  ].filter(Boolean).length
+  return 0.55 + 0.09 * señales
 }
 
 export function computeCrateScore(
@@ -170,7 +235,11 @@ export function computeCrateScore(
     total += components[k] * weights[k]
     wsum += weights[k]
   }
-  return { total: Math.round((total / wsum) * 100), components, reasons }
+
+  const seguridad = certeza(track)
+  if (seguridad < 1) reasons.push('sin cruzar contra catálogo: el puntaje va descontado')
+
+  return { total: Math.round((total / wsum) * seguridad * 100), components, reasons }
 }
 
 /** Etiqueta para la UI según el score. */

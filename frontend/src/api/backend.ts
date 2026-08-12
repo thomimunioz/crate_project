@@ -75,3 +75,25 @@ export async function identifyAudio(url: string): Promise<IdentifyResult> {
   }
   return res.json() as Promise<IdentifyResult>
 }
+
+export interface DiscoverItem {
+  video_id: string
+  title: string
+  uploader?: string | null
+  channel_id?: string | null
+  duration_sec?: number | null
+  views?: number | null
+}
+
+/**
+ * Busca en YouTube SIN gastar quota: el backend usa yt-dlp, que habla el mismo
+ * InnerTube que el reproductor web. `search.list` cuesta 100 de las 10.000
+ * unidades diarias; esto cuesta 0. La metadata rica se pide después con
+ * `videos.list`, que sale 1 unidad cada 50 ids.
+ */
+export async function discoverIds(q: string, limit = 50): Promise<string[]> {
+  const res = await fetch(`${API_BASE}/discover?q=${encodeURIComponent(q)}&limit=${limit}`)
+  if (!res.ok) throw new Error(`discover ${res.status}`)
+  const data = (await res.json()) as { items: DiscoverItem[] }
+  return (data.items ?? []).map((i) => i.video_id).filter(Boolean)
+}
