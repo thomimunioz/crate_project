@@ -9,7 +9,7 @@ interface Props {
 }
 
 export function ResultCard({ track }: Props) {
-  const { save, remove, reject, analyze, analyzing } = useCrate()
+  const { save, remove, reject, analyze, analyzing, identify, identifying } = useCrate()
   const [showWhy, setShowWhy] = useState(false)
   const [preview, setPreview] = useState(false)
 
@@ -101,6 +101,17 @@ export function ResultCard({ track }: Props) {
             </span>
           ))}
         </div>
+      )}
+
+      {!pending && !e.confirmed && (
+        <button
+          onClick={() => void identify(track)}
+          disabled={identifying === track.crateId}
+          className="chip mt-3 hover:border-crate-teal disabled:opacity-50"
+          title="Identificar por huella acústica: no depende del título"
+        >
+          {identifying === track.crateId ? '🎧 escuchando…' : '🎧 identificar por sonido'}
+        </button>
       )}
 
       {!pending && (

@@ -80,7 +80,7 @@ export interface MusicEntity {
    * un link a Discogs en la descripción es un id, un match por texto es una
    * apuesta. Se muestra en el "Why this?".
    */
-  identifiedBy?: 'catalog_link' | 'topic_channel' | 'musicbrainz' | 'discogs'
+  identifiedBy?: 'catalog_link' | 'topic_channel' | 'acoustid' | 'musicbrainz' | 'discogs'
 }
 
 export type CrateStatus = 'seen' | 'saved' | 'analyzed' | 'rejected'

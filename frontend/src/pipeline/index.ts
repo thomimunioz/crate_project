@@ -13,6 +13,7 @@ import type {
 import type { Affinity } from '@/core/affinity'
 import { splitArtistTitle, extractYear, cleanTitle, similarity } from '@/core/fuzzy'
 import { extractHints } from '@/core/ytHints'
+import { identifyAudio } from '@/api/backend'
 import { computeCrateScore } from '@/core/score'
 import { inferMoodFromText, instrumentsFromText } from '@/core/taxonomy'
 import { confirmed as confirmedProv, inferred } from '@/core/provenance'
@@ -110,11 +111,19 @@ async function pickRelease(
   expectArtist: string,
   expectRelease: string,
   minScore: number,
+  /**
+   * Cuánto pesa el artista. Se baja cuando la obra ya está identificada por otra
+   * vía: ahí lo único que falta es encontrar EL DISCO, y comparar nombres de
+   * artista entre alfabetos distintos solo mete ruido — similarity('山下達郎',
+   * 'Tatsuro Yamashita') da 0 aunque sean la misma persona.
+   */
+  pesoArtista = 0.5,
 ): Promise<{ release: CatalogRelease; score: number } | null> {
   let best: { item: CatalogCandidate; score: number } | null = null
   for (const cand of candidates) {
     const score =
-      0.5 * similarity(expectArtist, cand.artist) + 0.5 * similarity(expectRelease, cand.title)
+      pesoArtista * similarity(expectArtist, cand.artist) +
+      (1 - pesoArtista) * similarity(expectRelease, cand.title)
     if (!best || score > best.score) best = { item: cand, score }
   }
   if (!best || best.score < minScore) return null
@@ -170,7 +179,8 @@ async function enrichOne(c: Candidate): Promise<EnrichedTrack> {
     }
     // 3) red de contención: texto libre
     if (!matched && artistHint) {
-      const free = await discogs.searchReleases(artistHint, rawTitle)
+      // si sabemos el disco, se busca por disco: el título del tema no lo encuentra
+      const free = await discogs.searchReleases(artistHint, albumHint ?? rawTitle)
       matched = await pickRelease(free, artistHint, albumHint ?? rawTitle, 0.7)
     }
   } catch {
@@ -423,4 +433,94 @@ export async function importPlaylist(
   const candidates = normalize(items)
   const tracks = await enrich(candidates, { limit: candidates.length, onProgress })
   return { tag: playlistTag(title), tracks }
+}
+
+/** Abajo de esto la huella no alcanza para pisar lo que ya sabíamos. */
+const MIN_HUELLA = 0.5
+
+/**
+ * Identifica un track por HUELLA ACÚSTICA y lo vuelve a enriquecer.
+ *
+ * Es el desempate para lo que el texto no puede leer: kanji, cirílico, títulos
+ * sueltos de una palabra. Una vez que la huella dice qué obra es, Discogs
+ * enriquece igual que siempre — mismo segundo salto, otro primer salto.
+ */
+export async function identifyByFingerprint(
+  track: EnrichedTrack,
+  query: SearchQuery,
+  affinity: Affinity,
+): Promise<EnrichedTrack> {
+  const src = track.sources[0]
+  if (!src) throw new Error('el track no tiene fuente para analizar')
+
+  const { candidates } = await identifyAudio(src.url)
+  const mejor = candidates.find((c) => c.recording_mbid && c.confidence >= MIN_HUELLA)
+  if (!mejor) throw new Error('la huella no encontró la grabación en AcoustID')
+
+  const artist = mejor.artist ?? track.entity.artist
+
+  // AcoustID devuelve todos los discos donde aparece la grabación, y el primero
+  // suele ser un box set o un recopilatorio. Se prueban varios, empezando por
+  // los títulos más cortos: el álbum original casi siempre se llama más simple
+  // que "The RCA/Air Years LP Box 1976–1982".
+  const albumes = [...new Set(mejor.releases)]
+    .sort((a, b) => a.length - b.length)
+    .slice(0, 3)
+
+  let matched: { release: CatalogRelease; score: number } | null = null
+  for (const album of albumes) {
+    if (!artist) break
+    try {
+      // El `artist=` estructurado de Discogs no matchea nombres en kanji; el `q=`
+      // libre sí. Y como la grabación ya está identificada por la huella, lo único
+      // que falta es dar con el disco: el artista pesa poco.
+      const candidatos = [
+        ...(await discogs.searchRelease(artist, album)),
+        ...(await discogs.searchReleases(artist, album)),
+      ]
+      matched = await pickRelease(candidatos, artist, album, 0.75, 0.15)
+      if (matched) break
+    } catch {
+      /* Discogs falló para este disco: se prueba el siguiente */
+    }
+  }
+
+  const rel = matched?.release
+  const entity: MusicEntity = {
+    ...track.entity,
+    crateId: `mb:${mejor.recording_mbid}`,
+    artist,
+    title: mejor.title ?? track.entity.title,
+    year: rel?.year ?? track.entity.year,
+    label: rel?.label ?? track.entity.label,
+    country: rel?.country ?? track.entity.country,
+    genres: rel?.genres ?? track.entity.genres,
+    styles: rel?.styles ?? track.entity.styles,
+    credits: rel?.credits ?? track.entity.credits,
+    discogsId: rel?.discogsId ?? track.entity.discogsId,
+    recordingMbid: mejor.recording_mbid ?? undefined,
+    confirmed: true,
+    identifiedBy: 'acoustid',
+  }
+
+  const fromCredits = entity.credits
+    .map((cr) => cr.instrument)
+    .filter((x): x is string => Boolean(x))
+
+  const identificado: EnrichedTrack = {
+    ...track,
+    crateId: entity.crateId,
+    entity,
+    instruments: fromCredits.length
+      ? confirmedProv(Array.from(new Set(fromCredits)), 'discogs')
+      : track.instruments,
+    rarity: {
+      ...track.rarity,
+      discogsWant: rel?.want ?? track.rarity.discogsWant,
+      discogsHave: rel?.have ?? track.rarity.discogsHave,
+    },
+    pending: false,
+    updatedAt: new Date().toISOString(),
+  }
+  return scoreAll([identificado], query, affinity)[0]
 }
