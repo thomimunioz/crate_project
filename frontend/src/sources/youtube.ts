@@ -5,17 +5,24 @@
  */
 import type { SourceItem, SearchQuery } from '@/core/entities'
 import type { DiscoverySource } from './types'
+import {
+  planificarQueries,
+  esBasura,
+  ordenarParaDigging,
+  MAX_RESULTS_POR_BUSQUEDA,
+  PRESUPUESTO_POR_DEFECTO,
+  type CandidatoDeDigging,
+  type DiggerQuery,
+  type PlanDeDigging,
+} from '@/core/queries'
+import { ESCENAS, obviosDe } from '@/core/scenes'
 
 const KEY = import.meta.env.VITE_YOUTUBE_API_KEY
 const BASE = 'https://www.googleapis.com/youtube/v3'
 
-/** Arma el string de búsqueda inyectando bias de digging (género/instrumentos). crate-scout lo mejora. */
-function buildQuery(q: SearchQuery): string {
-  const extra: string[] = []
-  if (q.genres?.length) extra.push(q.genres.join(' '))
-  if (q.instruments?.length) extra.push(q.instruments.join(' '))
-  return [q.text, ...extra].filter(Boolean).join(' ').trim()
-}
+/** Cuántos candidatos devolver al pipeline. Enriquece 24; el resto es colchón
+ *  para cuando "no me muestres lo que ya vi" descarta la mitad. */
+const CANDIDATOS_POR_BUSQUEDA = 48
 
 /** Convierte 'PT3M25S' a segundos. */
 function parseISODuration(iso: string): number | undefined {
@@ -64,28 +71,98 @@ function toItem(id: string, video: any): SourceItem {
   }
 }
 
+/** Una `search.list`: 100 unidades, 50 resultados (cuesta igual que pedir 20). */
+async function buscarIds(q: string): Promise<string[]> {
+  const params = new URLSearchParams({
+    part: 'snippet',
+    q,
+    type: 'video',
+    maxResults: String(MAX_RESULTS_POR_BUSQUEDA),
+    key: KEY,
+  })
+  const res = await fetch(`${BASE}/search?${params.toString()}`)
+  if (!res.ok) throw new Error(`YouTube search ${res.status}`)
+  const data: any = await res.json()
+  return (data.items ?? []).map((i: any) => i.id?.videoId).filter(Boolean)
+}
+
+export interface OpcionesDeBusqueda {
+  /** cuántos candidatos devolver. Default 48. */
+  limit?: number
+  /** cuántas `search.list` gastar (100 unidades c/u). Default 3. */
+  presupuesto?: number
+  /** semilla de la rotación de sellos/artistas/años; por defecto rota por día */
+  semilla?: number
+  /** para medir: se llama con el plan y con lo que se descartó */
+  onPlan?: (plan: PlanDeDigging) => void
+}
+
+/**
+ * Descubrimiento en YouTube: abanico de queries → dedupe → stats → anti-basura
+ * → orden de digging.
+ *
+ * El costo está acotado por el plan: N `search.list` (100 unidades c/u) más un
+ * `videos.list` cada 50 ids (1 unidad). Con el presupuesto por defecto son
+ * **303 unidades**, o sea ~33 búsquedas por día. Es 3× la búsqueda vieja, pero
+ * por candidato es más barato (~2 unidades contra ~5) y, sobre todo, los
+ * candidatos son otros: ver la tabla medida en `core/queries.ts`.
+ */
+export async function buscarEnYoutube(
+  query: SearchQuery,
+  opts: OpcionesDeBusqueda = {},
+): Promise<SourceItem[]> {
+  if (!KEY) throw new Error('Falta VITE_YOUTUBE_API_KEY')
+
+  const plan = planificarQueries(query, {
+    presupuesto: opts.presupuesto ?? PRESUPUESTO_POR_DEFECTO,
+    semilla: opts.semilla,
+  })
+  opts.onPlan?.(plan)
+
+  // En paralelo: una query que falle (quota, 400 por comillas raras) no puede
+  // tumbar la búsqueda entera.
+  const tandas = await Promise.allSettled(plan.queries.map((dq: DiggerQuery) => buscarIds(dq.q)))
+
+  // Dedupe conservando la lane que lo encontró primero. Que un video aparezca
+  // en varias lanes no lo hace mejor: suele ser el más obvio de la escena.
+  const laneDe = new Map<string, CandidatoDeDigging['lane']>()
+  for (const [i, r] of tandas.entries()) {
+    if (r.status !== 'fulfilled') continue
+    for (const id of r.value) if (!laneDe.has(id)) laneDe.set(id, plan.queries[i].lane)
+  }
+  if (!laneDe.size) return []
+
+  const stats = await fetchStats([...laneDe.keys()])
+  const candidatos: CandidatoDeDigging[] = []
+  for (const [id, lane] of laneDe) {
+    const video = stats.get(id)
+    if (!video) continue // borrado o privado
+    const item = toItem(id, video)
+    if (esBasura(item)) continue
+    candidatos.push({ item, lane })
+  }
+
+  // El vocabulario de la escena sirve dos veces: para armar las queries y para
+  // reconocer, al volver, qué resultado es de la escena y cuál se coló.
+  const escenas = ESCENAS.filter((e) => plan.escenas.includes(e.id))
+  const ordenados = ordenarParaDigging(candidatos, {
+    obvios: obviosDe(escenas),
+    anio: plan.anio,
+    pertinentes: escenas.flatMap((e) => [
+      ...e.gatillos,
+      ...e.populares,
+      ...e.jerga,
+      ...e.sellos,
+      ...e.artistas,
+      ...(e.nativo?.terminos ?? []),
+    ]),
+  })
+  return ordenados.slice(0, opts.limit ?? CANDIDATOS_POR_BUSQUEDA)
+}
+
 export const youtube: DiscoverySource = {
   kind: 'youtube',
-  async search(query, opts) {
-    if (!KEY) throw new Error('Falta VITE_YOUTUBE_API_KEY')
-    const limit = opts?.limit ?? 20
-    // TODO(F1): explorar order=date/relevance, filtros y paginación con criterio de quota.
-    const params = new URLSearchParams({
-      part: 'snippet',
-      q: buildQuery(query),
-      type: 'video',
-      maxResults: String(limit),
-      key: KEY,
-    })
-    const res = await fetch(`${BASE}/search?${params.toString()}`)
-    if (!res.ok) throw new Error(`YouTube search ${res.status}`)
-    const data: any = await res.json()
-    const ids: string[] = (data.items ?? [])
-      .map((i: any) => i.id?.videoId)
-      .filter(Boolean)
-    const stats = await fetchStats(ids)
-    return ids.map((id) => toItem(id, stats.get(id)))
-  },
+  search: (query, opts) => buscarEnYoutube(query, { limit: opts?.limit }),
 }
 
 // ---------- import de playlists propias ----------
