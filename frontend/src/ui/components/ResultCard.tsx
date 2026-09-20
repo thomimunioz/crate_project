@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
 import type { EnrichedTrack } from '@/core/entities'
-import { scoreLabel } from '@/core/score'
+import { scoreLabel, esRazonNegativa, NEGATIVA } from '@/core/score'
 import { provenanceLabel } from '@/core/provenance'
 import { useCrate } from '@/state/useCrateStore'
 import { AnalyzePanel } from './AnalyzePanel'
@@ -81,10 +81,90 @@ function Sticker({ total, pending }: { total?: number; pending: boolean }) {
   )
 }
 
+/**
+ * "Guardar en…": la colección con la que lo guardás (80s, soul, city pop).
+ * Es la misma taxonomía que dejan las playlists importadas, así el "match con
+ * tus discos de soul" vale también para lo guardado desde acá.
+ */
+function GuardarEn({
+  track,
+  tagsDelCrate,
+  onGuardar,
+  onCerrar,
+}: {
+  track: EnrichedTrack
+  tagsDelCrate: string[]
+  onGuardar: (tags: string[]) => void
+  onCerrar: () => void
+}) {
+  const [nuevo, setNuevo] = useState('')
+  const yaTiene = new Set(track.tags ?? [])
+  const opciones = tagsDelCrate.filter((t) => !yaTiene.has(t))
+  const enviar = (e: React.FormEvent) => {
+    e.preventDefault()
+    const tag = nuevo.trim().toLowerCase()
+    if (!tag) return
+    onGuardar([tag])
+    setNuevo('')
+  }
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-1.5" role="group" aria-label="Guardar en una colección">
+      <span className="eyebrow mr-1">guardar en</span>
+      {opciones.map((t) => (
+        <button
+          key={t}
+          type="button"
+          onClick={() => onGuardar([t])}
+          className="chip-btn hover:border-crate-go hover:text-crate-go"
+        >
+          #{t}
+        </button>
+      ))}
+      <form onSubmit={enviar} className="flex items-center gap-1">
+        <input
+          value={nuevo}
+          onChange={(e) => setNuevo(e.target.value)}
+          placeholder="nueva etiqueta"
+          aria-label="Nueva etiqueta"
+          className="field w-32 py-1 font-mono text-xs"
+        />
+        <button
+          type="submit"
+          disabled={!nuevo.trim()}
+          className="chip-btn hover:border-crate-go hover:text-crate-go"
+        >
+          ♡ ok
+        </button>
+      </form>
+      <button
+        type="button"
+        onClick={onCerrar}
+        className="eyebrow ml-auto hover:text-crate-amber"
+        aria-label="Cerrar"
+      >
+        ✕
+      </button>
+    </div>
+  )
+}
+
 export function ResultCard({ track }: Props) {
-  const { save, remove, reject, analyze, analyzing, identify, identifying } = useCrate()
+  const {
+    save,
+    remove,
+    reject,
+    skip,
+    analyze,
+    analyzing,
+    identify,
+    identifying,
+    crateTracks,
+    mining,
+    query,
+  } = useCrate()
   const [showWhy, setShowWhy] = useState(false)
   const [preview, setPreview] = useState(false)
+  const [eligiendoTag, setEligiendoTag] = useState(false)
 
   const e = track.entity
   const score = track.score
@@ -112,11 +192,25 @@ export function ResultCard({ track }: Props) {
     e.label,
     e.country,
     formatDuration(src?.durationSec),
-    track.rarity.youtubeViews != null ? `${formatCount(track.rarity.youtubeViews)} views` : null,
+    // views del listado flat vienen redondeadas: se dice con el "~"
+    track.rarity.youtubeViews != null
+      ? `${src?.viewsApprox ? '~' : ''}${formatCount(track.rarity.youtubeViews)} views`
+      : null,
+    src?.playlistIndex != null && mining ? `#${src.playlistIndex} de la veta` : null,
     track.rarity.discogsWant != null && track.rarity.discogsHave != null
       ? `${formatCount(track.rarity.discogsWant)} want / ${formatCount(track.rarity.discogsHave)} have`
       : null,
   ].filter(Boolean) as string[]
+
+  // tus colecciones, por cuántas fichas tienen: las opciones de "guardar en"
+  const tagsDelCrate = (() => {
+    const counts = new Map<string, number>()
+    for (const t of crateTracks) {
+      for (const tag of t.tags ?? []) counts.set(tag, (counts.get(tag) ?? 0) + 1)
+    }
+    return [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([tag]) => tag)
+  })()
+  const contexto = mining ? mining.nombre : query.text.trim() || 'esta búsqueda'
 
   return (
     <article
@@ -223,13 +317,23 @@ export function ResultCard({ track }: Props) {
               >
                 {inCrate ? '♥' : '♡'}
               </button>
+              {!inCrate && (
+                <button
+                  onClick={() => void skip(track)}
+                  aria-label={`No para ${contexto}: ocultarlo acá, sin rechazarlo`}
+                  title={`No para «${contexto}»: se oculta acá y nada más. No dice nada del disco.`}
+                  className="grid h-8 w-8 place-items-center rounded-md border border-crate-line text-sm text-crate-soft transition-colors hover:border-crate-warn hover:text-crate-warn"
+                >
+                  ✕
+                </button>
+              )}
               <button
                 onClick={() => void reject(track)}
-                aria-label="No me interesa: no volver a mostrarlo"
-                title="No me interesa: no volver a mostrarlo"
+                aria-label="No me interesa: no volver a mostrarlo en ninguna búsqueda"
+                title="No me interesa: rechazado. No vuelve a aparecer y la affinity aprende que esto no."
                 className="grid h-8 w-8 place-items-center rounded-md border border-crate-line text-sm text-crate-soft transition-colors hover:border-crate-stop hover:text-crate-stop"
               >
-                ✕
+                ⊘
               </button>
             </div>
           )}
@@ -312,14 +416,24 @@ export function ResultCard({ track }: Props) {
             </button>
             {showWhy && (
               <ul className="perf mt-2 space-y-1 pt-2 text-[13px] leading-snug text-crate-soft">
-                {reasons.map((r, i) => (
-                  <li key={i} className="flex gap-2">
-                    <span aria-hidden className="text-crate-amber">
-                      •
-                    </span>
-                    <span>{r}</span>
-                  </li>
-                ))}
+                {reasons.map((r, i) => {
+                  // las razones que BAJAN el score se ven distintas: el número baja y se sabe por qué
+                  const negativa = esRazonNegativa(r)
+                  return (
+                    <li key={i} className="flex gap-2">
+                      <span
+                        aria-label={negativa ? 'baja el puntaje' : undefined}
+                        aria-hidden={negativa ? undefined : true}
+                        className={negativa ? 'font-mono text-crate-warn' : 'text-crate-amber'}
+                      >
+                        {negativa ? '↓' : '•'}
+                      </span>
+                      <span className={negativa ? 'text-crate-soft/85' : ''}>
+                        {negativa ? r.slice(NEGATIVA.length) : r}
+                      </span>
+                    </li>
+                  )
+                })}
               </ul>
             )}
           </div>
@@ -337,6 +451,15 @@ export function ResultCard({ track }: Props) {
                 {preview ? '▮ ocultar' : '▶ preview'}
               </button>
             )}
+
+            <button
+              onClick={() => setEligiendoTag((v) => !v)}
+              aria-expanded={eligiendoTag}
+              className="chip-btn hover:border-crate-go hover:text-crate-go"
+              title={inCrate ? 'Sumarle una etiqueta de colección' : 'Guardar en una colección tuya (80s, soul…)'}
+            >
+              {inCrate ? '# etiquetar' : '♡ guardar en…'}
+            </button>
 
             {!e.confirmed && (
               <button
@@ -370,6 +493,18 @@ export function ResultCard({ track }: Props) {
               </span>
             </div>
           </div>
+        )}
+
+        {eligiendoTag && !pending && (
+          <GuardarEn
+            track={track}
+            tagsDelCrate={tagsDelCrate}
+            onGuardar={(tags) => {
+              void save(track, tags)
+              setEligiendoTag(false)
+            }}
+            onCerrar={() => setEligiendoTag(false)}
+          />
         )}
 
         {preview && yt && (

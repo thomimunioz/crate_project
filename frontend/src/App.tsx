@@ -1,8 +1,9 @@
-import { useEffect } from 'react'
-import { useCrate, type View } from '@/state/useCrateStore'
+import { useEffect, useState } from 'react'
+import { useCrate, type Mining, type View } from '@/state/useCrateStore'
 import { FilterBar } from '@/ui/components/FilterBar'
 import { ResultCard } from '@/ui/components/ResultCard'
 import { CrateView } from '@/ui/components/CrateView'
+import { Vetas } from '@/ui/components/Vetas'
 
 /** Selector de vista, con pinta de switch de consola. */
 function Tab({ id, label, count }: { id: View; label: string; count?: number }) {
@@ -28,8 +29,20 @@ function Tab({ id, label, count }: { id: View; label: string; count?: number }) 
 }
 
 /**
+ * Cuánto de la veta ya se procesó: lo que pasó por tus ojos (cavado o saltado
+ * por "ya lo vi") más lo descartado sin cavar (borrados, mixes, repetidos).
+ * Es lo que llega al total cuando la veta se agota; `visto` solo nunca llega.
+ */
+const procesados = (m: Mining): number => m.visto + m.descartados
+
+/** "156 cavados · 42 descartados (borrados, mixes, repetidos)" */
+const desgloseDeVeta = (m: Mining): string =>
+  `${m.visto} pasaron por tus ojos${m.descartados ? ` · ${m.descartados} descartados sin cavar (borrados, mixes, repetidos)` : ''}`
+
+/**
  * Transporte de la consola: qué está haciendo el motor ahora mismo.
  * Determinado cuando sabemos cuántas fichas faltan cruzar; barrido si no.
+ * Con una veta abierta, muestra "procesados / total" aunque no esté cavando.
  */
 function Transporte() {
   const { loading, enriching, mining } = useCrate()
@@ -38,48 +51,107 @@ function Transporte() {
   const total = enriching?.total ?? 0
   const done = enriching?.done ?? 0
   const pct = total > 0 ? Math.round((done / total) * 100) : 0
+  const pctVeta = mining && mining.total > 0 ? Math.min(100, Math.round((procesados(mining) / mining.total) * 100)) : 0
 
   return (
     <div className="lcd px-3 py-2" role="status" aria-live="polite">
       <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.14em]">
-        <span className="led led-on animate-pulse" />
+        <span className={`led ${loading ? 'led-on animate-pulse' : mining?.agotada ? 'led-go' : 'led-on'}`} />
         {mining ? (
-          <span>⛏ minando el canal · {mining}</span>
+          <span className="truncate">
+            ⛏ {mining.kind === 'playlist' ? 'playlist' : 'canal'} · {mining.nombre}
+          </span>
         ) : total > 0 ? (
           <span>cruzando contra catálogo</span>
         ) : (
           <span>diggeando…</span>
         )}
-        {total > 0 && (
-          <span className="ml-auto font-bold tabular-nums">
-            {done}/{total}
+        {mining ? (
+          <span
+            className="ml-auto flex-none font-bold tabular-nums"
+            title={`${procesados(mining)} de ${mining.total}: ${desgloseDeVeta(mining)}`}
+          >
+            {procesados(mining)}/{mining.total || '?'}
+            {loading && total > 0 && (
+              <span className="ml-2 font-normal text-crate-lcdInk/60">
+                {done}/{total}
+              </span>
+            )}
           </span>
+        ) : (
+          total > 0 && (
+            <span className="ml-auto font-bold tabular-nums">
+              {done}/{total}
+            </span>
+          )
         )}
       </div>
 
-      {total > 0 ? (
+      {loading && total > 0 ? (
         <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-black/50">
           <div
             className="h-full bg-crate-lcdInk transition-[width] duration-500"
             style={{ width: `${pct}%` }}
           />
         </div>
-      ) : (
+      ) : loading ? (
         <div className="scanbar mt-2" />
+      ) : mining ? (
+        // la veta: cuánto del pozo ya pasó por tus ojos
+        <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-black/50">
+          <div className="h-full bg-crate-lcdInk/60 transition-[width] duration-500" style={{ width: `${pctVeta}%` }} />
+        </div>
+      ) : null}
+
+      {mining?.aviso && (
+        <p className="mt-1.5 text-[10px] normal-case tracking-normal text-crate-warn/90">⚠ {mining.aviso}</p>
       )}
     </div>
   )
 }
 
+/** Vetas colapsables en la vista de búsqueda; el estado sobrevive al recargar. */
+function VetasPlegables() {
+  const [abierto, setAbierto] = useState(() => localStorage.getItem('crate:vetas') !== '0')
+  const toggle = () => {
+    setAbierto((v) => {
+      localStorage.setItem('crate:vetas', v ? '0' : '1')
+      return !v
+    })
+  }
+  return (
+    <div className="flex flex-col gap-2">
+      <button
+        type="button"
+        onClick={toggle}
+        aria-expanded={abierto}
+        className="eyebrow self-start transition-colors hover:text-crate-amber"
+      >
+        {abierto ? '− vetas' : '+ vetas · pegá una playlist o un canal'}
+      </button>
+      {abierto && <Vetas />}
+    </div>
+  )
+}
+
 function SearchView() {
-  const { results, loading } = useCrate()
+  const { results, loading, mining, mineMore, aviso } = useCrate()
   const cruzadas = results.filter((t) => !t.pending).length
 
   return (
     <>
       <FilterBar />
 
+      <VetasPlegables />
+
       <Transporte />
+
+      {/* la búsqueda salió degradada (sin key, quota agotada, una fuente caída): se dice qué se perdió */}
+      {aviso && !mining && (
+        <p className="text-[11px] text-crate-warn/90" role="status">
+          ⚠ {aviso}
+        </p>
+      )}
 
       {results.length > 0 && (
         <p className="eyebrow">
@@ -88,7 +160,7 @@ function SearchView() {
         </p>
       )}
 
-      {!loading && results.length === 0 && (
+      {!loading && results.length === 0 && !mining && (
         <div className="panel flex flex-col items-center gap-3 px-6 py-10 text-center">
           {/* el disco esperando que alguien lo saque del cajón */}
           <div
@@ -102,8 +174,18 @@ function SearchView() {
           <p className="font-display text-lg text-crate-soft">El cajón está cerrado.</p>
           <p className="max-w-sm text-sm text-crate-faint">
             Escribí una escena, una época o un instrumento y dale a{' '}
-            <span className="font-mono text-crate-amber">DIG</span>. Cuanto más específico, más
-            hondo cava.
+            <span className="font-mono text-crate-amber">DIG</span>, o pegá una playlist de otro
+            digger en vetas y cavala entera.
+          </p>
+        </div>
+      )}
+
+      {!loading && results.length === 0 && mining?.agotada && (
+        <div className="panel px-6 py-8 text-center">
+          <p className="font-display text-lg text-crate-soft">Esta veta ya está cavada.</p>
+          <p className="mt-1 text-sm text-crate-faint">
+            {procesados(mining)} de {mining.total}: {desgloseDeVeta(mining)}. Apagá «ocultando vistos» para
+            volver a verlos.
           </p>
         </div>
       )}
@@ -114,6 +196,28 @@ function SearchView() {
           <ResultCard key={t.sources[0]?.id ?? t.crateId} track={t} />
         ))}
       </div>
+
+      {/* seguir cavando: la próxima tanda de la veta, hasta cubrirla entera */}
+      {mining && !mining.agotada && (
+        <div className="flex flex-col items-center gap-1.5 py-2">
+          <button
+            type="button"
+            onClick={() => void mineMore()}
+            disabled={loading}
+            className="btn btn-amber px-6"
+          >
+            {loading ? 'cavando…' : `⛏ seguir cavando · quedan ${mining.quedan}`}
+          </button>
+          <span className="eyebrow">
+            cada tanda cruza 24 contra catálogo (~1 min en frío)
+          </span>
+        </div>
+      )}
+      {mining?.agotada && results.length > 0 && (
+        <p className="eyebrow py-2 text-center">
+          ✓ veta cavada entera: {procesados(mining)} de {mining.total} · {desgloseDeVeta(mining)}
+        </p>
+      )}
     </>
   )
 }
@@ -159,7 +263,7 @@ export default function App() {
             <span aria-hidden className="font-mono">
               ⚠
             </span>
-            <span>{error}</span>
+            <span className="whitespace-pre-line">{error}</span>
           </div>
         )}
 

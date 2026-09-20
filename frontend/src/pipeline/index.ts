@@ -11,26 +11,38 @@ import type {
   SearchQuery,
 } from '@/core/entities'
 import type { Affinity } from '@/core/affinity'
+import { timesFromChannel } from '@/core/affinity'
+import { esCurador } from '@/core/canales'
 import { splitArtistTitle, extractYear, cleanTitle, similarity } from '@/core/fuzzy'
 import { extractHints } from '@/core/ytHints'
 import { identifyAudio } from '@/api/backend'
-import { computeCrateScore } from '@/core/score'
+import { computeCrateScore, type ScoreContext } from '@/core/score'
+import { ordenarParaDigging, claveDeObraDe } from '@/core/queries'
+import { detectarEscenas, obviosDe, type SceneId } from '@/core/scenes'
 import { inferMoodFromText, instrumentsFromText } from '@/core/taxonomy'
 import { confirmed as confirmedProv, inferred } from '@/core/provenance'
 import { sourcesFor, discogs, musicbrainz } from '@/sources'
 import type { CatalogCandidate, CatalogRelease } from '@/sources'
 import type { MbRecording } from '@/sources/musicbrainz'
-import { fetchPlaylist, playlistTag, fetchChannelUploads } from '@/sources/youtube'
+import {
+  enriquecerTanda,
+  esBasuraFlat,
+  fetchPlaylist,
+  listarVeta,
+  playlistTag,
+  type TandaDeVeta,
+  type VetaRef,
+} from '@/sources/youtube'
 
 /**
- * Cuántos candidatos se enriquecen por búsqueda.
+ * Cuántos candidatos se enriquecen por búsqueda (y por tanda de una veta).
  *
  * El enrichment está serializado por fuente (ver sources/throttle.ts), así que
  * cada candidato cuesta ~1.1s de Discogs en frío. No se baja el número: enriquecer
  * menos es tener menos resultados con créditos y rareza, que es lo que alimenta el
  * score. El cache (db/cache.ts) hace que la segunda pasada sea instantánea.
  */
-const ENRICH_LIMIT = 24
+export const ENRICH_LIMIT = 24
 
 // ---------- discover ----------
 /**
@@ -43,9 +55,28 @@ const ENRICH_LIMIT = 24
  */
 const CUOTA_FUENTE_PRINCIPAL = 3
 
-export async function discover(query: SearchQuery): Promise<SourceItem[]> {
+/**
+ * Pregunta a todas las fuentes. Una que falle no tumba a las demás, pero se
+ * avisa (por `onAviso`) qué fuente no respondió; si NINGUNA respondió, se tira
+ * con el motivo de la principal (backend caído y sin key, por ejemplo) en vez
+ * de devolver una lista vacía muda.
+ */
+export async function discover(
+  query: SearchQuery,
+  opts: { onAviso?: (aviso: string) => void } = {},
+): Promise<SourceItem[]> {
   const sources = sourcesFor(query.sources)
-  const settled = await Promise.allSettled(sources.map((s) => s.search(query)))
+  const settled = await Promise.allSettled(sources.map((s) => s.search(query, { onAviso: opts.onAviso })))
+  if (settled.length && settled.every((r) => r.status === 'rejected')) {
+    const motivo = (settled[0] as PromiseRejectedResult).reason
+    throw motivo instanceof Error ? motivo : new Error(String(motivo))
+  }
+  for (const [i, r] of settled.entries()) {
+    if (r.status === 'rejected') {
+      const motivo = r.reason instanceof Error ? r.reason.message : String(r.reason)
+      opts.onAviso?.(`${sources[i].kind} no respondió (${motivo}): esta búsqueda sale sin esa fuente.`)
+    }
+  }
   const porFuente = settled.map((r) => (r.status === 'fulfilled' ? r.value : []))
   return intercalar(porFuente)
 }
@@ -95,20 +126,36 @@ export function normalize(items: SourceItem[]): Candidate[] {
       channelTitle: source.uploader,
       description: source.description,
       tags: source.tags,
+      title: source.title,
     })
     // En Archive el `creator` suele ser el artista del disco; en YouTube es el
-    // canal, que no lo es (salvo los "- Topic", que ya resuelven los hints).
+    // canal, que no lo es (salvo los "- Topic", que ya resuelven los hints, y
+    // los canales que SON el artista, que `artistFromChannel` detecta con
+    // confianza baja: "The Blackbyrds | Mysterious Vibes").
     const artistaDeFuente = source.kind === 'archive' ? source.uploader : undefined
+    const delCanal = hints.artistFromChannel
+    const conv = hints.titleHints
+    const artistaFinal = hints.artist ?? artist ?? artistaDeFuente ?? conv?.artist ?? delCanal?.value
     return {
       source,
       cleanedTitle: cleanTitle(source.title),
       // lo probado le gana a lo parseado del título, y eso al dato de la fuente
-      artist: hints.artist ?? artist ?? artistaDeFuente,
-      title: hints.title ?? title,
-      year: hints.year ?? extractYear(source.title),
+      artist: artistaFinal,
+      // la convención del canal sabe cuál segmento es el tema ("Álbum (1983) - A3 - Título")
+      title: hints.title ?? conv?.title ?? title,
+      year: hints.year ?? conv?.year ?? extractYear(source.title),
       bpm: parseBpm(source.title),
       key: parseKey(source.title),
-      parseConfidence: hints.source !== 'none' ? hints.confidence : artist ? 0.7 : 0.4,
+      parseConfidence:
+        hints.source !== 'none'
+          ? hints.confidence
+          : artist
+            ? 0.7
+            : conv?.artist
+              ? conv.confidence
+              : delCanal
+                ? delCanal.confidence
+                : 0.4,
       hints,
     }
   })
@@ -184,12 +231,27 @@ async function enrichOne(c: Candidate): Promise<EnrichedTrack> {
     mb = hints.recordingMbid
       ? await musicbrainz.lookupByMbid(hints.recordingMbid) // el video trae el MBID: no hay nada que adivinar
       : await musicbrainz.identifyRecording(c.artist, rawTitle)
+    // El nombre principal no matcheó: probar el mismo artista en otro alfabeto
+    // (kanji ↔ romaji del título bilingüe, o los alias del bloque Topic / tags).
+    // Es una llamada más por alias, así que se acota a dos.
+    if (!mb && !hints.recordingMbid) {
+      const alias = [hints.titleHints?.artistAlias, ...hints.aliases]
+        .filter((a): a is string => Boolean(a && a.trim()))
+        .filter((a) => a.toLowerCase() !== (c.artist ?? '').toLowerCase())
+        .slice(0, 2)
+      const tituloAlt = hints.titleHints?.titleAlias
+      for (const a of alias) {
+        mb = await musicbrainz.identifyRecording(a, rawTitle)
+        if (!mb && tituloAlt) mb = await musicbrainz.identifyRecording(a, tituloAlt)
+        if (mb) break
+      }
+    }
   } catch {
     /* MusicBrainz opcional: degradar con gracia */
   }
 
   const artistHint = hints.artist ?? mb?.artist ?? c.artist
-  const albumHint = hints.album ?? mb?.releaseTitle
+  const albumHint = hints.album ?? mb?.releaseTitle ?? hints.titleHints?.album
 
   let matched: { release: CatalogRelease; score: number } | null = null
   try {
@@ -235,6 +297,24 @@ async function enrichOne(c: Candidate): Promise<EnrichedTrack> {
       : matched !== null && matched.score >= 0.85
 
   const rel = matched?.release
+
+  /**
+   * Año de la obra. El ℗ de un Topic es la mejor pista cuando es el original;
+   * pero 1 de 6 Topic trae el ℗ de una reedición digital (℗ 2013 para un LP de
+   * 1973). Cuando los hints huelen a reedición (o su confianza de año es baja),
+   * manda el catálogo y el ℗ queda de último recurso. Sin hints, el año de
+   * Discogs puede ser también de una reedición: por eso MB va después de Discogs
+   * solo cuando no hay nada mejor.
+   */
+  const anioDudoso = hints.reissue || (hints.yearConfidence ?? 1) < 0.7
+  const year = anioDudoso
+    ? (mb?.year ?? rel?.year ?? hints.year ?? c.year)
+    : (hints.year ?? rel?.year ?? mb?.year ?? c.year)
+
+  // créditos: los del disco en Discogs; si no, los que el Topic lista por rol
+  // ("Piano: X"), que son instrumentos gratis sin gastar una llamada
+  const credits = rel?.credits?.length ? rel.credits : hints.credits
+
   const entity: MusicEntity = {
     // La identidad es del TRACK, no del disco. El MBID de grabación ya es
     // track-level; el id de Discogs es del release, así que tres cortes del
@@ -248,13 +328,14 @@ async function enrichOne(c: Candidate): Promise<EnrichedTrack> {
         : `guess:${slug(`${artistHint ?? ''} ${rawTitle}`) || c.source.nativeId}`,
     artist: hints.artist ?? rel?.artist ?? mb?.artist ?? c.artist ?? 'Unknown',
     title: hints.title ?? mb?.title ?? c.title ?? c.cleanedTitle,
-    // el ℗ de la descripción es el año de la obra; el de Discogs puede ser de una reedición
-    year: hints.year ?? rel?.year ?? mb?.year ?? c.year,
+    year,
     label: rel?.label ?? hints.label,
+    // país/géneros son campos de CATÁLOGO: lo parseado del título queda en
+    // `hints.titleHints` con su confianza y no se mezcla acá (contrato C4)
     country: rel?.country,
     genres: rel?.genres ?? [],
     styles: rel?.styles ?? [],
-    credits: rel?.credits ?? [],
+    credits,
     discogsId: rel?.discogsId,
     recordingMbid: mb?.recordingMbid,
     releaseMbid: mb?.releaseMbid,
@@ -271,12 +352,18 @@ async function enrichOne(c: Candidate): Promise<EnrichedTrack> {
               : undefined,
   }
 
-  // instrumentos: de créditos (catálogo) o del texto (parsed)
+  // instrumentos: de créditos del catálogo, de los roles de la descripción
+  // Topic (provenance "de la descripción"), o del texto del título (parsed)
   const fromCredits = entity.credits
     .map((cr) => cr.instrument)
     .filter((x): x is string => Boolean(x))
+  const creditosDeCatalogo = Boolean(rel?.credits?.length)
   const instrumentsList = fromCredits.length
-    ? confirmedProv(Array.from(new Set(fromCredits)), 'discogs')
+    ? confirmedProv(
+        Array.from(new Set(fromCredits)),
+        creditosDeCatalogo ? 'discogs' : 'youtube_description',
+        creditosDeCatalogo ? 1 : 0.8,
+      )
     : (() => {
         const fromText = instrumentsFromText(c.source.title)
         return fromText.length ? confirmedProv(fromText, 'youtube_title', 0.5) : undefined
@@ -332,13 +419,20 @@ export async function enrich(
 }
 
 // ---------- score + orquestación ----------
+
+/** Escenas del plan para la query: de acá salen la época y los nombres obvios del score. */
+export function escenasDe(query: SearchQuery): SceneId[] {
+  return detectarEscenas(query.text, [...(query.genres ?? []), ...(query.styles ?? [])]).map((e) => e.id)
+}
+
 export function scoreAll(
   tracks: EnrichedTrack[],
   query: SearchQuery,
   affinity: Affinity,
+  ctx: ScoreContext = { escenas: escenasDe(query), origen: 'busqueda' },
 ): EnrichedTrack[] {
   return tracks
-    .map((t) => ({ ...t, score: computeCrateScore(t, query, affinity) }))
+    .map((t) => ({ ...t, score: computeCrateScore(t, query, affinity, undefined, ctx) }))
     .sort((a, b) => (b.score?.total ?? 0) - (a.score?.total ?? 0))
 }
 
@@ -384,10 +478,11 @@ function orderPartial(
   tracks: EnrichedTrack[],
   query: SearchQuery,
   affinity: Affinity,
+  ctx: ScoreContext,
 ): EnrichedTrack[] {
   const listos = tracks.filter((t) => !t.pending)
   const faltan = tracks.filter((t) => t.pending)
-  return [...scoreAll(listos, query, affinity), ...faltan]
+  return [...scoreAll(listos, query, affinity, ctx), ...faltan]
 }
 
 /**
@@ -398,6 +493,20 @@ export interface SearchOptions {
   onPartial?: (tracks: EnrichedTrack[]) => void
   /** ids de fuente a descartar sin enriquecer: "no me muestres lo que ya vi" */
   skipSourceIds?: Set<string>
+  /**
+   * De dónde vienen los candidatos: 'veta' (playlist/canal ajeno, ya curado por
+   * otro digger) o 'busqueda' (fan-out crudo). El score pesa distinto la
+   * obscuridad según esto. Default 'busqueda'.
+   */
+  origen?: 'veta' | 'busqueda'
+  /** escenas del plan; si no vienen se detectan del texto de la query */
+  escenas?: SceneId[]
+  /** la fuente respondió degradada (sin key, quota agotada, una fuente caída): qué se perdió */
+  onAviso?: (aviso: string) => void
+}
+
+function contextoDe(query: SearchQuery, opts: SearchOptions): ScoreContext {
+  return { escenas: opts.escenas ?? escenasDe(query), origen: opts.origen ?? 'busqueda' }
 }
 
 export async function runSearch(
@@ -405,39 +514,29 @@ export async function runSearch(
   affinity: Affinity,
   opts: SearchOptions = {},
 ): Promise<EnrichedTrack[]> {
-  return runOnItems(await discover(query), query, affinity, opts)
+  return cavarTanda(await discover(query, { onAviso: opts.onAviso }), query, affinity, { ...opts, origen: 'busqueda' })
 }
 
 /**
- * Mina los uploads de un canal entero.
- *
- * Un canal del que ya guardaste varios temas es un curador humano que hizo el
- * digging por vos. Traerlo cuesta 1 unidad cada 50 videos contra las 100 de una
- * sola búsqueda: por tema es ~200 veces más barato. Ver docs/SOURCES.md
+ * Normaliza, enriquece y puntúa UNA tanda de items (a lo sumo ENRICH_LIMIT):
+ * es el cuerpo común de buscar y de cavar una veta. Lo ya visto se descarta
+ * antes de gastar red.
  */
-export async function mineChannel(
-  channelId: string,
+export async function cavarTanda(
+  items: SourceItem[],
   query: SearchQuery,
   affinity: Affinity,
   opts: SearchOptions = {},
 ): Promise<EnrichedTrack[]> {
-  return runOnItems(await fetchChannelUploads(channelId), query, affinity, opts)
-}
-
-async function runOnItems(
-  items: SourceItem[],
-  query: SearchQuery,
-  affinity: Affinity,
-  opts: SearchOptions,
-): Promise<EnrichedTrack[]> {
   const { onPartial, skipSourceIds } = opts
+  const ctx = contextoDe(query, opts)
   const candidates = normalize(items)
     .filter((c) => !skipSourceIds?.has(c.source.id))
     .slice(0, ENRICH_LIMIT)
 
   // clave estable: el crateId cambia cuando el cruce identifica la obra
   const porFuente = new Map(candidates.map((c) => [c.source.id, placeholder(c)]))
-  const emitir = (): void => onPartial?.(orderPartial([...porFuente.values()], query, affinity))
+  const emitir = (): void => onPartial?.(orderPartial([...porFuente.values()], query, affinity, ctx))
   emitir()
 
   const enriched = await enrich(candidates, {
@@ -447,7 +546,200 @@ async function runOnItems(
       emitir()
     },
   })
-  return scoreAll(enriched, query, affinity)
+  return scoreAll(enriched, query, affinity, ctx)
+}
+
+// ---------- vetas: cavar una playlist o un canal ENTERO, por tandas ----------
+
+/**
+ * Lo que sabemos de una veta mientras se cava. El pool son los items listados
+ * (flat, 0 quota) que todavía no se cavaron; `nextOffset` es el cursor del
+ * backend para seguir listando. El cursor real de "por dónde voy" es el set
+ * de `seen` en Dexie: lo ya visto se salta, y sobrevive a recargar la página.
+ */
+export interface EstadoDeVeta {
+  veta: VetaRef
+  /** id canónico según el backend (PL… / UC…) */
+  id?: string
+  nombre: string
+  /** cuántos hay en la veta; undefined si YouTube no lo dice */
+  total?: number
+  /** cuántos se listaron hasta ahora (incluye lo descartado por basura/borrado) */
+  listados: number
+  /** cuántos se descartaron sin cavar: borrados + basura dura + repetidos */
+  descartados: number
+  nextOffset?: number
+  pool: SourceItem[]
+  /**
+   * Todo lo que ya se listó (ids de fuente y claves de obra), cavado o no. El
+   * dedupe va contra esto y no contra el pool: lo cavado sale del pool en
+   * `proximaTanda`, y un video repetido 300 posiciones más adelante (o la
+   * misma obra subida dos veces lejos) volvía a entrar. Opcionales para que
+   * un estado armado a mano (harness) siga valiendo: se arman del pool.
+   */
+  idsListados?: Set<string>
+  obrasListadas?: Set<string>
+}
+
+/**
+ * Basura DURA sobre un item flat (sin descripción ni tags): karaoke, tutorial,
+ * mixes de 75+ min, "full album" sin forma "Artista - Tema". Nada de gusto.
+ * Si la duración no vino, se evalúa solo el texto (ver `esBasuraFlat`).
+ */
+const basuraDura = esBasuraFlat
+
+/**
+ * Clave de obra de un item flat, CON artista. Los Topic titulan solo con el
+ * tema y llevan el artista en el canal: keyear por título solo colapsaba
+ * "Morning Sunrise" de Twennynine con el de Weldon Irvine (medido en el pool
+ * del 19-sep: 5 colisiones falsas de 17). Sin artista no se deduplica.
+ */
+function obraDeFlat(item: SourceItem): string | undefined {
+  const topic = item.uploader?.match(/^(.+?)\s+-\s+Topic$/)?.[1]
+  if (topic) return claveDeObraDe(topic, item.title)
+  const { artist, title } = splitArtistTitle(item.title)
+  return claveDeObraDe(artist, title ?? item.title)
+}
+
+/** Arranca una veta: primera tanda del listado. Tira BackendError con el detail (404 privada, 400 ref inválida). */
+export async function abrirVeta(veta: VetaRef): Promise<EstadoDeVeta> {
+  const estado: EstadoDeVeta = {
+    veta,
+    nombre: veta.nombre ?? veta.ref,
+    listados: 0,
+    descartados: 0,
+    nextOffset: 0,
+    pool: [],
+    idsListados: new Set(),
+    obrasListadas: new Set(),
+  }
+  return listarMas(estado)
+}
+
+/** Lista la próxima página de la veta y la suma al pool (sin borrados, sin basura dura, sin repetidos). */
+export async function listarMas(estado: EstadoDeVeta): Promise<EstadoDeVeta> {
+  if (estado.nextOffset == null) return estado
+  const tanda: TandaDeVeta = await listarVeta(estado.veta, estado.nextOffset)
+  return sumarAlPool(estado, tanda)
+}
+
+/**
+ * Suma una tanda listada al pool: descarta borrados, basura dura y la misma
+ * obra repetida (por `claveDeObra`). Puro, para poder medirlo sin red
+ * (`scripts/vetaBench.ts`).
+ */
+export function sumarAlPool(estado: EstadoDeVeta, tanda: TandaDeVeta): EstadoDeVeta {
+  // copias nuevas: el estado es inmutable hacia afuera
+  const idsListados = new Set(estado.idsListados ?? estado.pool.map((i) => i.id))
+  const obrasListadas = new Set(
+    estado.obrasListadas ?? estado.pool.map(obraDeFlat).filter((k): k is string => Boolean(k)),
+  )
+  const nuevos: SourceItem[] = []
+  let descartados = tanda.noDisponibles
+  for (const item of tanda.items) {
+    if (idsListados.has(item.id) || basuraDura(item)) {
+      descartados++
+      continue
+    }
+    // la misma obra subida dos veces en la misma veta: se cava una sola
+    const obra = obraDeFlat(item)
+    if (obra && obrasListadas.has(obra)) {
+      descartados++
+      continue
+    }
+    if (obra) obrasListadas.add(obra)
+    idsListados.add(item.id)
+    nuevos.push(item)
+  }
+  return {
+    ...estado,
+    id: tanda.id,
+    nombre: tanda.nombre,
+    total: tanda.total ?? estado.total,
+    listados: estado.listados + tanda.items.length + tanda.noDisponibles,
+    descartados: estado.descartados + descartados,
+    nextOffset: tanda.nextOffset,
+    pool: [...estado.pool, ...nuevos],
+    idsListados,
+    obrasListadas,
+  }
+}
+
+/**
+ * Elige la próxima tanda a cavar y la saca del pool. La cobertura es TOTAL a
+ * lo largo de las tandas (brief §6: la joya no se anuncia en el título, así
+ * que no se recorta por título): el orden solo decide por dónde empezar.
+ *
+ * Orden barato, con lo que hay en flat: primero lo de canales de los que ya
+ * guardaste o curadores conocidos (medido en el pool del 19-sep: 16–22% de
+ * guardado contra 3%), después el resto según `ordenarParaDigging` en modo
+ * veta (sin obscuridad: dedupe por obra, pertinencia de escena, formato).
+ * Lo ya visto se salta y NO cuenta como cavado.
+ */
+export interface OpcionesDeTanda {
+  /** tamaño de la tanda. Default ENRICH_LIMIT. */
+  n?: number
+  /**
+   * Qué va primero. Default: canal del que ya guardaste o curador conocido.
+   * `() => false` deja solo el orden de `ordenarParaDigging`; sirve para medir
+   * cada señal por separado (`scripts/vetaBench.ts`).
+   */
+  prioridad?: (item: SourceItem) => boolean
+}
+
+export function prioridadPorDefecto(affinity: Affinity): (item: SourceItem) => boolean {
+  return (i) => timesFromChannel(affinity, i) > 0 || esCurador(i.channelId, i.uploader)
+}
+
+export function proximaTanda(
+  estado: EstadoDeVeta,
+  query: SearchQuery,
+  affinity: Affinity,
+  skipSourceIds: Set<string> | undefined,
+  opts: OpcionesDeTanda = {},
+): { tanda: SourceItem[]; estado: EstadoDeVeta; saltados: number } {
+  const n = opts.n ?? ENRICH_LIMIT
+  const pendientes = estado.pool.filter((i) => !skipSourceIds?.has(i.id))
+  const saltados = estado.pool.length - pendientes.length
+
+  const escenas = detectarEscenas(query.text, [...(query.genres ?? []), ...(query.styles ?? [])])
+  const ordenados = ordenarParaDigging(
+    pendientes.map((item) => ({ item, lane: 'veta' as const })),
+    {
+      origen: 'veta',
+      obvios: obviosDe(escenas),
+      pertinentes: escenas.length
+        ? escenas.flatMap((e) => [...e.gatillos, ...e.populares, ...e.jerga, ...e.sellos, ...e.artistas])
+        : undefined,
+      // en una veta de un solo canal el tope por canal no tiene sentido
+      topePorCanal: Number.POSITIVE_INFINITY,
+    },
+  )
+  const conocido = opts.prioridad ?? prioridadPorDefecto(affinity)
+  const primero = ordenados.filter(conocido)
+  const resto = ordenados.filter((i) => !conocido(i))
+  const tanda = [...primero, ...resto].slice(0, n)
+
+  const tomados = new Set(tanda.map((i) => i.id))
+  // los saltados salen del pool también: ya se vieron, no se van a cavar
+  const pool = pendientes.filter((i) => !tomados.has(i.id))
+  return { tanda, estado: { ...estado, pool }, saltados }
+}
+
+/**
+ * Cava una tanda de la veta: pide `videos.list` SOLO para estos ids (la única
+ * quota que gasta una veta), y pasa por el pipeline con origen 'veta'.
+ * Devuelve también el aviso si se cavó sin key.
+ */
+export async function cavarVeta(
+  tanda: SourceItem[],
+  query: SearchQuery,
+  affinity: Affinity,
+  opts: SearchOptions = {},
+): Promise<{ tracks: EnrichedTrack[]; aviso?: string }> {
+  const { items, aviso } = await enriquecerTanda(tanda)
+  const tracks = await cavarTanda(items, query, affinity, { ...opts, origen: 'veta' })
+  return { tracks, aviso }
 }
 
 /**
