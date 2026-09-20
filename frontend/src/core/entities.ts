@@ -22,6 +22,14 @@ export interface SourceItem {
   channelId?: string
   durationSec?: number
   views?: number
+  /**
+   * Las views del listado plano de yt-dlp vienen redondeadas ("945000", "1700").
+   * Con esto la UI dice "~1,7k views" y el score no las trata como exactas.
+   * Solo es false cuando el número salió de `videos.list`.
+   */
+  viewsApprox?: boolean
+  /** posición dentro de la playlist/canal que se está minando (cursor de veta) */
+  playlistIndex?: number
   publishedAt?: string
   thumbnail?: string
   /** Vienen en el mismo `snippet` que ya pedimos: no cuestan quota extra. */
@@ -81,6 +89,14 @@ export interface MusicEntity {
    * apuesta. Se muestra en el "Why this?".
    */
   identifiedBy?: 'catalog_link' | 'topic_channel' | 'acoustid' | 'musicbrainz' | 'discogs'
+  /**
+   * Fuerza del match contra el release de Discogs del que salieron géneros,
+   * estilos, sello y país (0..1; 1 con link directo). Es distinta de
+   * `confirmed`: un Topic confirma la OBRA por el bloque ℗, pero el disco de
+   * Discogs pudo elegirse con 0.62 de similitud. La affinity solo aprende esas
+   * interpretaciones de catálogo cuando este número es alto. Lo setea el pipeline.
+   */
+  catalogMatch?: number
 }
 
 export type CrateStatus = 'seen' | 'saved' | 'analyzed' | 'rejected'
@@ -91,6 +107,13 @@ export interface EnrichedTrack {
   entity: MusicEntity
   sources: SourceItem[]
   bpm?: Provenanced<number>
+  /**
+   * Lo que leyó el DSP tal cual (`analyzed`), cuando `bpm` es otra octava
+   * plegada al rango del usuario (`inferred`) o corregida a mano. Viaja con la
+   * ficha para que el "Why this?" pueda decir "76 BPM · analizado 152": sin
+   * esto el usuario no puede juzgar si el pliegue fue correcto.
+   */
+  bpmRaw?: Provenanced<number>
   key?: Provenanced<string>
   mood?: Provenanced<Mood>
   instruments?: Provenanced<string[]>

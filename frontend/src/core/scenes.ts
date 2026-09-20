@@ -251,7 +251,9 @@ export const ESCENAS: Escena[] = [
       'Luther Vandross', 'Anita Baker', 'Isley Brothers', 'Teddy Pendergrass', 'Marvin Gaye',
       'Barry White', 'The Whispers', 'Atlantic Starr', 'Frankie Beverly',
     ],
-    epoca: [1977, 1987],
+    // hasta 1992, no 1987: en el benchmark del 19-sep el tier "1990–92" fue el
+    // de mejor tasa de guardado (7/14) — la escuela manda, no la década
+    epoca: [1977, 1992],
   },
   {
     id: 'modern-soul',

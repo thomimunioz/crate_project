@@ -1,11 +1,21 @@
 /**
  * CRATE Score — "¿qué tan probable es que esto sea una joya que NO encontraste?"
- * Separa rarity ≠ obscurity ≠ discovery value. Siempre explicable (reasons → "Why this?").
+ * Separa rarity ≠ obscurity ≠ discovery value. Siempre explicable (reasons → "Why this?"),
+ * y eso incluye las penalizaciones: si el número baja, el usuario ve por qué.
  * Ver docs/CRATE_SCORE.md
  */
 import type { EnrichedTrack, SearchQuery } from './entities'
 import type { Affinity } from './affinity'
-import { affinityScore } from './affinity'
+import {
+  affinityScore,
+  canalDeTrack,
+  eraWeight,
+  NEGATIVA,
+  timesFromChannel,
+  timesSaved,
+} from './affinity'
+import { ESCENAS, type Escena, type SceneId } from './scenes'
+import { bpmWithinRange } from './tempo'
 
 export interface ScoreComponents {
   filterMatch: number
@@ -21,47 +31,80 @@ export interface CrateScore {
   /** 0..100 */
   total: number
   components: ScoreComponents
-  /** motivos legibles para el "Why this?" */
+  /** motivos legibles para el "Why this?"; los que empiezan con `NEGATIVA` bajan el score */
   reasons: string[]
 }
 
 /**
- * Pesos recalibrados con datos reales, no a ojo.
+ * De dónde viene el candidato y con qué plan se buscó. Todo opcional: sin
+ * contexto el score se comporta como una búsqueda cruda sin escena.
+ */
+export interface ScoreContext {
+  /** escenas del plan de digging: de acá salen la época y los nombres obvios */
+  escenas?: SceneId[]
+  /**
+   * 'veta' = playlist/canal ajeno ya curado por otro digger; 'busqueda' = fan-out
+   * crudo de YouTube. En una veta casi todo es sampleable y la obscuridad separa
+   * menos: medido en el pool del 19-sep, lo guardado tiene mediana 25k views y
+   * lo de <1k views se guardó al 2%. Ahí la obscuridad pesa la mitad.
+   */
+  origen?: 'veta' | 'busqueda'
+}
+
+/** Prefijo de las razones que BAJAN el score (vive en affinity.ts para no importar en círculo). */
+export { NEGATIVA }
+export const esRazonNegativa = (r: string): boolean => r.startsWith(NEGATIVA)
+
+/**
+ * Pesos recalibrados contra el oído real, no a ojo.
  *
- * Dos cosas cambiaron desde los valores iniciales y mueven la fórmula:
+ * Vara: `frontend/scripts/scoreBench.ts` sobre el benchmark del 19-sep-2026
+ * (206 sugerencias de un pool curado, 109 guardadas; ver docs/benchmarks/).
+ * Con la fórmula anterior el score ordenaba AL REVÉS (AUC 0.45 sobre lo que
+ * escuchó; obscurity sola 0.33 sobre el pool): premiaba las pocas views y eso
+ * en un pool curado es justo el ruido (OSTs, karaoke, mal titulados).
  *
- * 1. **La rareza dejó de ser un hueco.** Con el cruce contra catálogo al 72%,
- *    el 68% de los tracks trae want/have de Discogs. Antes ese componente
- *    devolvía el 0.3 neutro casi siempre; ahora discrimina de verdad, así que
- *    sube.
- * 2. **La obscuridad sigue siendo un eje, aunque el descubrimiento ya filtre.**
- *    Bajarla fue un error que corrigió la medición: con obscurity en 0.12, una
- *    búsqueda de MPB brasileño metía segundo a Sergio Mendes & Brasil '66 con
- *    39.062 views. Es correcto para la query y está confirmado, pero es
- *    exactamente lo que el usuario YA conoce. El fan-out baja la mediana a ~400
- *    views, pero adentro del resultado siguen conviviendo 429 y 39.062: ahí
- *    la obscuridad es lo único que los separa. Vuelve a 0.16.
+ * Lo que mueve la fórmula hoy:
+ * 1. **Obscurity ya no premia pocas views: castiga mainstream.** Meseta hasta
+ *    100k y acantilado después. Lo que guardó tiene mediana 25k; lo que ignoró
+ *    con millones de views encajaba perfecto (Whitney, Isleys, Patti Austin).
+ * 2. **La fuente pesa.** Un canal del que ya guardaste varios temas es un curador
+ *    humano: 66% de tasa de guardado contra 53% base. Va en sourceQuality, con
+ *    razón, y nunca en obscurity (es calidad de la FUENTE, no rareza de la obra).
+ * 3. **Rarity sigue alta** porque en una búsqueda real el 68% trae want/have de
+ *    Discogs; en el benchmark no hay catálogo y queda plana, así que su peso no
+ *    se pudo medir acá.
  *
  * Rarity ≠ obscurity sigue valiendo: una obra rara de catálogo es otra cosa
  * que un upload que nadie miró. Ver docs/CRATE_SCORE.md.
  */
 export const DEFAULT_WEIGHTS: ScoreComponents = {
-  filterMatch: 0.24,
-  rarity: 0.2,
-  obscurity: 0.16,
-  metadataRichness: 0.08,
-  sourceQuality: 0.07,
-  historicalRelevance: 0.08,
-  personalAffinity: 0.17,
+  filterMatch: 0.2,
+  rarity: 0.18,
+  obscurity: 0.1,
+  metadataRichness: 0.06,
+  sourceQuality: 0.22,
+  historicalRelevance: 0.06,
+  personalAffinity: 0.18,
 }
 
-// épocas dulces para la estética del usuario (soul/jazz/city pop/MPB/library)
+/**
+ * Épocas por defecto cuando no hay escena en el plan ni década aprendida.
+ * Sin corte en 1986: el tier "1990–92" fue el de mejor tasa de guardado (50%)
+ * en la entrega 80s del benchmark. La escuela manda, no la década.
+ */
 const SWEET_SPOTS: Array<[number, number]> = [
   [1968, 1979],
-  [1980, 1986],
+  [1980, 1992],
 ]
 
 const clamp01 = (x: number): number => Math.max(0, Math.min(1, x))
+
+function formatViews(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toLocaleString('es-AR', { maximumFractionDigits: 1 })}M`
+  if (n >= 1_000) return `${(n / 1_000).toLocaleString('es-AR', { maximumFractionDigits: 1 })}k`
+  return n.toLocaleString('es-AR')
+}
 
 function rarityScore(t: EnrichedTrack, reasons: string[]): number {
   const { discogsWant, discogsHave } = t.rarity
@@ -72,15 +115,84 @@ function rarityScore(t: EnrichedTrack, reasons: string[]): number {
   return s
 }
 
-function obscurityScore(t: EnrichedTrack, reasons: string[]): number {
+/**
+ * Curva de obscuridad en log10(views): meseta hasta 100k, bajada suave hasta
+ * 300k, acantilado hasta 1M y cero en 10M. Medido en el pool del 19-sep: la
+ * tasa de guardado es pareja de 5k a 300k (6–13%), cae a 4% arriba de 300k, y
+ * abajo de 1k es 2% (ahí vive el ruido). Pocas views NO suman: solo dejan de
+ * restar.
+ */
+const CURVA_VIEWS: Array<[number, number]> = [
+  [5, 1.0], // 100k
+  [5.48, 0.85], // 300k
+  [6, 0.45], // 1M
+  [7, 0], // 10M
+]
+
+function curvaViews(views: number): number {
+  const x = Math.log10(Math.max(views, 1))
+  if (x <= CURVA_VIEWS[0][0]) return 1
+  for (let i = 1; i < CURVA_VIEWS.length; i++) {
+    const [x0, y0] = CURVA_VIEWS[i - 1]
+    const [x1, y1] = CURVA_VIEWS[i]
+    if (x <= x1) return y0 + ((y1 - y0) * (x - x0)) / (x1 - x0)
+  }
+  return 0
+}
+
+function escenasDe(ctx: ScoreContext): Escena[] {
+  if (!ctx.escenas?.length) return []
+  return ESCENAS.filter((e) => ctx.escenas!.includes(e.id))
+}
+
+const escapeRe = (x: string): string => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+/** ¿El artista es un nombre sobreexpuesto de la escena (lo encontrás solo)? */
+function nombreObvio(t: EnrichedTrack, escenas: Escena[]): string | undefined {
+  const artista = t.entity.artist.toLowerCase()
+  if (!artista || artista === 'unknown') return undefined
+  for (const e of escenas) {
+    // por palabra entera: "Anri" no tiene que pegar adentro de otro nombre
+    const hit = e.obvios.find((o) =>
+      new RegExp(`(^|[^\\p{L}\\p{N}])${escapeRe(o.toLowerCase())}([^\\p{L}\\p{N}]|$)`, 'u').test(
+        artista,
+      ),
+    )
+    if (hit) return hit
+  }
+  return undefined
+}
+
+/**
+ * Obscurity = qué tan difícil es ENCONTRARLA. Ya no premia pocas views: lo
+ * mainstream resta con razón visible, y "escondido de verdad" solo se afirma
+ * sobre una obra identificada (un upload sin identificar con 200 views puede
+ * ser cualquier cosa).
+ */
+function obscurityScore(t: EnrichedTrack, ctx: ScoreContext, reasons: string[]): number {
   const views = t.rarity.youtubeViews
-  if (views == null) return 0.4
-  const ageDays = t.rarity.uploadAgeDays ?? 3650
-  // descontar uploads nuevos: todavía no tuvieron chance de acumular views
-  const ageFactor = clamp01(ageDays / 365)
-  const raw = clamp01(1 - Math.log10(Math.max(views, 10)) / 6) // 10→~0.83, 1M→~0
-  const s = clamp01(raw * (0.5 + 0.5 * ageFactor))
-  if (views < 1000 && ageFactor > 0.5) reasons.push(`solo ${views.toLocaleString()} views en YouTube`)
+  let s: number
+  if (views == null) {
+    s = 0.7 // sin views (Archive, etc.): ni mainstream ni escondido probado
+  } else {
+    const ageDays = t.rarity.uploadAgeDays ?? 3650
+    // un upload de ayer todavía no acumuló views: no afirmar reach bajo con tanta fuerza
+    const ageFactor = clamp01(ageDays / 365)
+    s = clamp01(curvaViews(views) * (0.8 + 0.2 * ageFactor))
+    // el flat de yt-dlp trae las views redondeadas: se dice "~1,7k", no "1.700"
+    const v = `${t.sources[0]?.viewsApprox ? '~' : ''}${formatViews(views)} views`
+    if (views >= 500_000) {
+      reasons.push(`${NEGATIVA}${v}: esto ya lo conocés`)
+    } else if (views < 5_000 && t.entity.confirmed && ageFactor > 0.5) {
+      reasons.push(`${v} para un disco identificado: escondido de verdad`)
+    }
+  }
+
+  const obvio = nombreObvio(t, escenasDe(ctx))
+  if (obvio) {
+    s *= 0.5
+    reasons.push(`${NEGATIVA}${obvio}: nombre sobreexpuesto de la escena, lo encontrás solo`)
+  }
   return s
 }
 
@@ -102,19 +214,97 @@ function richnessScore(t: EnrichedTrack): number {
   return clamp01(n / 5)
 }
 
-function sourceQualityScore(t: EnrichedTrack): number {
+/**
+ * Calidad de la FUENTE: ¿es un buen rip de un tema, subido por alguien que
+ * sabe? Acá entra el curador (canal del que ya guardaste, o de la lista
+ * personal): es señal sobre quién lo subió, no sobre cuán rara es la obra.
+ */
+const mmss = (d: number): string => `${Math.floor(d / 60)}:${String(Math.round(d % 60)).padStart(2, '0')}`
+
+function sourceQualityScore(t: EnrichedTrack, affinity: Affinity, reasons: string[]): number {
   const s = t.sources[0]
   if (!s) return 0.3
   let q = t.entity.confirmed ? 0.7 : 0.45
+
+  // Duración: un tema sampleable dura entre 3 y 7 minutos. Medido en el pool
+  // del 19-sep: de 253 items abajo de 3 min se guardó 1; de 25 arriba de
+  // 10 min, ninguno; 83 de los 107 guardados duran entre 4 y 7 min.
   const d = s.durationSec ?? 0
-  if (d > 0 && d < 30) q -= 0.2 // muy corto: sospechoso
-  if (d > 1800) q -= 0.3 // >30min: probable mix/álbum entero, no un track
+  if (d > 0 && d < 30) {
+    q -= 0.35
+    reasons.push(`${NEGATIVA}dura ${d}s: demasiado corto para ser un tema`)
+  } else if (d > 0 && d < 150) {
+    q -= 0.15
+    reasons.push(`${NEGATIVA}dura ${mmss(d)}: interludio o fragmento`)
+  }
+  if (d > 1800) {
+    q -= 0.3
+    reasons.push(`${NEGATIVA}dura ${Math.round(d / 60)} min: probable mix o álbum entero`)
+  } else if (d > 600) {
+    q -= 0.2
+    reasons.push(`${NEGATIVA}dura ${mmss(d)}: probable suite, cara entera o mix`)
+  }
+
+  // Curador: quién lo subió. Medido en el pool: un canal del que ya guardaste
+  // aunque sea 1 tema rinde 16% de guardado contra 3% del resto; con 2–3, 22%.
+  // Un canal "Artista - Topic" no es un curador: es el distribuidor. Lo que
+  // dice es "ya guardaste a este artista", y eso lo cuenta la affinity.
+  const canal = canalDeTrack(t)
+  const esTopic = /- Topic$/.test(s.uploader ?? '')
+  const n = esTopic ? 0 : Math.max(0, timesFromChannel(affinity, s))
+  const quien = s.uploader ?? canal?.nombre ?? 'este canal'
+  if (canal?.rol === 'curador' && n >= 2) {
+    q += 0.3
+    reasons.push(`subido por ${quien}, curador que ya te dio ${n} temas`)
+  } else if (canal?.rol === 'curador') {
+    q += 0.2
+    reasons.push(`subido por ${quien}, canal curador de la escena`)
+  } else if (n >= 2) {
+    q += 0.2
+    reasons.push(`de ${quien}, de donde ya guardaste ${n}`)
+  } else if (n >= 1) {
+    q += 0.15
+    reasons.push(`de ${quien}, de donde ya guardaste 1`)
+  }
   return clamp01(q)
 }
 
-function historicalRelevanceScore(t: EnrichedTrack, reasons: string[]): number {
+/**
+ * Relevancia histórica = ¿cae en la época de la ESCENA que estás cavando?
+ * Sin plan, cae a tu década (aprendida del crate) y, sin crate, a los sweet
+ * spots por defecto. Es el único lugar donde puntúa la época: la affinity no
+ * la cuenta de nuevo.
+ */
+function historicalRelevanceScore(
+  t: EnrichedTrack,
+  ctx: ScoreContext,
+  affinity: Affinity,
+  reasons: string[],
+): number {
   const y = t.entity.year
   if (!y) return 0.4
+
+  const escenas = escenasDe(ctx)
+  if (escenas.length) {
+    const adentro = escenas.find((e) => y >= e.epoca[0] && y <= e.epoca[1])
+    if (adentro) {
+      reasons.push(`${y} · época de ${adentro.nombre} (${adentro.epoca[0]}–${adentro.epoca[1]})`)
+      return 0.9
+    }
+    const cerca = escenas.some((e) => y >= e.epoca[0] - 3 && y <= e.epoca[1] + 3)
+    // fuera de época baja el score: se dice (toda señal negativa lleva razón)
+    if (!cerca) {
+      reasons.push(`${NEGATIVA}${y}: fuera de la época de ${escenas.map((e) => e.nombre).join(' / ')}`)
+    }
+    return cerca ? 0.65 : 0.35
+  }
+
+  const propia = affinity.total >= 20 ? eraWeight(affinity, y) : null
+  if (propia != null) {
+    if (propia >= 0.6) reasons.push(`${y} · década que venís guardando`)
+    return 0.4 + 0.5 * propia
+  }
+
   for (const [a, b] of SWEET_SPOTS) {
     if (y >= a && y <= b) {
       reasons.push(`sweet spot ${a}–${b}`)
@@ -149,7 +339,16 @@ function filterMatchScore(t: EnrichedTrack, q: SearchQuery, reasons: string[]): 
   }
   if (q.bpm && t.bpm) {
     checks++
-    if (t.bpm.value >= q.bpm[0] && t.bpm.value <= q.bpm[1]) hits++
+    // el DSP se equivoca de octava hacia arriba (79% de los >115 eran el doble):
+    // un 152 leído que es un 76 real no se descarta, cuenta a medias y se dice
+    const v = t.bpm.value
+    const como = bpmWithinRange(v, q.bpm[0], q.bpm[1])
+    if (como === 'exact') hits++
+    else if (como === 'octave') {
+      hits += 0.5
+      const otra = v > q.bpm[1] ? v / 2 : v * 2
+      reasons.push(`${Math.round(v)} BPM leído; probablemente ${Math.round(otra)} (otra octava)`)
+    }
   }
   if (q.key && t.key) {
     checks++
@@ -204,21 +403,36 @@ function certeza(t: EnrichedTrack): number {
   return 0.55 + 0.09 * señales
 }
 
+/**
+ * Artista repetido no es descubrimiento: otro tema del artista que más guardás
+ * es lo primero que encontrarías solo. Se acota en la affinity y acá se DICE.
+ *
+ * Restar se probó y se revirtió: en el benchmark del 19-sep, Thomas guardó el
+ * 71% de lo sugerido de artistas que ya tenía contra 47% de artistas nuevos, y
+ * cada punto de penalidad bajaba el AUC (0.555 sin → 0.545 con 2%/tema → 0.535
+ * con 5%/tema). La penalidad queda en 0 y la razón se muestra igual: el
+ * usuario decide si eso es hallazgo o no. Volver a probar cuando el crate
+ * tenga más de un día de historia.
+ */
+const PENALIDAD_ARTISTA_REPETIDO = 0
+const MAX_PENALIDAD_ARTISTA = 0.06
+
 export function computeCrateScore(
   track: EnrichedTrack,
   query: SearchQuery,
   affinity: Affinity,
   weights: ScoreComponents = DEFAULT_WEIGHTS,
+  ctx: ScoreContext = {},
 ): CrateScore {
   const reasons: string[] = []
   const components: ScoreComponents = {
     filterMatch: filterMatchScore(track, query, reasons),
     rarity: rarityScore(track, reasons),
-    obscurity: obscurityScore(track, reasons),
+    obscurity: obscurityScore(track, ctx, reasons),
     metadataRichness: richnessScore(track),
-    sourceQuality: sourceQualityScore(track),
-    historicalRelevance: historicalRelevanceScore(track, reasons),
-    personalAffinity: affinityScore(track, affinity),
+    sourceQuality: sourceQualityScore(track, affinity, reasons),
+    historicalRelevance: historicalRelevanceScore(track, ctx, affinity, reasons),
+    personalAffinity: affinityScore(track, affinity, reasons),
   }
   const comoSeIdentifico = track.entity.identifiedBy
     ? COMO_SE_IDENTIFICO[track.entity.identifiedBy]
@@ -229,17 +443,43 @@ export function computeCrateScore(
     reasons.push(`${Math.round(components.personalAffinity * 100)}% match con tu crate`)
   }
 
-  let total = 0
-  let wsum = 0
-  for (const k of Object.keys(weights) as (keyof ScoreComponents)[]) {
-    total += components[k] * weights[k]
-    wsum += weights[k]
+  // el BPM plegado se dice con el crudo al lado, para que el usuario juzgue el pliegue
+  const b = track.bpm
+  if (b && b.source === 'audio_analysis' && b.method === 'inferred') {
+    const crudo = track.bpmRaw
+    reasons.push(
+      crudo
+        ? `${Math.round(b.value)} BPM · analizado ${Math.round(crudo.value)}, plegado a tu rango`
+        : `${Math.round(b.value)} BPM · plegado a tu rango (el DSP leyó otra octava)`,
+    )
+  } else if (b && b.source === 'user' && b.method === 'manual' && track.bpmRaw) {
+    reasons.push(`${Math.round(b.value)} BPM · corregido a mano (el DSP leyó ${Math.round(track.bpmRaw.value)})`)
   }
 
-  const seguridad = certeza(track)
-  if (seguridad < 1) reasons.push('sin cruzar contra catálogo: el puntaje va descontado')
+  // en una veta el pool ya viene curado: la obscuridad separa menos
+  const pesos: ScoreComponents = { ...weights }
+  if (ctx.origen === 'veta') pesos.obscurity = weights.obscurity * 0.5
 
-  return { total: Math.round((total / wsum) * seguridad * 100), components, reasons }
+  let total = 0
+  let wsum = 0
+  for (const k of Object.keys(pesos) as (keyof ScoreComponents)[]) {
+    total += components[k] * pesos[k]
+    wsum += pesos[k]
+  }
+
+  let factor = certeza(track)
+  if (factor < 1) reasons.push(`${NEGATIVA}sin cruzar contra catálogo: el puntaje va descontado`)
+
+  const repetido = timesSaved(affinity, track.entity.artist)
+  if (repetido >= 2) {
+    const pen = Math.min(MAX_PENALIDAD_ARTISTA, PENALIDAD_ARTISTA_REPETIDO * repetido)
+    factor *= 1 - pen
+    reasons.push(
+      `${pen > 0 ? NEGATIVA : ''}ya guardaste ${repetido} de ${track.entity.artist}: mismo artista, no un hallazgo`,
+    )
+  }
+
+  return { total: Math.round((total / wsum) * factor * 100), components, reasons }
 }
 
 /** Etiqueta para la UI según el score. */
