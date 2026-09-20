@@ -18,6 +18,11 @@ No compite con Splice/Tracklib/Loopcloud. Ataca otro problema:
 El éxito se mide con una pregunta: **¿encontré algo que no hubiera encontrado buscando normal?**
 El mayor riesgo no es técnico, es la **calidad de resultados**. Todo se subordina a eso.
 
+La métrica es el **hit rate** (guardados / sugeridos) sobre lo que el usuario escucha de
+verdad, no las views. Baseline a mano, 19-sep-2026: 109/206 = 53%
+(`docs/benchmarks/2026-09-19-digging-a-mano/`). Cada cambio de discovery, hints, score o DSP
+se mide contra ese benchmark antes y después (ver `docs/ROADMAP.md`, "Cómo se mide").
+
 ## 3. Alcance de la interacción
 
 - **Descubrir + preview.** Nada de descargar/capturar audio dentro de la app.
@@ -27,9 +32,12 @@ El mayor riesgo no es técnico, es la **calidad de resultados**. Todo se subordi
 ## 4. Dos capas
 
 - **Capa 1 (browser, metadata-first):** meta-search + text-mining + cruce Discogs/MusicBrainz.
-- **Capa 2 (opt-in, backend):** botón "Analizar audio" → yt-dlp + DSP → BPM/key/mood/instrumentos.
+- **Capa 2 (opt-in, backend):** botón "Analizar audio" → yt-dlp (descarga temporal completa,
+  se recorta y se borra) + DSP → BPM/key con evidencia (alternativas, ambigüedad); la octava la
+  elige el cliente con el rango del usuario.
 
-Un backend **liviano** existe desde el día 1 (CORS proxy + DSP), pero no es el cerebro.
+Un backend **liviano** existe desde el día 1 (CORS proxy + discovery sin quota con yt-dlp +
+DSP), pero no es el cerebro: devuelve evidencia, nunca gusto.
 
 ## 5. Modelo de datos (resumen — detalle en ENTITY_MODEL.md)
 
@@ -58,9 +66,10 @@ Eso convierte al crate-index en **tu** crate, no en un cache genérico.
 
 ## 9. Fuentes (detalle en SOURCES.md)
 
-- **F1:** YouTube · Discogs · MusicBrainz · Internet Archive.
+- **F1:** YouTube (API + yt-dlp sin quota: búsqueda y playlists/canales ajenos como vetas) ·
+  Discogs · MusicBrainz · Internet Archive · AcoustID (huella acústica, opt-in por ficha).
 - **F2:** Spotify (referencia), web search, Bandcamp, Freesound.
-- **F3:** Soulseek, SoundCloud, fingerprinting.
+- **F3:** Soulseek, SoundCloud.
 
 ## 10. Identidad visual
 
@@ -82,8 +91,16 @@ F1 el núcleo (discovery real + score + crate personal), F2 ampliar red + NL sea
 
 ## 13. Riesgos
 
-1. **Calidad de resultados** (el grande): mitigar con score obsesivo + casos de prueba.
-2. **Quota de YouTube:** cachear agresivo, no quemar `search.list`.
+1. **Calidad de resultados** (el grande): mitigar con score obsesivo + benchmark real
+   (hit rate, AUC) que se corre antes y después de cada cambio.
+2. **Quota de YouTube:** ya no es el cuello de botella (yt-dlp busca y lista a costo 0);
+   `videos.list` se pide solo para la tanda que se enriquece. Cachear igual.
 3. **Fragilidad de scraping (Bandcamp) / APIs cerradas (SoundCloud):** aislar tras el proxy, degradar con gracia.
 4. **Fuzzy match impreciso:** umbral + marcar entidades no confirmadas en vez de inventar.
-5. **Legal/ToS:** discovery + preview; DSP sobre fragmentos temporales; sin redistribución de audio.
+5. **Legal/ToS:** discovery + preview; el DSP hace una descarga temporal que se recorta, se
+   analiza y se borra; nunca se sirve ni se redistribuye audio.
+6. **yt-dlp / YouTube se rompen cada pocos meses** (403, desafío JS, runtime): mantener
+   `yt-dlp` + `yt-dlp-ejs` al día, exigir node 22+ / deno 2.3+, y un `GET /health` que diga qué
+   falta en vez de fallar en silencio.
+7. **Sobreajustar al gusto de un usuario:** el oído de Thomas es dato con fecha y n (affinity,
+   `canales.ts`, prior de tempo), no regla del backend; tiene que poder cambiar por persona.

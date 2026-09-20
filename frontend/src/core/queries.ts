@@ -41,7 +41,7 @@
 import type { SearchQuery, SourceItem } from './entities'
 import type { Escena, SceneId } from './scenes'
 import { detectarEscenas } from './scenes'
-import { cleanTitle } from './fuzzy'
+import { cleanTitle, splitArtistTitle } from './fuzzy'
 
 // ---------- tipos ----------
 
@@ -49,7 +49,19 @@ import { cleanTitle } from './fuzzy'
  * Estrategia de una query. Cada lane ataca el long tail por un lado distinto;
  * el orden de este tipo es el orden de prioridad medido.
  */
-export type Lane = 'jerga' | 'sello' | 'nativo' | 'artista' | 'descriptor' | 'literal'
+export type Lane = 'jerga' | 'sello' | 'nativo' | 'artista' | 'descriptor' | 'literal' | 'veta'
+
+/**
+ * De dónde viene el candidato. Cambia lo que el portero mira:
+ *
+ *   - `busqueda`: resultados crudos de `search.list` / ytsearch. Ahí la
+ *     obscuridad separa (medido: Sergio Mendes con 39k views segundo).
+ *   - `veta`: playlist o canal de otro digger, un pool YA curado. Medido sobre
+ *     las 10 playlists "Samples Vol." del 19-sep: dentro de la veta más views
+ *     correlaciona con calidad, no con "ya lo conocés" (AUC de views 0.32).
+ *     El portero no usa obscuridad; la cobertura tiene que ser total.
+ */
+export type OrigenDeCandidato = 'busqueda' | 'veta'
 
 export interface DiggerQuery {
   /** el string que va a `search.list` */
@@ -415,7 +427,7 @@ function costoDe(cantidadDeQueries: number): number {
  * pero son exactamente lo que CLAUDE.md pone fuera del producto.
  */
 const BASURA =
-  /(type beat|sample pack|sample kit|drum kit|beat tape|karaoke|\breaction\b|\breacts?\b|tutorial|how to make|nightcore|sped ?up|slowed( ?\+ ?reverb)?|8d audio|ai cover|full movie|unboxing|\bhaul\b|virtual instrument|\bvsts?\b|\bkontakt\b|pianobook|spitfire|sample library|\bplugins?\b|preset|backing track|no copyright|free download)/i
+  /(type beat|sample pack|sample kit|drum kit|beat tape|karaoke|reaction video|\breacts? to\b|first time (?:hearing|listening)|tutorial|how to make|nightcore|sped ?up|slowed( ?\+ ?reverb)?|8d audio|ai cover|full movie|unboxing|\bhaul\b|virtual instrument|\bvsts?\b|\bkontakt\b|pianobook|spitfire|sample library|\bplugins?\b|preset|backing track|no copyright|free download)/i
 
 /** Vocabulario de mix/playlist. Solo cuenta si además es largo. */
 const MIX =
@@ -435,9 +447,18 @@ const VENTA = /(lote\s*\d|à venda|a venda|for sale|disponí|#shorts|#vinylcommu
 const CHARLA =
   /(解説|語る|聴いてみた|レビュー|ランキング|ベスト ?\d+|紹介|開封|ジャケット|mostra lp|coleç|colecc|reseña|\breview\b|unbox|documental|entrevista|interview)/i
 
-/** Jerga de rip: dice "esto salió de un disco físico". */
+/**
+ * Jerga de rip: dice "esto salió de un disco físico".
+ *
+ * "full album" NO está acá a propósito: un disco entero de 40 minutos no es
+ * un tema para samplear, y premiarlo con puntos hacía que un "Artist - Album
+ * (1982) Full Album" pasara el portero con ventaja. Ver `FULL_ALBUM`.
+ */
 const JERGA_RIP =
-  /(vinyl ?rip|vinil|vinyle|vinilo|vinile|\bLP\b|\bEP\b|\b45\b|\b7"|\b12"|side [ab]\b|lado [ab]\b|full album|álbum completo|album completo|disco completo|album complet|レコード|アルバム|全曲|完全版|private press|test press|original press|\bobi\b|33 tours)/i
+  /(vinyl ?rip|vinil|vinyle|vinilo|vinile|\bLP\b|\bEP\b|\b45\b|\b7"|\b12"|side [ab]\b|lado [ab]\b|レコード|アルバム|全曲|完全版|private press|test press|original press|\bobi\b|33 tours)/i
+
+/** El video es el disco entero. Con más de 20 minutos y sin forma "Artista - Tema" es basura universal. */
+const FULL_ALBUM = /(full album|full lp|álbum completo|album completo|disco completo|album complet|whole album|entire album|フルアルバム)/i
 
 const RUIDO_BLANDO = /(\blive\b|lyrics?|subtitulad|\bcover\b|karaoke|remix|instrumental version)/i
 
@@ -466,9 +487,20 @@ export function esBasura(item: SourceItem): boolean {
   // 15+ minutos con vocabulario de playlist: los canales de "TOKYO 1982
   // 【Playlist 48】" son la mitad de lo que devuelve una query literal
   if (dur > 900 && MIX.test(t)) return true
+  // un disco entero de 20+ minutos que ni siquiera dice de quién es (brief §4:
+  // "full album de 40 min es ruido"). Con forma "Artista - Disco" pasa, porque
+  // ahí hay una obra identificable y el formato ya lo castiga en el puntaje.
+  if (dur > 1200 && FULL_ALBUM.test(t) && !splitArtistTitle(t).artist) return true
   if (dur < 150 && (VENTA.test(t) || hashtags >= 3)) return true
   return false
 }
+
+/**
+ * Lo que NO es basura universal, a propósito: el gusto de un usuario. Los OST
+ * de anime, los covers de videojuegos o el vaporwave son ruido para Thomas y
+ * oro para otro beatmaker; eso vive en `core/canales.ts` (rol 'ruido' y
+ * `TEMAS_DE_RUIDO_PERSONAL`) y lo aplica la affinity como peso negativo.
+ */
 
 // ---------- puntaje de digging (pre-enrichment) ----------
 
@@ -526,14 +558,22 @@ function pertinencia(item: SourceItem, ctx: ContextoDeEscena): number {
  * Esto es un portero: decide cuáles 24 de los ~150 candidatos se ganan las
  * llamadas a MusicBrainz y Discogs.
  */
-export function puntajeDeDig(item: SourceItem, ctx: ContextoDeEscena = {}): PuntajeDeDig {
+export function puntajeDeDig(
+  item: SourceItem,
+  ctx: ContextoDeEscena = {},
+  origen: OrigenDeCandidato = 'busqueda',
+): PuntajeDeDig {
   const motivos: string[] = []
   const titulo = item.title
   const hay = `${titulo} ${item.description ?? ''}`.toLowerCase()
 
+  // En una veta el pool ya lo curó otro digger: las views no dicen "ya lo
+  // conocés", dicen "a otros también les gustó". Ahí no se mira.
   const views = item.views ?? 0
-  const obscuridad = clamp01(1 - Math.log10(Math.max(views, 10)) / 6)
-  if (views > 0 && views < 1000) motivos.push(`${views} views`)
+  const obscuridad = origen === 'veta' ? 1 : clamp01(1 - Math.log10(Math.max(views, 10)) / 6)
+  if (origen === 'busqueda' && views > 0 && views < 1000) {
+    motivos.push(`${item.viewsApprox ? '~' : ''}${views} views`)
+  }
 
   const dur = item.durationSec ?? 0
   const formato =
@@ -584,6 +624,7 @@ export function puntajeDeDig(item: SourceItem, ctx: ContextoDeEscena = {}): Punt
    * antigüedad del upload y el want/have de Discogs.
    */
   const calidad = 0.35 * formato + 0.65 * clamp01(senales)
+  // en veta `obscuridad` es 1 y el factor queda en 1: calidad × pertinencia, nada más
   const valor = clamp01(calidad * pert * (0.25 + 0.75 * obscuridad) - castigo)
   return { valor, motivos }
 }
@@ -600,16 +641,29 @@ export interface CandidatoDeDigging {
  * `cleanTitle` (que ya saca "[Vinyl Rip]", "(1982)", "HQ" y la lista de géneros
  * colgada al final) y después tira todo lo que no sea letra o número.
  */
-function claveDeObra(titulo: string): string {
+export function claveDeObra(titulo: string): string {
   const limpio = cleanTitle(titulo)
     .toLowerCase()
     .replace(/[^\p{L}\p{N}]+/gu, '')
   return limpio || titulo.toLowerCase()
 }
 
+/**
+ * La misma clave a partir de artista + título ya separados, para reconocer la
+ * misma obra a nivel de crate ("no me muestres lo que ya vi" por OBRA, no solo
+ * por id de video). Sin artista devuelve undefined: "Alone" o "Misty" solos
+ * colisionan con cualquier cosa y no sirven para descartar.
+ */
+export function claveDeObraDe(artist: string | undefined, title: string): string | undefined {
+  if (!artist?.trim()) return undefined
+  return claveDeObra(`${artist} - ${title}`)
+}
+
 export interface OpcionesDeOrden extends ContextoDeEscena {
   /** cuántos temas del mismo canal pueden entrar seguidos. Default 4. */
   topePorCanal?: number
+  /** de dónde vienen los candidatos. Default 'busqueda'. Ver `OrigenDeCandidato`. */
+  origen?: OrigenDeCandidato
 }
 
 /**
@@ -645,7 +699,7 @@ export function ordenarParaDigging(
   // Away" ocupó 4 de los 24). Se queda el mejor puntuado de cada obra.
   const mejorPorObra = new Map<string, { c: CandidatoDeDigging; p: number }>()
   for (const c of candidatos) {
-    const p = puntajeDeDig(c.item, ctx).valor
+    const p = puntajeDeDig(c.item, ctx, opts.origen ?? 'busqueda').valor
     const clave = claveDeObra(c.item.title)
     const previo = mejorPorObra.get(clave)
     if (!previo || p > previo.p) mejorPorObra.set(clave, { c, p })

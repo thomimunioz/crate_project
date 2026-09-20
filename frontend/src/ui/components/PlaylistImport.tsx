@@ -2,8 +2,10 @@ import { useState } from 'react'
 import { useCrate } from '@/state/useCrateStore'
 
 /**
- * Import de playlists propias de YouTube como semilla del crate.
- * Cuesta ~1 unidad de quota cada 50 temas, contra las 100 de una sola búsqueda.
+ * Import de playlists PROPIAS de YouTube como semilla del crate: todo entra
+ * como guardado con el nombre de la playlist como etiqueta. Para playlists
+ * ajenas está "vetas" en la vista de búsqueda, que no guarda nada.
+ * Listar es gratis (yt-dlp); la metadata cuesta 1 unidad cada 50 temas.
  */
 export function PlaylistImport() {
   const { importPlaylists, importing } = useCrate()
@@ -21,7 +23,7 @@ export function PlaylistImport() {
     <form onSubmit={onSubmit} className="panel p-4">
       <div className="flex items-center gap-2">
         <span className="tape">sembrar el crate</span>
-        <span className="eyebrow">playlists tuyas</span>
+        <span className="eyebrow">playlists tuyas · entran como guardadas</span>
       </div>
       <p className="mt-2.5 text-sm text-crate-soft">
         Pegá playlists tuyas de YouTube, una por línea. El nombre de cada una queda como etiqueta:

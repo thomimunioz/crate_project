@@ -36,6 +36,48 @@ function Cifra({ n, label }: { n: number; label: string }) {
   )
 }
 
+/**
+ * Hit rate por búsqueda o veta: de lo que se mostró, cuánto quedó en el crate.
+ * Es la métrica del producto (53% medido a mano el 19-sep), calculada por la
+ * app sobre uso real. Solo se lista lo que tuvo al menos una decisión.
+ */
+function HitRates() {
+  const { hitRates } = useCrate()
+  const conDecision = hitRates.filter((h) => h.guardadas + h.rechazadas > 0).slice(0, 8)
+  if (conDecision.length === 0) return null
+  const total = conDecision.reduce(
+    (acc, h) => ({ mostradas: acc.mostradas + h.mostradas, guardadas: acc.guardadas + h.guardadas }),
+    { mostradas: 0, guardadas: 0 },
+  )
+  const pct = (h: { guardadas: number; mostradas: number }): string =>
+    h.mostradas > 0 ? `${Math.round((h.guardadas / h.mostradas) * 100)}%` : '—'
+  return (
+    <section className="lcd px-4 py-3">
+      <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-crate-lcdInk/70">
+        <span className="led led-go" />
+        hit rate · guardadas / mostradas
+        <span className="ml-auto font-bold tabular-nums text-crate-lcdInk">
+          {pct(total)} <span className="font-normal text-crate-lcdInk/60">de {total.mostradas}</span>
+        </span>
+      </div>
+      <ul className="mt-2 space-y-1 text-[11px]">
+        {conDecision.map((h) => (
+          <li key={h.queryText} className="flex items-center gap-3">
+            <span className="min-w-0 flex-1 truncate normal-case" title={h.queryText}>
+              {h.queryText.startsWith('veta:') ? `⛏ ${h.queryText.slice(5)}` : h.queryText}
+            </span>
+            <span className="tabular-nums text-crate-lcdInk/60">
+              {h.guardadas}/{h.mostradas}
+              {h.rechazadas > 0 && <span title="rechazadas"> · ⊘{h.rechazadas}</span>}
+            </span>
+            <span className="w-10 text-right font-bold tabular-nums">{pct(h)}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
 /** Tu crate: lo que guardaste o analizaste. Filtra local, sin tocar la red. */
 export function CrateView() {
   const { crateTracks } = useCrate()
@@ -105,6 +147,8 @@ export function CrateView() {
           <PlaylistImport />
         </div>
       )}
+
+      <HitRates />
 
       <div className="flex flex-wrap items-center gap-2">
         <input
