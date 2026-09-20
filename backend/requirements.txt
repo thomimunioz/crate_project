@@ -7,8 +7,13 @@ pydantic-settings>=2.3
 python-dotenv>=1.0
 
 # Capa 2: análisis de audio (opt-in)
-yt-dlp>=2024.8.6
+# yt-dlp: desde 2026.08.19 resuelve el desafío JS de YouTube (las versiones anteriores
+# daban 403 en toda descarga). Para eso necesita un runtime JS en el sistema — node 22+
+# o deno 2.3+ — y el paquete yt-dlp-ejs, que trae los scripts del resolvedor (con node
+# es obligatorio: yt-dlp no los vendorea). Ver app/ytdl.py y README.md.
+yt-dlp>=2026.08.19
+yt-dlp-ejs
 librosa>=0.10.2
 numpy>=1.26
 soundfile>=0.12
-# Requiere ffmpeg instalado en el sistema (para recortar el fragmento y decodificar audio).
+# Requiere ffmpeg instalado en el sistema (recorta la ventana a WAV para librosa/fpcalc).

@@ -42,3 +42,6 @@ Thumbs.db
 
 # ---- typescript build artifacts ----
 *.tsbuildinfo
+
+# ---- calibración de BPM (features derivadas, no audio; se regeneran con tools/bpm_calibrate.py fetch) ----
+backend/tools/cache/
