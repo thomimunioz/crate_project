@@ -123,4 +123,71 @@ decisión mía.
 
 ---
 
+# Segunda tanda (madrugada del 28)
+
+Me pediste: auditoría completa, tests y CI, el botón de bajar, y todo
+versionado. Esto es lo que salió.
+
+## Botón de bajar — HECHO
+
+El ⇩ slsk buscaba y mostraba quién tiene el archivo, y ahí terminaba. Ahora
+cada resultado tiene su botón: encola en slskd, anota el archivo contra el tema
+(así `por_bajar` deja de reclamarlo) y **sigue la descarga**.
+
+Eso último no es adorno: en la primera prueba real el par aceptó y a los seis
+segundos quedó *"Completed, Errored"*. Si el botón dice "listo" y el archivo no
+llega, es peor que no tener botón. Ahora muestra el porcentaje, "bajado" o
+"falló — probá otro", en rojo.
+
+Probado contra slskd de verdad: búsqueda de 40 archivos, encolado aceptado,
+cola consultada.
+
+## Tests y CI — HECHO
+
+**43 tests**, 0,2 s, no tocan la base ni salen a la red. `python -m pytest`.
+
+El más importante es `test_regex_sanas.py`: recorre todas las regex compiladas
+y rechaza cualquier carácter de control. Es exactamente el bug de las 50 regex
+rotas, convertido en test — y cubre la clase de error, no el caso.
+
+**Los verifiqué con mutaciones**, no mirando que pasen: rompí a propósito la
+lista blanca, una regex y el separador de artista, y los tests cayeron. Dos
+mutaciones se escaparon (las dos capas de la lista blanca se tapan entre sí),
+agregué una aserción más y ya se cazan.
+
+CI en GitHub Actions: pytest en cada push, más un guardia que falla si alguien
+versiona un secreto.
+
+## Auditoría completa — HECHA
+
+Está en `docs/AUDITORIA-2026-10-27.md`. **9 hallazgos, 9 arreglados.**
+
+Los tres que importan:
+1. 🔴 El servidor servía el repo entero: `/.env` entregaba tus 11 claves.
+2. 🟠 **SSRF en el proxy del backend**: valida el host y después sigue
+   redirects sin revalidar, así que un host permitido podía mandarlo a una IP
+   interna. En el archivo que dice "SIN ser un open relay".
+3. 🟡 Claves foráneas apagadas + 381 duplicados, 22 de ellos ofreciéndote como
+   novedad cosas que ya tenés.
+
+**El hallazgo más grande no es un bug: el 72% del código del repo no corre.**
+`backend/` (2.292 líneas) y `frontend/` (9.104) están dormidos desde el 20-sep.
+Decidir qué pasa con ellos es la Etapa D y es tuya, no mía.
+
+## Todo versionado
+
+5 commits, pusheados a `origin/develop`. Ningún secreto en la historia
+(verificado).
+
+## Lo que sigue pendiente
+
+- **FOLK y DARK** — los dejé, como pediste.
+- **Tu carpeta de música** — dijiste "por ahora sin carpeta".
+- **Etapa D**: qué hacemos con `backend/` y `frontend/`.
+- **Etapa E**: sacar `mi-crate.html` de git, estrategia para `crate.db`
+  (16 MB binarios por commit), un linter.
+- **Etapa F**: tests de endpoints y del JS generado.
+
+---
+
 Apagué la PC como pediste. Hasta mañana.

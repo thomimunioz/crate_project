@@ -6,6 +6,43 @@
 
 ---
 
+## Lo que corre hoy: `app/` (leer esto ANTES que el resto)
+
+> **27-oct-2026.** El mapa de abajo describe el diseño de F1 (React + FastAPI) y
+> sigue siendo válido como *diseño*. Pero lo que Thomas usa todos los días es
+> otra cosa, y hay que saberlo antes de tocar nada:
+
+```
+crate                 ← levanta la app y abre el navegador
+crate estado          ← qué hay en la base
+crate ayuda           ← el resto
+```
+
+| Parte | Líneas | Estado |
+|---|---|---|
+| **`app/`** | 4.588 Python | **Esto es CRATE.** Servidor local + criterios + hotlist + build |
+| `crate.db` | 51.438 temas | El índice real, irreemplazable |
+| `mi-crate.html` | generado | La interfaz. Sale de `app_build.py` |
+| `backend/` | 2.292 Python | **Dormido desde el 20-sep.** No lo levanta nadie |
+| `frontend/` | 9.104 TS | **Dormido desde el 20-sep.** Nunca reemplazó al HTML |
+
+**Si vas a cambiar algo que Thomas ve, se toca en `app/`, no en `frontend/src`.**
+
+Piezas: `crate_server.py` (127.0.0.1:7777), `criterios.py` (todo lo medido del
+oído, fuente de verdad), `hotlist.py` (cola de escucha), `veta.py` (mina la base),
+`cavar.py` (sale a YouTube), `app_build.py` → `mi-crate.html`.
+
+**Tests:** `python -m pytest` desde la raíz. 43 tests, 0,2 s, no tocan la base ni
+la red. CI en GitHub Actions. El más importante es `test_regex_sanas.py`: nunca
+escribas una regex a través de un heredoc de bash — los `` llegan convertidos
+en el carácter 8, que no se imprime, y el filtro falla en silencio. Pasó con 50
+regex a la vez.
+
+**Auditoría:** `docs/AUDITORIA-2026-10-27.md`. La decisión pendiente más grande
+es qué se hace con `backend/` y `frontend/`.
+
+---
+
 ## Qué es CRATE (en una línea)
 
 **Un buscador de crate-digging que construye tu propio índice mientras buscás.**
