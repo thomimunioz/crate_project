@@ -33,6 +33,7 @@ med = con.execute("SELECT count(*) FROM analisis").fetchone()[0]
 pls = sorted({p for d in datos for p in (d["playlists"] or "").split("\n") if p})
 n_est = sum(1 for d in datos if d.get("estrellas"))
 hoy = time.strftime("%d.%m.%Y")
+sello = time.strftime("%d-%m %H:%M")
 
 CLASE_G = {"SOUL": "g-soul", "80s": "g-80s", "R&B SOUL": "g-rnb", "DARK": "g-dark",
            "JAZZ FUSION": "g-fusion", "CITY POP": "g-citypop", "PIANO": "g-piano",
@@ -53,7 +54,7 @@ DOC = """<!doctype html>
 <header>
   <div class="bloque">
     <h1>Cra<span>te</span></h1>
-    <div class="tag"><b>catálogo personal</b>digging · %s
+    <div class="tag"><b>catálogo personal</b>digging · %s<span class="sello" title="cuando se generó esta página — si no coincide con lo último que tocamos, estás viendo una copia vieja: Ctrl+Shift+R">build %s</span>
       <div class="temas">
         <button data-t="foryou"   title="Yamashita · For You — Hiroshi Nagai, mediodía">for you</button>
         <button data-t="allofme"  title="Takanaka · All Of Me — el Pacífico desde el aire">all of me</button>
@@ -164,7 +165,7 @@ DOC = """<!doctype html>
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>const DATOS=%s;</script>
 <script>%s</script>
-</body></html>""" % (FUENTES, CSS, hoy, len(datos), "{:,}".format(tot).replace(",","."),
+</body></html>""" % (FUENTES, CSS, hoy, sello, len(datos), "{:,}".format(tot).replace(",","."),
                      med, n_est, chips_pl,
                      json.dumps(datos, ensure_ascii=False, separators=(",", ":")), JS)
 

@@ -82,6 +82,20 @@ class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *a, **k):
         super().__init__(*a, directory=RAIZ, **k)
 
+    def end_headers(self):
+        """Nunca cachear la app.
+
+        mi-crate.html se regenera cada vez que cambia algo, pero el navegador
+        se quedaba con la copia vieja: Thomas recargaba, seguia viendo codigo
+        viejo, y los arreglos "no funcionaban". Peor: mezclaba HTML nuevo con
+        comportamiento viejo, que es imposible de diagnosticar.
+        """
+        if self.path.endswith(".html") or self.path.startswith("/api/"):
+            self.send_header("Cache-Control", "no-store, must-revalidate")
+            self.send_header("Pragma", "no-cache")
+            self.send_header("Expires", "0")
+        super().end_headers()
+
     def log_message(self, *a):
         pass                                  # sin ruido en la consola
 

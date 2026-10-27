@@ -136,6 +136,9 @@ h1{
 }
 .tag{font-family:var(--mono);font-size:.68rem;letter-spacing:.17em;text-transform:uppercase;
   border-left:2px solid var(--stxt);padding-left:11px;line-height:1.75}
+.sello{font-family:var(--mono);font-size:.56rem;letter-spacing:.06em;
+  margin-left:10px;padding:1px 5px;border:1px solid var(--suave);border-radius:2px;
+  color:var(--suave);white-space:nowrap}
 .tag b{font-size:1.1rem;display:block;letter-spacing:.05em}
 .temas{display:flex;gap:5px;margin-top:10px}
 .temas button{border-radius:3px;
