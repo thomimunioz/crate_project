@@ -178,7 +178,7 @@ function pintar(){
         + '<span class="tem">'+esc(d.nombre || d.titulo)+'</span>'
         + '<a class="art" href="'+d.url+'" target="_blank" rel="noopener">'
         +   esc(d.artista || '—')+'</a>'
-        + '<button class="slsk" data-q="'+esc(limpiar(d.titulo))+'" title="buscar en Soulseek">⇩ slsk</button>'
+        + '<button class="slsk" data-q="'+esc(limpiar(d.titulo))+'" data-id="'+esc(d.id)+'" title="buscar en Soulseek">⇩ slsk</button>'
         + '<div class="meta">'+(d.canal?'<span>'+esc(d.canal)+'</span>':'')+pl+'</div>'
       + '</td>'
       + '<td class="dato">'+(d.anio ? '<span class="v">'+d.anio+'</span>' : '·')+'</td>'
@@ -207,7 +207,7 @@ document.addEventListener('click', e => {
   const b = e.target.closest('.slsk');
   if(b){
     e.preventDefault(); e.stopPropagation();
-    buscarEnSoulseek(b.dataset.q, b);
+    buscarEnSoulseek(b.dataset.q, b, b.dataset.id);
     return;
   }
   const s = e.target.closest('.estrellas .s');
@@ -596,7 +596,7 @@ function pintarBusqueda(res){
       + '<td class="cat">+'+String(i+1).padStart(3,'0')+'</td>'
       + '<td><a class="art" href="https://www.youtube.com/watch?v='+d.id+'" target="_blank">'
         + esc(d.titulo)+'</a>'
-        + '<button class="slsk" data-q="'+esc(limpiar(d.titulo))+'">⇩ slsk</button>'
+        + '<button class="slsk" data-q="'+esc(limpiar(d.titulo))+'" data-id="'+esc(d.id)+'">⇩ slsk</button>'
         + '<div class="meta">'+esc(d.canal||'')+'</div>'
         + (raz?'<div class="razon">'+esc(raz)+'</div>':'')
       + '</td>'
@@ -649,7 +649,9 @@ $('#bvolver').onclick = () => {
    tiene el archivo, en que formato y a que bitrate. Copiar al portapapeles
    no servia para nada.
    ======================================================================= */
-async function buscarEnSoulseek(q, boton){
+let SLSK_TEMA = null;          // id del tema cuya ficha esta abierta
+async function buscarEnSoulseek(q, boton, id){
+  SLSK_TEMA = id || null;
   if(!servidor){ flash('esto necesita crate_server.py'); return; }
   const caja = $('#slsk');
   $('#slsktit').textContent = q;
@@ -681,19 +683,82 @@ async function buscarEnSoulseek(q, boton){
       }
       const a = d.archivos || [];
       $('#slskn').textContent = a.length + ' archivos · ' + seg + 's';
-      fin(a.length ? a.map(f=>
-          '<div class="fila" title="'+esc(f.ruta||'')+'">'
+      fin(a.length ? a.map((f,i)=>{
+          SLSK_ARCH[i] = f;
+          return '<div class="fila" title="'+esc(f.ruta||'')+'">'
         + '<span class="fmt'+(f.ext==='mp3'?' mp3':'')+'">'+esc(f.ext.toUpperCase())
         +   (f.bitrate?(' '+f.bitrate):'')+'</span>'
         + '<span class="nom">'+esc(f.nombre)+'</span>'
         + '<span class="usr">'+esc(f.usuario||'')+(f.libre?' ●':'')+'</span>'
-        + '<span class="usr">'+f.mb+' MB</span></div>').join('')
+        + '<span class="usr">'+f.mb+' MB</span>'
+        + '<button class="bajar" data-i="'+i+'" title="bajar de '
+        +   esc(f.usuario||'')+'">bajar</button></div>';
+        }).join('')
         : '<div class="vacio2">nadie lo tiene compartido ahora</div>');
     };
     setTimeout(consultar, 2500);
   }catch(err){ fin('<div class="vacio2">slskd no responde</div>'); }
 }
 $('#slskx').onclick = ()=> $('#slsk').classList.remove('on');
+
+/* En Soulseek pedir no es recibir: el par puede estar caido o tener la cola
+   llena. Sin esto el boton decia "listo" y el archivo no llegaba nunca.
+   (Paso en la primera prueba: "Completed, Errored" a los 6 segundos.) */
+async function seguirBajada(nombre, boton){
+  for(let i = 0; i < 40; i++){
+    await new Promise(r => setTimeout(r, 3000));
+    let d;
+    try{ d = await (await fetch('/api/slsk/bajadas')).json(); }catch(e){ continue; }
+    const x = (d.bajadas || []).find(z => z.nombre === nombre);
+    if(!x) continue;
+    const e = (x.estado || '').toLowerCase();
+    if(e.includes('errored') || e.includes('rejected') || e.includes('cancelled')){
+      boton.classList.remove('listo'); boton.classList.add('fallo');
+      boton.textContent = 'falló'; boton.disabled = false;
+      boton.title = 'el par no la entregó — probá otro de la lista';
+      flash('no la entregó ' + (x.usuario || '') + ' · probá otro');
+      return;
+    }
+    if(e.includes('completed')){
+      boton.textContent = 'bajado ✓'; boton.classList.add('listo');
+      flash('bajado: ' + nombre.slice(0, 40));
+      return;
+    }
+    if(x.pct > 0) boton.textContent = Math.round(x.pct) + '%';
+  }
+}
+
+/* Bajar de verdad: se lo pedimos a slskd y queda anotado contra el tema, asi
+   `por_bajar` deja de reclamarlo. El archivo cae en la carpeta de slskd. */
+const SLSK_ARCH = {};
+$('#slsklista').addEventListener('click', async e => {
+  const b = e.target.closest('.bajar');
+  if(!b) return;
+  const f = SLSK_ARCH[b.dataset.i];
+  if(!f) return;
+  b.disabled = true; b.textContent = 'pidiendo…';
+  try{
+    const r = await fetch('/api/slsk/bajar', {method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({usuario:f.usuario, ruta:f.ruta, bytes:f.bytes,
+                            ext:f.ext, bitrate:f.bitrate, id:SLSK_TEMA})});
+    const j = await r.json();
+    if(j.ok){
+      b.textContent = 'en cola'; b.classList.add('listo');
+      flash('pedida a ' + f.usuario);
+      seguirBajada(f.nombre, b);
+      if(SLSK_TEMA){                        // ya lo tenes: que se vea al toque
+        local[SLSK_TEMA] = Object.assign({}, local[SLSK_TEMA], {tiene:1});
+        guardarLocal();
+        const d = D.find(x=>x.id===SLSK_TEMA);
+        if(d){ d.tiene = 1; pintar(); }
+      }
+    } else {
+      b.disabled = false; b.textContent = 'bajar';
+      flash(j.error || 'slskd no la acepto');
+    }
+  }catch(err){ b.disabled=false; b.textContent='bajar'; flash('slskd no responde'); }
+});
 
 
 /* =======================================================================

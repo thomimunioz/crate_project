@@ -95,6 +95,14 @@ class Handler(SimpleHTTPRequestHandler):
             self.send_header("Location", "/mi-crate.html")
             self.end_headers()
             return
+        if ruta == "/api/slsk/bajadas":
+            if not SLSKD_KEY:
+                return self._json({"ok": False, "error": "falta la API key"}, 503)
+            try:
+                d = slsk_api("GET", "/api/v0/transfers/downloads")
+            except Exception as e:
+                return self._json({"ok": False, "error": str(e)[:140]}, 502)
+            return self._json({"ok": True, "bajadas": bajadas_planas(d)})
         if ruta.startswith("/api/slsk/"):
             sid = ruta.rsplit("/", 1)[-1]
             try:
@@ -244,6 +252,35 @@ class Handler(SimpleHTTPRequestHandler):
                                    "error": "slskd no responde: " + str(e)[:120]}, 502)
             return self._json({"ok": True, "id": ini.get("id"), "q": q})
 
+        if ruta == "/api/slsk/bajar":
+            usuario = (datos.get("usuario") or "").strip()
+            archivo = datos.get("ruta") or ""
+            if not usuario or not archivo:
+                return self._json({"ok": False, "error": "falta usuario o archivo"}, 400)
+            if not SLSKD_KEY:
+                return self._json({"ok": False, "error": "falta la API key de slskd"}, 503)
+            cuerpo = [{"filename": archivo, "size": int(datos.get("bytes") or 0)}]
+            try:
+                slsk_api("POST", "/api/v0/transfers/downloads/%s"
+                         % urllib.parse.quote(usuario, safe=""), cuerpo)
+            except Exception as e:
+                return self._json({"ok": False,
+                                   "error": "slskd rechazo la descarga: " + str(e)[:120]}, 502)
+            # queda anotado contra el tema: asi `por_bajar` deja de pedirlo y se
+            # sabe de donde salio el archivo cuando aparezca en el disco
+            vid = datos.get("id")
+            if vid:
+                con = db()
+                if con.execute("SELECT 1 FROM tema WHERE id=?", (vid,)).fetchone():
+                    con.execute("""INSERT OR REPLACE INTO archivo(id,ruta,formato,
+                                                 bitrate,bytes,fuente,bajado)
+                                   VALUES(?,?,?,?,?,'slskd',?)""",
+                                (vid, archivo, (datos.get("ext") or "").lower(),
+                                 datos.get("bitrate"), datos.get("bytes"), hoy))
+                    con.commit()
+                con.close()
+            return self._json({"ok": True, "usuario": usuario})
+
         if ruta == "/api/playlist":
             vid = datos.get("id")
             lista = (datos.get("playlist") or "").strip()
@@ -296,6 +333,25 @@ def slsk_api(metodo, ruta, cuerpo=None):
     return json.loads(txt) if txt.strip() else {}
 
 
+def bajadas_planas(d):
+    """slskd devuelve usuario -> directorios -> archivos. Se aplana a una lista
+    con lo unico que importa mirando una descarga: que es, como va y si fallo."""
+    out = []
+    for u in (d or []):
+        for dirr in (u.get("directories") or []):
+            for f in (dirr.get("files") or []):
+                tam = f.get("size") or 0
+                out.append({
+                    "usuario": u.get("username"),
+                    "nombre": (f.get("filename") or "").replace("/", chr(92))
+                              .split(chr(92))[-1],
+                    "estado": f.get("state") or "",
+                    "pct": round(100.0 * (f.get("bytesTransferred") or 0) / tam, 1)
+                           if tam else 0.0,
+                    "mb": round(tam / 1048576.0, 1)})
+    return out
+
+
 def ordenar_archivos(d):
     """Saca los archivos de la respuesta y los ordena por calidad: FLAC primero,
     despues por bitrate, y los que tienen slot libre antes."""
@@ -311,6 +367,7 @@ def ordenar_archivos(d):
             out.append({"nombre": nom, "usuario": usr, "libre": libre, "ext": ext,
                         "bitrate": f.get("bitRate"),
                         "mb": round((f.get("size") or 0) / 1048576.0, 1),
+                        "bytes": f.get("size") or 0,
                         "seg": f.get("length"), "ruta": f.get("filename")})
     prio = {"flac": 0, "wav": 0, "aiff": 0, "ape": 1, "wv": 1, "m4a": 2, "ogg": 2, "mp3": 3}
     out.sort(key=lambda x: (prio.get(x["ext"], 9), -(x["bitrate"] or 0),

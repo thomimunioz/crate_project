@@ -277,6 +277,15 @@ tr:hover .btn-cl,.clasif.abierto .btn-cl{visibility:visible}
   background:var(--acento2);color:var(--stxt);white-space:nowrap}
 #slsk .fmt.mp3{background:var(--suave)}
 #slsk .usr{font-family:var(--mono);font-size:.62rem;color:var(--suave);white-space:nowrap}
+/* el boton de bajar: discreto hasta que lo apuntas, verde cuando quedo pedido */
+#slsk .bajar{margin-left:4px;border:1px solid var(--acento);background:transparent;
+  color:var(--acento);font-family:var(--mono);font-size:.62rem;letter-spacing:.06em;
+  text-transform:uppercase;padding:3px 8px;border-radius:2px;cursor:pointer;
+  transition:background .12s,color .12s}
+#slsk .bajar:hover:not(:disabled){background:var(--acento);color:var(--stxt)}
+#slsk .bajar:disabled{opacity:.5;cursor:default}
+#slsk .bajar.listo{border-color:var(--acento2);color:var(--acento2);opacity:1}
+#slsk .bajar.fallo{border-color:var(--estrella);color:var(--estrella);opacity:1}
 #slsk .vacio2{padding:26px 12px;text-align:center;color:var(--suave);
   font-family:var(--mono);font-size:.76rem}
 
