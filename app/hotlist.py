@@ -145,8 +145,10 @@ def generar():
             "SELECT id FROM hot WHERE bpm IS NULL LIMIT 40")]
         if faltan:
             print("\n  midiendo %d con el DSP…" % len(faltan))
+            # sin timeout, un yt-dlp colgado deja la tanda a medias para
+            # siempre. 40 temas a ~4 min de tope cada uno: 45 min alcanza.
             subprocess.run([sys.executable, os.path.join(HERE, "bpm.py")] + faltan,
-                           capture_output=True)
+                           capture_output=True, timeout=2700)
             print("  medidos. Corre bd_build.py para volcarlos a la base.")
     con.close()
     return 0

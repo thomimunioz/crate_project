@@ -37,9 +37,28 @@ async def proxy(url: str = Query(..., description="URL absoluta a relayear")) ->
         "Accept": "application/json",
         **_auth_for(host),
     }
+    # Seguir redirects a ciegas saltea la allowlist: un host permitido puede
+    # responder 302 hacia 127.0.0.1 o hacia una IP interna y el proxy lo trae
+    # igual. Por eso se siguen a mano, revalidando el host en CADA salto.
+    # (Auditoria del 27-oct-2026.)
     try:
-        async with httpx.AsyncClient(timeout=20.0, follow_redirects=True) as client:
-            r = await client.get(url, headers=headers)
+        async with httpx.AsyncClient(timeout=20.0, follow_redirects=False) as client:
+            for _ in range(5):
+                r = await client.get(url, headers=headers)
+                if r.status_code not in (301, 302, 303, 307, 308):
+                    break
+                destino = str(r.headers.get("location") or "")
+                if not destino:
+                    break
+                url = str(httpx.URL(url).join(destino))
+                salto = urlparse(url).hostname or ""
+                if not _host_allowed(salto):
+                    raise HTTPException(
+                        status_code=403,
+                        detail=f"redirect a host no permitido: {salto!r}")
+                headers = {**headers, **_auth_for(salto)}
+            else:
+                raise HTTPException(status_code=502, detail="demasiados redirects")
     except httpx.HTTPError as exc:
         raise HTTPException(status_code=502, detail=f"proxy error: {exc}") from exc
 

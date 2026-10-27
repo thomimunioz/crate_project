@@ -52,6 +52,11 @@ def servible(ruta):
 def db():
     con = sqlite3.connect(DB, timeout=10)
     con.row_factory = sqlite3.Row
+    # SQLite trae las foraneas APAGADAS por defecto, asi que el
+    # "ON DELETE CASCADE" de hotlist no se cumplia: borrar un tema dejaba la
+    # fila del hotlist colgada. Hoy no hay huerfanos; esto es para que sigan
+    # sin haberlos. (Auditoria del 27-oct.)
+    con.execute("PRAGMA foreign_keys = ON")
     return con
 
 

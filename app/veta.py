@@ -139,6 +139,11 @@ def minar(con, veta, cupo):
         AND NOT EXISTS (SELECT 1 FROM marca      m WHERE m.id = t.id)
         AND NOT EXISTS (SELECT 1 FROM en_playlist p WHERE p.id = t.id)
         AND NOT EXISTS (SELECT 1 FROM hotlist    h WHERE h.id = t.id)
+        -- Mismo tema subido dos veces con distinto id: medido el 27-oct, 22
+        -- de los que ya estan en sus listas tienen un gemelo suelto en la
+        -- base. Sin esto se los ofrecemos como novedad.
+        AND NOT EXISTS (SELECT 1 FROM tema g JOIN en_playlist p ON p.id = g.id
+                        WHERE g.titulo = t.titulo AND g.id <> t.id)
     """).fetchall()
 
     pasan = []
