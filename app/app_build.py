@@ -108,7 +108,7 @@ DOC = """<!doctype html>
   </div>
 
   <div class="fila1" id="cavar">
-    <span class="lbl">cavar en youtube</span>
+    <span class="lbl">diggear en youtube</span>
     <input id="qy" placeholder="soul · city pop · piano · folk · dark · fusion">
     <button class="chip b on" id="bcavar">buscar</button>
     <button class="chip m" id="bhot" title="lo mejor sin escuchar, renovado cada semana">★ hotlist</button>

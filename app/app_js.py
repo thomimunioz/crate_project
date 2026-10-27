@@ -202,7 +202,15 @@ document.addEventListener('click', e => {
   const a = e.target.closest('a.art');
   if(a && servidor && !e.ctrlKey && !e.metaKey && !e.shiftKey){
     const tr = a.closest('tr[data-id]');
-    if(tr && reproducir(tr.dataset.id)){ e.preventDefault(); return; }
+    if(tr){
+      // Se frena SIEMPRE, ande o no. Si reproducir() falla (tipico: el
+      // reproductor de YouTube todavia no termino de cargar) antes el click
+      // se escapaba al href y se abria una pestaña sin que lo pidieras.
+      // Para ir a YouTube a proposito: ctrl+click o boton del medio.
+      e.preventDefault();
+      reproducir(tr.dataset.id);
+      return;
+    }
   }
   const b = e.target.closest('.slsk');
   if(b){
@@ -582,11 +590,19 @@ $('#player .pest').addEventListener('click', e=>{
 
 
 /* =======================================================================
-   CAVAR EN YOUTUBE DESDE LA APP
+   DIGGEAR EN YOUTUBE DESDE LA APP
    Thomas escribe "soul" y el servidor le agrega todo lo que fuimos midiendo:
    expande la busqueda, descarta con los criterios y ordena por lo que rinde.
    ======================================================================= */
 let modoBusqueda = false;
+
+/* En el hotlist el artista a veces no viene separado del titulo (lo que trae
+   el buscador es el titulo crudo de YouTube). En ese caso firma con el canal,
+   que es lo que de verdad importa: quien lo subio. */
+function firmaDe(d){
+  if(d.artista && d.artista !== d.titulo) return d.artista;
+  return d.canal || '—';
+}
 
 function pintarBusqueda(res){
   $('#cuerpo').innerHTML = res.length ? res.map((d,i)=>{
@@ -594,8 +610,16 @@ function pintarBusqueda(res){
     const raz = (d.razones||[]).slice(0,2).join(' · ');
     return '<tr data-id="'+d.id+'" class="nuevo">'
       + '<td class="cat">+'+String(i+1).padStart(3,'0')+'</td>'
-      + '<td><a class="art" href="https://www.youtube.com/watch?v='+d.id+'" target="_blank">'
-        + esc(d.titulo)+'</a>'
+      + '<td>'
+        // Misma estructura que la tabla principal: el TEMA es un span grande y
+        // clickeable (toda la fila reproduce), y el link a YouTube es solo la
+        // firma de abajo. Antes el titulo entero era el <a>, asi que si el
+        // reproductor todavia estaba cargando el click se escapaba al link y
+        // se abria una pestaña. Ahora no hay forma de que eso pase.
+        + '<span class="tem">'+esc(d.nombre || d.titulo)+'</span>'
+        + '<a class="art" href="https://www.youtube.com/watch?v='+d.id+'"'
+        +   ' target="_blank" rel="noopener" title="abrir en YouTube">'
+        +   esc(firmaDe(d))+'</a>'
         + '<button class="slsk" data-q="'+esc(limpiar(d.titulo))+'" data-id="'+esc(d.id)+'">⇩ slsk</button>'
         + '<div class="meta">'+esc(d.canal||'')+'</div>'
         + (raz?'<div class="razon">'+esc(raz)+'</div>':'')
