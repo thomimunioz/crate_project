@@ -1,0 +1,33 @@
+name: tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: instalar pytest
+        run: python -m pip install --quiet pytest
+
+      # Los tests son de funciones puras: no tocan crate.db, no salen a la red
+      # y no necesitan yt-dlp ni slskd. Por eso corren en el runner sin montar
+      # nada. Si alguno empieza a necesitar la base, va a fallar aca primero.
+      - name: correr los tests
+        run: python -m pytest
+
+      - name: que no se cuelen secretos
+        run: |
+          if git ls-files | grep -E '(^|/)\.env$|slskd_key|\.pem$|\.key$'; then
+            echo "::error::hay un archivo con secretos versionado"
+            exit 1
+          fi
+          echo "ningun secreto versionado"
