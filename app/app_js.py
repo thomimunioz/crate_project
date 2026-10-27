@@ -624,9 +624,23 @@ function pintarBusqueda(res){
         + '<div class="meta">'+esc(d.canal||'')+'</div>'
         + (raz?'<div class="razon">'+esc(raz)+'</div>':'')
       + '</td>'
-      + '<td class="dato">'+(d.views!=null?'<span class="v">'+(d.views>=1000?Math.round(d.views/1000)+'k':d.views)+'</span><br>views':'·')+'</td>'
-      + '<td class="dato">'+(d.bpm?'<span class="v">'+Math.round(d.bpm)+'</span><br>bpm':'·')+'</td>'
-      + '<td class="dato">'+(d.dur?'<span class="v">'+Math.floor(d.dur/60)+':'+String(d.dur%60).padStart(2,'0')+'</span>':'·')+'</td>'
+      // Las TRES celdas llevan etiqueta, si o si. .v es display:block, asi que
+      // la unidad siempre cae abajo: una celda con etiqueta mide dos renglones
+      // y una sin etiqueta mide uno. Con vertical-align:middle la de un
+      // renglon queda centrada respecto de las otras y se ve torcida. Ademas
+      // la etiqueta va en <span class="u"> y no en texto pelado despues de un
+      // <br>, para que tome el estilo de la tabla principal.
+      + '<td class="dato">'+(d.views!=null
+            ? '<span class="v">'+(d.views>=1000?Math.round(d.views/1000)+'k':d.views)
+              +'</span><span class="u">views</span>'
+            : '·')+'</td>'
+      + '<td class="dato">'+(d.bpm
+            ? '<span class="v">'+Math.round(d.bpm)+'</span><span class="u">bpm</span>'
+            : '·')+'</td>'
+      + '<td class="dato">'+(d.dur
+            ? '<span class="v">'+Math.floor(d.dur/60)+':'+String(d.dur%60).padStart(2,'0')
+              +'</span><span class="u">largo</span>'
+            : '·')+'</td>'
       + '<td class="est">'+clasif(d)+' '+rating(d.id, e)+'</td></tr>';
   }).join('') : '<tr><td colspan="6" class="vacio">no quedo nada después de filtrar</td></tr>';
   marcarSonando();

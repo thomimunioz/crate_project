@@ -354,7 +354,10 @@ td.dato{font-family:var(--mono);font-size:.8rem;text-align:right;white-space:now
   color:var(--suave);width:76px;font-variant-numeric:tabular-nums}
 td.dato .v{font-family:var(--mono);font-weight:700;font-size:1.02rem;color:var(--fuerte);
   letter-spacing:-.01em;line-height:1.15;display:block;font-variant-numeric:tabular-nums}
-td.dato .u{font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;opacity:.65}
+/* sin opacity: al 65% quedaba en 2,7 de contraste sobre "for you" (minimo
+   4,5). Ya es secundaria por tamaño, mayusculas y espaciado; no hace falta
+   ademas apagarla hasta volverla ilegible. */
+td.dato .u{font-size:.6rem;letter-spacing:.08em;text-transform:uppercase}
 td.dato .v.men{color:var(--acento2)}
 .bajado{display:inline-block;font-family:var(--sans);font-weight:700;font-size:.56rem;
   letter-spacing:.1em;color:var(--stxt);background:var(--acento2);padding:1px 5px;
