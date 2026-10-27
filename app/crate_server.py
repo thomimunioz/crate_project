@@ -106,14 +106,14 @@ class Handler(SimpleHTTPRequestHandler):
             try:
                 d = slsk_api("GET", "/api/v0/transfers/downloads")
             except Exception as e:
-                return self._json({"ok": False, "error": str(e)[:140]}, 502)
+                return self._json({"ok": False, "error": error_slskd(e)}, 502)
             return self._json({"ok": True, "bajadas": bajadas_planas(d)})
         if ruta.startswith("/api/slsk/"):
             sid = ruta.rsplit("/", 1)[-1]
             try:
                 d = slsk_api("GET", "/api/v0/searches/%s?includeResponses=true" % sid)
             except Exception as e:
-                return self._json({"ok": False, "error": str(e)[:140]}, 502)
+                return self._json({"ok": False, "error": error_slskd(e)}, 502)
             estado = d.get("state", "")
             listo = estado.startswith("Completed")
             return self._json({"ok": True, "listo": listo, "estado": estado,
@@ -253,8 +253,7 @@ class Handler(SimpleHTTPRequestHandler):
             try:
                 ini = slsk_api("POST", "/api/v0/searches", {"searchText": q})
             except Exception as e:
-                return self._json({"ok": False,
-                                   "error": "slskd no responde: " + str(e)[:120]}, 502)
+                return self._json({"ok": False, "error": error_slskd(e)}, 502)
             return self._json({"ok": True, "id": ini.get("id"), "q": q})
 
         if ruta == "/api/slsk/bajar":
@@ -269,8 +268,7 @@ class Handler(SimpleHTTPRequestHandler):
                 slsk_api("POST", "/api/v0/transfers/downloads/%s"
                          % urllib.parse.quote(usuario, safe=""), cuerpo)
             except Exception as e:
-                return self._json({"ok": False,
-                                   "error": "slskd rechazo la descarga: " + str(e)[:120]}, 502)
+                return self._json({"ok": False, "error": error_slskd(e)}, 502)
             # queda anotado contra el tema: asi `por_bajar` deja de pedirlo y se
             # sabe de donde salio el archivo cuando aparezca en el disco
             vid = datos.get("id")
@@ -326,6 +324,19 @@ class Handler(SimpleHTTPRequestHandler):
             return self._json({"ok": True, "id": vid, "tiene": tiene})
 
         return self._json({"ok": False, "error": "ruta desconocida"}, 404)
+
+
+
+def error_slskd(e):
+    """Traduce el error de red a algo accionable.
+
+    "WinError 10061: no se puede establecer una conexion" no le dice nada a
+    nadie. Casi siempre significa una sola cosa: slskd no esta prendido.
+    """
+    txt = str(e)
+    if "10061" in txt or "refused" in txt.lower() or "actively refused" in txt:
+        return "slskd no esta prendido — corré  crate slsk  y probá de nuevo"
+    return "slskd no responde: " + txt[:110]
 
 
 def slsk_api(metodo, ruta, cuerpo=None):

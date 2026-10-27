@@ -10,11 +10,13 @@
     crate sync            vuelca lo que votaste en el navegador a crate.db
     crate estado          que hay en la base, en una pantalla
     crate limpiar         saca canales de IA y arregla años de reedicion
+    crate slsk            prende solo slskd (si se te cayo)
 
 Cada subcomando es uno de los scripts de siempre: esto no agrega logica, solo
 evita tener que acordarse de cual era.
 """
 import os
+import socket
 import subprocess
 import sqlite3
 import sys
@@ -31,6 +33,38 @@ COMANDOS = {
     "sync":    ["bd_sync.py"],
     "check":   ["app_check.py"],
 }
+
+
+RAIZ = os.path.dirname(HERE)
+SLSKD = os.path.join(RAIZ, "slskd")
+
+
+def puerto_abierto(puerto, host="127.0.0.1"):
+    with socket.socket() as s:
+        s.settimeout(0.4)
+        return s.connect_ex((host, puerto)) == 0
+
+
+def levantar_slskd():
+    """slskd es un programa aparte: si no esta prendido, el boton de Soulseek
+    tira "no se puede establecer una conexion" y no se entiende por que. Como
+    siempre hay que prenderlo igual, lo prende esto.
+
+    Tarda ~10s en loguearse a la red de Soulseek, pero no bloqueamos: para
+    cuando Thomas apriete el boton de buscar ya va a estar.
+    """
+    if puerto_abierto(5030):
+        return "ya estaba prendido"
+    exe = os.path.join(SLSKD, "slskd.exe")
+    if not os.path.exists(exe):
+        return "no esta instalado (bajalo de github.com/slskd/slskd)"
+    try:
+        subprocess.Popen([exe, "--config", os.path.join(SLSKD, "slskd.yml")],
+                         cwd=SLSKD, stdout=subprocess.DEVNULL,
+                         stderr=subprocess.DEVNULL)
+        return "prendido (tarda ~10s en conectarse a la red)"
+    except Exception as e:
+        return "no pude prenderlo: %s" % str(e)[:60]
 
 
 def correr(script, resto):
@@ -68,12 +102,16 @@ def limpiar():
 def main():
     args = sys.argv[1:]
     if not args:
+        print("soulseek: %s" % levantar_slskd())
         return correr("crate_server.py", [])
     cmd, resto = args[0].lower(), args[1:]
     if cmd in ("estado", "status"):
         return estado()
     if cmd == "limpiar":
         return limpiar()
+    if cmd in ("slsk", "soulseek"):
+        print("soulseek: %s" % levantar_slskd())
+        return 0
     if cmd in COMANDOS:
         return correr(COMANDOS[cmd][0], resto)
     if cmd in ("-h", "--help", "ayuda", "help"):

@@ -50,3 +50,6 @@ backend/tools/cache/
 # crate.db SI se versiona: es el indice real y es irreemplazable.
 # El .bak es una copia redundante de 15 MB, esa no.
 crate.db.bak
+
+# ---- slskd (binario de 100 MB, se baja de github.com/slskd/slskd) ----
+slskd/
