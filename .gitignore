@@ -45,3 +45,8 @@ Thumbs.db
 
 # ---- calibración de BPM (features derivadas, no audio; se regeneran con tools/bpm_calibrate.py fetch) ----
 backend/tools/cache/
+
+# ---- crate local (27-oct-2026) ----
+# crate.db SI se versiona: es el indice real y es irreemplazable.
+# El .bak es una copia redundante de 15 MB, esa no.
+crate.db.bak

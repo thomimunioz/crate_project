@@ -1,0 +1,45 @@
+{
+  "_comentario": "Config lista para claude-code-router. NO esta instalado ni activo. Ver LEEME.md. Pone tu key y copiala a ~/.claude-code-router/config.json",
+  "LOG": true,
+  "API_TIMEOUT_MS": 600000,
+  "Providers": [
+    {
+      "name": "deepseek",
+      "api_base_url": "https://api.deepseek.com/chat/completions",
+      "api_key": "PONE_TU_KEY_ACA",
+      "models": ["deepseek-chat", "deepseek-reasoner"]
+    },
+    {
+      "name": "openrouter",
+      "api_base_url": "https://openrouter.ai/api/v1/chat/completions",
+      "api_key": "PONE_TU_KEY_ACA",
+      "models": [
+        "google/gemini-2.5-flash",
+        "anthropic/claude-sonnet-4",
+        "qwen/qwen-2.5-coder-32b-instruct"
+      ]
+    },
+    {
+      "name": "ollama",
+      "api_base_url": "http://localhost:11434/v1/chat/completions",
+      "api_key": "ollama",
+      "models": ["qwen2.5-coder:14b"]
+    }
+  ],
+  "Router": {
+    "default": "deepseek,deepseek-chat",
+    "background": "ollama,qwen2.5-coder:14b",
+    "think": "deepseek,deepseek-reasoner",
+    "longContext": "openrouter,google/gemini-2.5-flash",
+    "longContextThreshold": 60000,
+    "webSearch": "openrouter,google/gemini-2.5-flash"
+  },
+  "_fallback": "Si una cuota se agota, el router reintenta con el siguiente proveedor que tenga el modelo. Para forzar uno: /model proveedor,modelo",
+  "_que_hace_cada_ruta": {
+    "default": "lo normal: barato",
+    "background": "tareas chicas automaticas: local, cero costo",
+    "think": "razonamiento: el caro, solo cuando hace falta",
+    "longContext": "cuando el contexto pasa de 60k tokens",
+    "webSearch": "busquedas en la web"
+  }
+}

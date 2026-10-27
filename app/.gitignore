@@ -1,0 +1,17 @@
+# la clave de slskd: credencial, nunca al repo
+slskd_key.txt
+datos/slskd_key.txt
+
+__pycache__/
+*.pyc
+
+# Pools cavados: pesan 15 MB y se regeneran con `crate cavar` / vetas.py.
+# Lo que NO se ignora de datos/ son las selecciones hechas a mano
+# (fuego.json, marcados.json, seleccion.json, sel_ids.txt...): eso es el oido
+# de Thomas y no se puede regenerar.
+datos/*_pool.json
+datos/*_cavado.json
+datos/mapa.json
+datos/meta_cache*.json
+datos/vetas_lista.txt
+datos/*.bak.json

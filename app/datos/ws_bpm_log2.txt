@@ -1,0 +1,102 @@
+{"id": "whyqGpZOsFc", "bpm": 65.8, "bpm_conf": 0.77, "key": "G minor", "key_conf": 0.78, "dur": 248}
+{"id": "EnlVohGBlsc", "bpm": 93.6, "bpm_conf": 0.34, "key": "C# major", "key_conf": 0.77, "dur": 221}
+{"id": "GYOeJAN50tQ", "bpm": 130.5, "bpm_conf": 0.83, "key": "D# minor", "key_conf": 0.76, "dur": 445}
+{"id": "FMhW6BclGg0", "bpm": 60.8, "bpm_conf": 0.82, "key": "G minor", "key_conf": 0.76, "dur": 279}
+{"id": "h8Xmu93aVeM", "bpm": 61.4, "bpm_conf": 0.39, "key": "A major", "key_conf": 0.89, "dur": 173}
+{"id": "5-U5NF4-z50", "bpm": 82.1, "bpm_conf": 0.88, "key": "C# minor", "key_conf": 0.84, "dur": 180}
+{"id": "iAJSRhpqGLU", "bpm": 75.3, "bpm_conf": 0.88, "key": "A# major", "key_conf": 0.93, "dur": 190}
+{"id": "7BYLNiZfYA0", "bpm": 65.4, "bpm_conf": 0.76, "key": "G minor", "key_conf": 0.79, "dur": 253}
+{"id": "A16kk5s-tdc", "bpm": 64.7, "bpm_conf": 0.65, "key": "C major", "key_conf": 0.81, "dur": 257}
+{"id": "DGWQ_4jQdwc", "bpm": 60.2, "bpm_conf": 0.66, "key": "G# major", "key_conf": 0.7, "dur": 276}
+{"id": "l-_2mtWzlIc", "bpm": 129.7, "bpm_conf": 0.29, "key": "A major", "key_conf": 0.83, "dur": 343}
+{"id": "wulBAbQQLxA", "bpm": 113.7, "bpm_conf": 0.89, "key": "A# minor", "key_conf": 0.85, "dur": 219}
+{"id": "wwSsPaqyOrA", "bpm": 113.9, "bpm_conf": 0.67, "key": "D minor", "key_conf": 0.92, "dur": 215, "cached": true}
+{"id": "ta0s2g_pqU8", "bpm": 77.9, "bpm_conf": 0.75, "key": "D major", "key_conf": 0.95, "dur": 229, "cached": true}
+{"id": "1t3t9qsruMs", "bpm": 190.4, "bpm_conf": 0.73, "key": "E minor", "key_conf": 0.78, "dur": 357, "cached": true}
+{"id": "qh2I82CvhH0", "bpm": 66.6, "bpm_conf": 0.85, "key": "B minor", "key_conf": 0.91, "dur": 262, "cached": true}
+{"id": "IRqTD3qDXCM", "bpm": 83.6, "bpm_conf": 0.83, "key": "D major", "key_conf": 0.85, "dur": 203, "cached": true}
+{"id": "6Rqi3aD71qk", "bpm": 81.6, "bpm_conf": 0.64, "key": "B minor", "key_conf": 0.85, "dur": 298, "cached": true}
+{"id": "4yZfGewP_qo", "bpm": 89.0, "bpm_conf": 0.85, "key": "G minor", "key_conf": 0.85, "dur": 415, "cached": true}
+{"id": "kR3x32_h9-I", "bpm": 102.7, "bpm_conf": 0.84, "key": "C major", "key_conf": 0.72, "dur": 305, "cached": true}
+{"id": "_oEXAuRIxKY", "bpm": 53.6, "bpm_conf": 0.76, "key": "D minor", "key_conf": 0.92, "dur": 199, "cached": true}
+{"id": "LN0YTionu2w", "bpm": 106.8, "bpm_conf": 0.41, "key": "G minor", "key_conf": 0.74, "dur": 186, "cached": true}
+{"id": "lWdnl3H6rUk", "bpm": 59.9, "bpm_conf": 0.68, "key": "A# major", "key_conf": 0.9, "dur": 305, "cached": true}
+{"id": "HQY8fYgjgXQ", "bpm": 143.8, "bpm_conf": 0.82, "key": "E minor", "key_conf": 0.81, "dur": 228, "cached": true}
+{"id": "82qu_Gqq4g8", "bpm": 65.6, "bpm_conf": 0.38, "key": "C major", "key_conf": 0.9, "dur": 243, "cached": true}
+{"id": "YNft5UCtwGw", "bpm": 61.8, "bpm_conf": 0.51, "key": "C major", "key_conf": 0.83, "dur": 260, "cached": true}
+{"id": "6DReNZgfw9k", "bpm": 128.6, "bpm_conf": 0.64, "key": "E minor", "key_conf": 0.78, "dur": 187, "cached": true}
+{"id": "dIXDbV7amXk", "bpm": 66.5, "bpm_conf": 0.54, "key": "E minor", "key_conf": 0.88, "dur": 197, "cached": true}
+{"id": "YQ7Ywrqmvvw", "bpm": 99.8, "bpm_conf": 0.94, "key": "A minor", "key_conf": 0.86, "dur": 175, "cached": true}
+{"id": "XPRAcNVZL_4", "bpm": 73.5, "bpm_conf": 0.54, "key": "C# major", "key_conf": 0.87, "dur": 211, "cached": true}
+{"id": "sibiaN5hzu0", "bpm": 131.3, "bpm_conf": 0.75, "key": "B major", "key_conf": 0.81, "dur": 289, "cached": true}
+{"id": "1-TEngF_i5Y", "bpm": 58.3, "bpm_conf": 0.66, "key": "G minor", "key_conf": 0.86, "dur": 447, "cached": true}
+{"id": "-ceMt_rLLzM", "bpm": 87.5, "bpm_conf": 0.9, "key": "D major", "key_conf": 0.65, "dur": 199, "cached": true}
+{"id": "D0NsS975a1g", "bpm": 73.1, "bpm_conf": 0.62, "key": "E major", "key_conf": 0.74, "dur": 207, "cached": true}
+{"id": "Qvzm05aFt9Q", "bpm": 92.1, "bpm_conf": 0.83, "key": "D major", "key_conf": 0.85, "dur": 279, "cached": true}
+{"id": "v2WYH36ns5A", "bpm": 59.1, "bpm_conf": 0.53, "key": "F major", "key_conf": 0.88, "dur": 303, "cached": true}
+{"id": "l8D5f3PxPy8", "bpm": 98.9, "bpm_conf": 0.92, "key": "F minor", "key_conf": 0.76, "dur": 185, "cached": true}
+{"id": "XQOVSNksx8k", "bpm": 54.7, "bpm_conf": 0.43, "key": "D minor", "key_conf": 0.9, "dur": 322, "cached": true}
+{"id": "0x-qpgV9y98", "bpm": 60.5, "bpm_conf": 0.83, "key": "F minor", "key_conf": 0.86, "dur": 231, "cached": true}
+{"id": "Md6v_OAnGog", "bpm": 79.6, "bpm_conf": 0.74, "key": "F# major", "key_conf": 0.74, "dur": 343, "cached": true}
+{"id": "vRBczk_J44g", "bpm": 76.4, "bpm_conf": 0.71, "key": "F major", "key_conf": 0.89, "dur": 361, "cached": true}
+{"id": "BdU_AEBQ9nw", "bpm": 114.9, "bpm_conf": 0.68, "key": "G# major", "key_conf": 0.88, "dur": 242}
+{"id": "wtl5a5-3DtM", "bpm": 76.1, "bpm_conf": 0.73, "key": "D major", "key_conf": 0.91, "dur": 207}
+{"id": "WdQGd4zs1oY", "bpm": 114.7, "bpm_conf": 0.79, "key": "C# minor", "key_conf": 0.87, "dur": 396}
+{"id": "slCzhmXQcF0", "bpm": 113.7, "bpm_conf": 0.83, "key": "F# minor", "key_conf": 0.79, "dur": 405}
+{"id": "WPQAfuTvO_I", "bpm": 92.1, "bpm_conf": 0.88, "key": "D minor", "key_conf": 0.74, "dur": 251}
+{"id": "hh1hhim_Ao0", "bpm": 62.3, "bpm_conf": 0.56, "key": "E minor", "key_conf": 0.86, "dur": 479, "cached": true}
+{"id": "HoAl-G7vDKQ", "bpm": 60.1, "bpm_conf": 0.31, "key": "F# major", "key_conf": 0.89, "dur": 580, "cached": true}
+{"id": "sid1Sjlcaa8", "bpm": 55.9, "bpm_conf": 0.8, "key": "C major", "key_conf": 0.85, "dur": 220}
+{"id": "1zFjvY5etPY", "bpm": 88.8, "bpm_conf": 0.61, "key": "A minor", "key_conf": 0.8, "dur": 223, "cached": true}
+{"id": "xtHQ7E89joo", "bpm": 171.7, "bpm_conf": 0.84, "key": "F minor", "key_conf": 0.87, "dur": 377}
+{"id": "nnqOTsRc8cc", "bpm": 64.4, "bpm_conf": 0.53, "key": "G major", "key_conf": 0.91, "dur": 343}
+{"id": "ZU4gUBZEcTY", "bpm": 101.2, "bpm_conf": 0.91, "key": "E minor", "key_conf": 0.71, "dur": 224, "cached": true}
+{"id": "7DPKfnynczc", "bpm": 98.0, "bpm_conf": 0.85, "key": "D# major", "key_conf": 0.86, "dur": 295, "cached": true}
+{"id": "-zLVyh4R2GE", "bpm": 90.0, "bpm_conf": 0.93, "key": "D minor", "key_conf": 0.89, "dur": 188, "cached": true}
+{"id": "7hB0s0HrgYM", "bpm": 58.5, "bpm_conf": 0.73, "key": "E major", "key_conf": 0.97, "dur": 180, "cached": true}
+{"id": "sqM73FqK5CM", "bpm": 61.4, "bpm_conf": 0.38, "key": "A# major", "key_conf": 0.87, "dur": 250, "cached": true}
+{"id": "MZbuSIrGmE8", "bpm": 78.4, "bpm_conf": 0.3, "key": "G major", "key_conf": 0.83, "dur": 307, "cached": true}
+{"id": "N5NgA6HluXk", "bpm": 51.4, "bpm_conf": 0.32, "key": "E minor", "key_conf": 0.82, "dur": 253, "cached": true}
+{"id": "0bOyOik8iHE", "bpm": 160.3, "bpm_conf": 0.54, "key": "A minor", "key_conf": 0.86, "dur": 176, "cached": true}
+{"id": "lqj5mwWBDfg", "bpm": 61.2, "bpm_conf": 0.7, "key": "F minor", "key_conf": 0.8, "dur": 198, "cached": true}
+{"id": "OqiYpS5mSM4", "bpm": 130.1, "bpm_conf": 0.68, "key": "C minor", "key_conf": 0.85, "dur": 220, "cached": true}
+{"id": "_gxq-aI1EI0", "bpm": 146.2, "bpm_conf": 0.38, "key": "G# minor", "key_conf": 0.84, "dur": 260, "cached": true}
+{"id": "DQpi-82AR0I", "bpm": 99.7, "bpm_conf": 0.6, "key": "A major", "key_conf": 0.88, "dur": 185, "cached": true}
+{"id": "-sEtZw7uvFk", "bpm": 60.7, "bpm_conf": 0.55, "key": "C# major", "key_conf": 0.8, "dur": 261, "cached": true}
+{"id": "-rJwLzhDb3Q", "bpm": 109.4, "bpm_conf": 0.69, "key": "A# minor", "key_conf": 0.84, "dur": 260}
+{"id": "jQizjBneOVg", "bpm": 125.9, "bpm_conf": 0.47, "key": "D major", "key_conf": 0.82, "dur": 264}
+{"id": "QVGlp9DdjIw", "bpm": 74.1, "bpm_conf": 0.53, "key": "B minor", "key_conf": 0.87, "dur": 278}
+{"id": "bwdaf_OyyAU", "bpm": 128.7, "bpm_conf": 0.83, "key": "E major", "key_conf": 0.89, "dur": 207}
+{"id": "Z942tUFQXFM", "bpm": 85.9, "bpm_conf": 0.88, "key": "F# major", "key_conf": 0.82, "dur": 206}
+{"id": "Xb7eNyIp4-I", "bpm": 96.5, "bpm_conf": 0.69, "key": "G# major", "key_conf": 0.87, "dur": 202}
+{"id": "BenaGItkVC4", "bpm": 56.0, "bpm_conf": 0.84, "key": "G major", "key_conf": 0.85, "dur": 172}
+{"id": "fOJD22Ema1Q", "bpm": 92.6, "bpm_conf": 0.85, "key": "B major", "key_conf": 0.9, "dur": 233}
+{"id": "PlV4EJTpZco", "bpm": 109.1, "bpm_conf": 0.31, "key": "A minor", "key_conf": 0.87, "dur": 226}
+{"id": "X4H84r1EJTM", "bpm": 133.3, "bpm_conf": 0.67, "key": "E major", "key_conf": 0.88, "dur": 345}
+{"id": "3ZowqZ72Ofw", "bpm": 172.6, "bpm_conf": 0.91, "key": "E minor", "key_conf": 0.89, "dur": 425}
+{"id": "FhuwDA0NQ_E", "bpm": 89.2, "bpm_conf": 0.74, "key": "G minor", "key_conf": 0.9, "dur": 406}
+{"id": "BkrA948Lf8I", "bpm": 67.4, "bpm_conf": 0.63, "key": "A minor", "key_conf": 0.9, "dur": 181}
+{"id": "QReC-suN8Qo", "bpm": 103.5, "bpm_conf": 0.66, "key": "G minor", "key_conf": 0.91, "dur": 258}
+{"id": "hK8CJKBC7ro", "bpm": 103.3, "bpm_conf": 0.42, "key": "C# minor", "key_conf": 0.91, "dur": 260}
+{"id": "40-t3X-gU7I", "bpm": 73.7, "bpm_conf": 0.89, "key": "D major", "key_conf": 0.82, "dur": 227}
+{"id": "p2OJnaA7ekM", "bpm": 130.6, "bpm_conf": 0.64, "key": "A major", "key_conf": 0.9, "dur": 268}
+{"id": "wsUHmeI2cUk", "bpm": 108.5, "bpm_conf": 0.82, "key": "F minor", "key_conf": 0.92, "dur": 432}
+{"id": "GQ9FU2j885g", "bpm": 91.5, "bpm_conf": 0.57, "key": "G major", "key_conf": 0.89, "dur": 188}
+{"id": "wbTLw0y78yI", "bpm": 68.1, "bpm_conf": 0.56, "key": "G major", "key_conf": 0.92, "dur": 223}
+{"id": "gcnliuB6GJY", "bpm": 71.1, "bpm_conf": 0.85, "key": "E minor", "key_conf": 0.9, "dur": 228}
+{"id": "1_ylDQd_pI8", "bpm": 71.4, "bpm_conf": 0.87, "key": "E minor", "key_conf": 0.9, "dur": 226}
+{"id": "obk_Te5QNTA", "bpm": 71.4, "bpm_conf": 0.86, "key": "E minor", "key_conf": 0.9, "dur": 229}
+{"id": "2xxucCj6wNs", "bpm": 135.9, "bpm_conf": 0.92, "key": "E minor", "key_conf": 0.88, "dur": 313, "cached": true}
+{"id": "QlpieOLxmvI", "bpm": 96.2, "bpm_conf": 0.54, "key": "F major", "key_conf": 0.84, "dur": 244, "cached": true}
+{"id": "FqAXUCJseD8", "bpm": 153.5, "bpm_conf": 0.69, "key": "G minor", "key_conf": 0.83, "dur": 322, "cached": true}
+{"id": "CLowpsC-h_w", "bpm": 159.7, "bpm_conf": 0.81, "key": "D major", "key_conf": 0.86, "dur": 385, "cached": true}
+{"id": "mIJz92beD0c", "bpm": 116.7, "bpm_conf": 0.8, "key": "D minor", "key_conf": 0.96, "dur": 268, "cached": true}
+{"id": "2_EKo6GAJnE", "bpm": 119.3, "bpm_conf": 0.74, "key": "C minor", "key_conf": 0.68, "dur": 322, "cached": true}
+{"id": "_VbTNNoTY6U", "bpm": 92.2, "bpm_conf": 0.72, "key": "E minor", "key_conf": 0.9, "dur": 325}
+{"id": "giQcVNKSzD8", "bpm": 124.4, "bpm_conf": 0.65, "key": "D major", "key_conf": 0.79, "dur": 367}
+{"id": "xYmXbXWW5uo", "bpm": 103.2, "bpm_conf": 0.56, "key": "E minor", "key_conf": 0.85, "dur": 629}
+{"id": "qIwEBov5N-0", "bpm": 52.3, "bpm_conf": 0.55, "key": "F minor", "key_conf": 0.85, "dur": 265}
+{"id": "VuQu3c9uCNE", "bpm": 74.1, "bpm_conf": 0.6, "key": "G# major", "key_conf": 0.87, "dur": 280}
+{"id": "9mJBXh-i80k", "bpm": 71.4, "bpm_conf": 0.73, "key": "A# major", "key_conf": 0.89, "dur": 300}
+{"id": "orMjR1jr_Wg", "bpm": 88.6, "bpm_conf": 0.92, "key": "D major", "key_conf": 0.95, "dur": 230}
+{"id": "5y4AEXWUqP0", "bpm": 74.2, "bpm_conf": 0.81, "key": "C major", "key_conf": 0.91, "dur": 306}

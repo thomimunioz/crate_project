@@ -1,0 +1,284 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CRATE · demo</title><style>*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;max-width:1060px;margin:0 auto;padding:28px 18px 60px;background:#f4efe6;color:#2a2420;line-height:1.5}
+h1{font-size:1.9rem;margin:0 0 4px;letter-spacing:-.5px}
+.lede{color:#6b5d4d;font-size:1rem;margin:0 0 22px}
+h2{font-size:1.1rem;margin:26px 0 6px}
+.intro{background:#fffdf7;border:1px solid #d9cdb5;border-radius:10px;padding:18px 24px;margin:0 0 30px}
+.intro h2{font-size:1.05rem;margin:22px 0 6px;color:#8b2f1f}
+.intro h2:first-child{margin-top:0}
+.intro p{margin:6px 0;font-size:.94rem}
+.intro blockquote{margin:10px 0;padding:8px 14px;border-left:3px solid #c9b8a0;background:#f4efe6;font-style:italic;color:#4a4038;font-size:.92rem}
+.sec{margin-top:38px}
+.sec h2{font-size:1.18rem;border-bottom:2px solid #c9b8a0;padding-bottom:5px;margin-bottom:4px}
+.sub{color:#6b5d4d;font-size:.88rem;margin:0 0 12px}
+table{width:100%;border-collapse:collapse}
+td{padding:8px;border-bottom:1px solid #e0d6c4;vertical-align:top;font-size:.93rem}
+td.n{color:#8a7a66;width:2.4em;text-align:right}
+td.m{width:11em;color:#6b5d4d;font-size:.83rem;white-space:nowrap;text-align:right}
+a{color:#8b2f1f;text-decoration:none;font-weight:600}
+a:hover{text-decoration:underline}
+.ch{color:#6b5d4d;font-size:.81rem}
+.why{color:#4a4038;font-size:.87rem;margin-top:3px}
+.alt{color:#9a8c7c;font-size:.76rem}
+.men{color:#5a6a4a;font-weight:600}
+@media(max-width:640px){td.m{width:auto;font-size:.76rem}body{padding:16px 12px}}</style></head><body>
+<h1>CRATE</h1>
+<p class="lede">50 temas que probablemente no ibas a encontrar buscando. 10 de cada género.</p>
+
+<div class="intro">
+<h2>Qué es esto</h2>
+<p>Esto es <b>CRATE</b>, un buscador de samples que Thomas está construyendo. La idea no es
+"encontrar música buena" — eso lo hace cualquier playlist. La idea es encontrar
+<b>lo que no ibas a encontrar buscando normal</b>: discos de sello chico, autoediciones,
+prensados de 500 copias, cosas que están subidas a YouTube con 300 reproducciones y que
+nadie sampleó todavía.</p>
+
+<h2>Cómo busca</h2>
+<p>No busca por palabras. Buscar <i>"70s soul"</i> en YouTube te devuelve lo mismo que a
+todo el mundo, y eso ya está exprimido.</p>
+<p>Lo que hace es <b>cavar canales enteros de diggers</b> — tipos que suben rips de sus
+propios vinilos, uno por día, hace años. Para esta tanda se listaron
+<b>48.204 temas</b> de esos canales, sin gastar un centavo de API: se usa la misma
+herramienta que descarga videos, pero pidiéndole solo los títulos.</p>
+<p>De esos 48.204 quedaron <b>27.113 candidatos</b> después de tirar todo lo que ya
+le habíamos mostrado antes, lo que dura menos de 2:45, lo que pasa de 300.000
+reproducciones y la basura obvia (karaokes, álbumes enteros, mixes).</p>
+
+<h2>Qué se le mide a cada tema</h2>
+<p>A los 170 finalistas se les <b>bajó el audio y se los analizó de verdad</b>, no se
+leyó la ficha: 45 segundos de cada uno pasados por un analizador que calcula
+<b>tempo y tonalidad</b>. Por eso abajo vas a ver "84 BPM · F minor" en temas donde YouTube
+no dice nada de eso.</p>
+<p>Un detalle: cuando el analizador lee el doble del tempo real (le pasa seguido con las
+baladas, cuenta las corcheas en vez de los golpes) el número se pliega a la mitad y se
+muestra entre paréntesis lo que había leído. Thomas casi nunca usa nada arriba de
+115 BPM, así que eso importa.</p>
+
+<h2>Por qué está ordenado así</h2>
+<p>Acá viene la parte honesta. Se midió, contra <b>195 decisiones reales</b> de Thomas
+(lo que guardó y lo que descartó, con el motivo escrito), qué señales automáticas
+predicen si algo le va a gustar.</p>
+<p><b>Ninguna.</b> Año, reproducciones, duración, tempo, tonalidad: todas dieron entre 0,43
+y 0,57 en una escala donde <b>0,50 es tirar una moneda</b>. Son ruido.</p>
+<p>Lo único que predice de verdad es la <b>curación a mano</b>: los temas marcados 🔥 se
+guardan el <b>58%</b> de las veces y los 👍 el <b>38%</b>. Así que estos 50 están
+<b>elegidos y escuchados uno por uno</b>, y el ícono es una apuesta, no un cálculo.</p>
+
+<h2>Qué busca Thomas, concretamente</h2>
+<p>Hace hiphop <b>drumless</b>, estilo Griselda, Roc Marciano, Boldy James, Dano, Cerounno.
+En ese palo no se busca una canción: se busca <b>un pedazo de canción con espacio</b> —
+una intro, un pasaje, un momento donde no estén cantando encima. Él lo dijo así:</p>
+<blockquote>"no necesito que la canción lo loopee, pero sí necesito que haya espacio
+(...) lo importante es que no estén todo el pto tema cantando"</blockquote>
+<p>Por eso acá hay preferencia por temas largos, por los que dicen "instrumental", y por
+los que arrancan despacio. Y por eso se descartó todo lo que viniera en 6/8 (no entra
+en un beat de 4/4) y el jazz muy ortodoxo, tipo trío de piano improvisando: suena
+hermoso y es imposible de samplear.</p>
+
+<h2>Cómo usarlo ahora</h2>
+<p>Cada título es un link: <b>abrilo</b> y se marca solo como escuchado. Si te gusta,
+tildá <b>"lo agregué"</b> y aparecen <b>cinco estrellas</b> para puntuarlo. Si no te gusta,
+elegí el motivo en el desplegable — esa es la parte que más sirve, porque cada "no" con
+motivo afina la próxima búsqueda.</p>
+<p>Al final de la página hay un botón para <b>exportar</b> todo lo marcado. Ese archivo es
+el que entrena al sistema.</p>
+
+<h2>Cuánto funciona hoy</h2>
+<p>Sin inventar nada: sobre las tandas anteriores el sistema tiene un
+<b>38% de acierto</b> — de cada 10 temas que sugiere, Thomas se guarda casi 4.
+Cavando a mano él llega al 53%. O sea que <b>todavía rinde por debajo de hacerlo a mano</b>,
+y la diferencia está justamente en lo que falta: que la máquina pueda oír dónde hay
+espacio instrumental, que hoy no puede.</p>
+<p>La veta que mejor rinde es <b>modern soul de sello chico: 56%</b>. La que peor,
+jazz fusion: 23%.</p>
+</div>
+
+<div class="sec"><h2>R&amp;B · modern soul de sello chico</h2><p class="sub">La veta que mejor rinde: 56% de acierto. Autoediciones de los 80, sellos que sacaron un disco y cerraron.</p><table>
+<tr><td class="n">1</td><td>🔥 <a href="https://www.youtube.com/watch?v=NFexxmlv4V8" target="_blank">Smuv-C - No Body But Your Love (Sax Instrumental)</a><div class="ch">skeenery</div><div class="why">61 BPM en menor y es la version de sax: el espacio instrumental ya viene hecho</div></td><td class="m">1993<br>61 BPM · <span class="men">G# minor</span><br>729 · 5:43</td></tr>
+<tr><td class="n">2</td><td>🔥 <a href="https://www.youtube.com/watch?v=yDlMLkLXd9Q" target="_blank">The Elements Of Love - Fade Away (Instrumental)</a><div class="ch">skeenery</div><div class="why">7:29 de instrumental a 64 BPM. Con esa duracion hay pasaje seguro</div></td><td class="m">1985<br>64 BPM · <span>D# major</span><br>1k · 7:29</td></tr>
+<tr><td class="n">3</td><td>🔥 <a href="https://www.youtube.com/watch?v=GLpRfHS-BF0" target="_blank">C# Sharp With The Love Machine Orch. ‎– My Turn To Shine (Instrumental)</a><div class="ch">Five Special Records</div><div class="why">68 BPM en re menor, 6:16, y 265 reproducciones: sello chico de verdad</div></td><td class="m">?<br>68 BPM · <span class="men">D minor</span><br>265 · 6:16</td></tr>
+<tr><td class="n">4</td><td>🔥 <a href="https://www.youtube.com/watch?v=xlqQmwtFUVM" target="_blank">Duane Parham - Litte Miss Hip Pockets (Instrumental)</a><div class="ch">skeenery</div><div class="why">62 BPM en do menor. Autoedicion de Detroit del 85</div></td><td class="m">1985<br>63 BPM · <span class="men">C minor</span><br>623 · 4:10</td></tr>
+<tr><td class="n">5</td><td>🔥 <a href="https://www.youtube.com/watch?v=v98lsD1hMmA" target="_blank">Liora Twani - Sweet Stuff</a><div class="ch">Winta Groove</div><div class="why">79 BPM en fa menor y 7:10. El tipo de tema que respira</div></td><td class="m">?<br>79 BPM · <span class="men">F minor</span><br>1k · 7:10</td></tr>
+<tr><td class="n">6</td><td>🔥 <a href="https://www.youtube.com/watch?v=Mna-ViL7NT0" target="_blank">Diane White - One Night To Share</a><div class="ch">Winta Groove</div><div class="why">59 BPM en re menor, 7:16. Lento y oscuro, justo el rango</div></td><td class="m">?<br>60 BPM <span class=alt>(leyó 119)</span> · <span class="men">D minor</span><br>19k · 7:16</td></tr>
+<tr><td class="n">7</td><td>🔥 <a href="https://www.youtube.com/watch?v=iwu2bjugK1U" target="_blank">Michael Sterling - Black To Blue</a><div class="ch">Neglected Trax</div><div class="why">63 BPM en fa menor. Modern soul de los 80 sin reedicion conocida</div></td><td class="m">?<br>64 BPM · <span class="men">F minor</span><br>523 · 5:41</td></tr>
+<tr><td class="n">8</td><td>👍 <a href="https://www.youtube.com/watch?v=pZUaiME8WEw" target="_blank">Lassiter - Crazy 4 You (Slow T.V.)</a><div class="ch">skeenery</div><div class="why">74 BPM en la menor. Dice &#x27;Slow T.V.&#x27;, que suele ser la version larga</div></td><td class="m">?<br>74 BPM · <span class="men">A minor</span><br>914 · 5:30</td></tr>
+<tr><td class="n">9</td><td>👍 <a href="https://www.youtube.com/watch?v=HbHxaU9m0CI" target="_blank">Nathan Bartell - Let Me Taste Your Love</a><div class="ch">skeenery</div><div class="why">72 BPM en re menor, 5:30</div></td><td class="m">?<br>72 BPM · <span class="men">D minor</span><br>2k · 5:30</td></tr>
+<tr><td class="n">10</td><td>👍 <a href="https://www.youtube.com/watch?v=SMPQ-24nKJs" target="_blank">Grady Harrell - Love&#x27;s Destination</a><div class="ch">Neglected Trax</div><div class="why">63 BPM, 7:14. Largo y lento, aunque este en mayor</div></td><td class="m">?<br>64 BPM · <span>G major</span><br>513 · 7:14</td></tr>
+</table></div>
+<div class="sec"><h2>80s · quiet storm y slow jams</h2><p class="sub">R&amp;B lento del 84 al 92. Lo que suena a las tres de la mañana.</p><table>
+<tr><td class="n">11</td><td>🔥 <a href="https://www.youtube.com/watch?v=hLPJrnL9sFg" target="_blank">Windy City - I Still Love You (1980)</a><div class="ch">BigPeter1027 Real Music Channel</div><div class="why">50 BPM: el mas lento de toda la tanda. Chicago, 1980</div></td><td class="m">1980<br>50 BPM · <span>A major</span><br>652 · 4:23</td></tr>
+<tr><td class="n">12</td><td>🔥 <a href="https://www.youtube.com/watch?v=i4uvMHnihHA" target="_blank">Waldo - Love Don&#x27;t Grow On Trees</a><div class="ch">BigPeter1027 Real Music Channel</div><div class="why">66 BPM en mi menor, 6:05. Nombre que no figura en ningun lado</div></td><td class="m">?<br>66 BPM · <span class="men">E minor</span><br>285 · 6:05</td></tr>
+<tr><td class="n">13</td><td>🔥 <a href="https://www.youtube.com/watch?v=spmFSfqyFQc" target="_blank">Mizz - Love Me By Name</a><div class="ch">BigPeter1027 Real Music Channel</div><div class="why">68 BPM en la# menor. Quiet storm de sello chico</div></td><td class="m">?<br>68 BPM · <span class="men">A# minor</span><br>458 · 5:33</td></tr>
+<tr><td class="n">14</td><td>🔥 <a href="https://www.youtube.com/watch?v=kjMy2N4dpeU" target="_blank">D.J. Rogers - How Can I (Say I Love You Again)</a><div class="ch">BigPeter1027 Real Music Channel</div><div class="why">60 BPM en si menor y casi 7 minutos</div></td><td class="m">?<br>60 BPM · <span class="men">B minor</span><br>687 · 6:57</td></tr>
+<tr><td class="n">15</td><td>🔥 <a href="https://www.youtube.com/watch?v=SvadjqH7cpE" target="_blank">Danny Pearson - Walkin&#x27; In The Rain With The One I Love</a><div class="ch">BigPeter1027 Real Music Channel</div><div class="why">66 BPM en re menor, 6:33</div></td><td class="m">?<br>67 BPM · <span class="men">D minor</span><br>932 · 6:33</td></tr>
+<tr><td class="n">16</td><td>🔥 <a href="https://www.youtube.com/watch?v=MwKKREds28E" target="_blank">Rhythm Machine - Thought My Love Was Fine</a><div class="ch">BigPeter1027 Real Music Channel</div><div class="why">9:10. A esa duracion el pasaje instrumental es casi seguro</div></td><td class="m">?<br>71 BPM <span class=alt>(leyó 143)</span> · <span>C major</span><br>1k · 9:10</td></tr>
+<tr><td class="n">17</td><td>👍 <a href="https://www.youtube.com/watch?v=vib-xYh9utk" target="_blank">First Love - Things Are Not The Same (1985)</a><div class="ch">BigPeter1027 Real Music Channel</div><div class="why">73 BPM, 1985, 6:04. Grupo del que no hay casi nada</div></td><td class="m">1985<br>73 BPM · <span>A# major</span><br>846 · 6:04</td></tr>
+<tr><td class="n">18</td><td>👍 <a href="https://www.youtube.com/watch?v=xApVHsoeYtw" target="_blank">Greg Phillinganes - Forever Now</a><div class="ch">BigPeter1027 Real Music Channel</div><div class="why">72 BPM en do# menor. El disco solista no lo conoce nadie</div></td><td class="m">?<br>73 BPM · <span class="men">C# minor</span><br>602 · 5:57</td></tr>
+<tr><td class="n">19</td><td>👍 <a href="https://www.youtube.com/watch?v=E3ws_KWNNnA" target="_blank">Stargard - Just One Love</a><div class="ch">BigPeter1027 Real Music Channel</div><div class="why">67 BPM, 5:51, 260 reproducciones</div></td><td class="m">?<br>68 BPM <span class=alt>(leyó 136)</span> · <span>G major</span><br>260 · 5:51</td></tr>
+<tr><td class="n">20</td><td>👍 <a href="https://www.youtube.com/watch?v=DVus21gB28M" target="_blank">Esther Williams - Ready For Love</a><div class="ch">BigPeter1027 Real Music Channel</div><div class="why">72 BPM, 5:53</div></td><td class="m">?<br>72 BPM · <span>G major</span><br>863 · 5:53</td></tr>
+</table></div>
+<div class="sec"><h2>Soul · 45s y private press de los 70</h2><p class="sub">Sweet soul, deep soul, Philly. Prensados chicos que no entraron a ninguna compilación.</p><table>
+<tr><td class="n">21</td><td>🔥 <a href="https://www.youtube.com/watch?v=tljh-LNAX_I" target="_blank">Midnight Love - Mama&#x27;s Baby Boy (Instrumental) [Audio]</a><div class="ch">Athens of The North</div><div class="why">61 BPM en la# menor, instrumental de 6:16. Casi hecho</div></td><td class="m">?<br>61 BPM · <span class="men">A# minor</span><br>623 · 6:16</td></tr>
+<tr><td class="n">22</td><td>🔥 <a href="https://www.youtube.com/watch?v=_IkrA6klBXs" target="_blank">Doug Payne - She Is on the Money (Instrumental) [Audio]</a><div class="ch">Athens of The North</div><div class="why">57 BPM en mi menor. De los mas lentos de la tanda</div></td><td class="m">?<br>57 BPM · <span class="men">E minor</span><br>451 · 4:15</td></tr>
+<tr><td class="n">23</td><td>🔥 <a href="https://www.youtube.com/watch?v=9W5t8C10eGU" target="_blank">Coast To Coast - Love Is the Same (Alternate Instrumental) [Audio]</a><div class="ch">Athens of The North</div><div class="why">65 BPM en fa# menor, instrumental alternativo</div></td><td class="m">?<br>65 BPM <span class=alt>(leyó 130)</span> · <span class="men">F# minor</span><br>433 · 5:23</td></tr>
+<tr><td class="n">24</td><td>🔥 <a href="https://www.youtube.com/watch?v=q6ug-Aca1Rk" target="_blank">Kansas City Express - This Is the Place (Instrumental) [Audio] (2 of 2)</a><div class="ch">Athens of The North</div><div class="why">74 BPM en do menor. Private press de Kansas City</div></td><td class="m">?<br>74 BPM · <span class="men">C minor</span><br>20k · 5:32</td></tr>
+<tr><td class="n">25</td><td>🔥 <a href="https://www.youtube.com/watch?v=rwoQ6y41Iyg" target="_blank">LOVE COMMITTEE   I WANNA MAKE LOVE TO YOU</a><div class="ch">TheRAREGROOVEMAN</div><div class="why">69 BPM en fa menor, 5:51. Philly del 70</div></td><td class="m">?<br>69 BPM · <span class="men">F minor</span><br>14k · 5:51</td></tr>
+<tr><td class="n">26</td><td>🔥 <a href="https://www.youtube.com/watch?v=GdfsPVidSEo" target="_blank">Carletta Sue - You Keep Holding Back On Love</a><div class="ch">Soultwinz</div><div class="why">72 BPM en fa menor. Modern soul que no reedito nadie</div></td><td class="m">?<br>73 BPM · <span class="men">F minor</span><br>700 · 5:40</td></tr>
+<tr><td class="n">27</td><td>👍 <a href="https://www.youtube.com/watch?v=8xWQz38V2kE" target="_blank">Norfolk - You Are My Doll Baby (Instrumental) [Audio]</a><div class="ch">Athens of The North</div><div class="why">59 BPM, instrumental, 330 reproducciones</div></td><td class="m">?<br>59 BPM <span class=alt>(leyó 119)</span> · <span>F major</span><br>330 · 5:30</td></tr>
+<tr><td class="n">28</td><td>👍 <a href="https://www.youtube.com/watch?v=OwRJ_vsUJNw" target="_blank">Crystal Winds - Signs of Winter&#x27;s Time (Instrumental) [Audio]</a><div class="ch">Athens of The North</div><div class="why">68 BPM. Grupo de Detroit, private press del 79</div></td><td class="m">?<br>68 BPM · <span>A major</span><br>2k · 4:41</td></tr>
+<tr><td class="n">29</td><td>👍 <a href="https://www.youtube.com/watch?v=zup3YlxB53Q" target="_blank">The Exoutics: Lets Make Love (At Home Sometime) 1988</a><div class="ch">DJ Vinyl Goblin</div><div class="why">60 BPM, 45 oscuro de 1988</div></td><td class="m">1988<br>61 BPM · <span>C major</span><br>315 · 4:44</td></tr>
+<tr><td class="n">30</td><td>👍 <a href="https://www.youtube.com/watch?v=RReM4yyZvKo" target="_blank">Shirley Brown: If This Is Goodbye (1989)</a><div class="ch">DJ Vinyl Goblin</div><div class="why">60 BPM, 1989. Deep soul tardio</div></td><td class="m">1989<br>61 BPM · <span>A# major</span><br>158 · 4:47</td></tr>
+</table></div>
+<div class="sec"><h2>Japanese City Pop</h2><p class="sub">Japón 76-88. AOR y baladas con Rhodes, en discos que nunca salieron de ahí.</p><table>
+<tr><td class="n">31</td><td>🔥 <a href="https://www.youtube.com/watch?v=lXcqk7rNy10" target="_blank">The Round - B2 マジック・ボーイ - 1985</a><div class="ch">ants kask</div><div class="why">54 BPM en sol menor. Japones de 1985 con 840 reproducciones</div></td><td class="m">1985<br>54 BPM · <span class="men">G minor</span><br>840 · 5:35</td></tr>
+<tr><td class="n">32</td><td>🔥 <a href="https://www.youtube.com/watch?v=YY2h6UTKrtI" target="_blank">森田童子 Morita Doji - 今日は奇蹟の朝です Today Is The Miracle Morning [Japan] Psych Folk, Prog (1976)</a><div class="ch">Music for empty rooms</div><div class="why">61 BPM en re menor, 1976. Folk japones oscuro, nunca salio de ahi</div></td><td class="m">1976<br>61 BPM <span class=alt>(leyó 122)</span> · <span class="men">D minor</span><br>9k · 5:18</td></tr>
+<tr><td class="n">33</td><td>🔥 <a href="https://www.youtube.com/watch?v=63MeoHT8FDM" target="_blank">ミシェル·ハート Michelle Hart - Where Did Love Go [Japan] Easy Listening, Downtempo, Citypop (1988)</a><div class="ch">Music for empty rooms</div><div class="why">70 BPM en mi menor, 1988. AOR japones de los buenos</div></td><td class="m">1988<br>71 BPM <span class=alt>(leyó 142)</span> · <span class="men">E minor</span><br>14k · 4:39</td></tr>
+<tr><td class="n">34</td><td>🔥 <a href="https://www.youtube.com/watch?v=ff-7nNlgUWM" target="_blank">Ryoko Sakaguchi (坂口良子) - 仮面 (Persona) - 1982 - Japan</a><div class="ch">ants kask</div><div class="why">78 BPM en do menor, 1982. Actriz que grabo un disco y listo</div></td><td class="m">1982<br>78 BPM · <span class="men">C minor</span><br>7k · 5:37</td></tr>
+<tr><td class="n">35</td><td>🔥 <a href="https://www.youtube.com/watch?v=7-wJdxQ_TSs" target="_blank">カーティス・クリーク・バンド Curtis Creek Band - City Morning (1984)</a><div class="ch">Music for empty rooms</div><div class="why">80 BPM en do menor, 1984. El titulo lo dice todo</div></td><td class="m">1984<br>80 BPM · <span class="men">C minor</span><br>16k · 5:25</td></tr>
+<tr><td class="n">36</td><td>🔥 <a href="https://www.youtube.com/watch?v=bxSgf6v-h30" target="_blank">Air Suspension Club Band (エアー・サスペンション・クラブ・バンド) - A3  Daydream - 1982 - Japan</a><div class="ch">ants kask</div><div class="why">66 BPM en la menor, 1982, 6:07</div></td><td class="m">1982<br>66 BPM · <span class="men">A minor</span><br>1k · 6:07</td></tr>
+<tr><td class="n">37</td><td>🔥 <a href="https://www.youtube.com/watch?v=sc0u7Jy4nsI" target="_blank">John Neptune With Arakawa Band - Blue Wind　ブルー・ウィンドウ (Japan, 1980)</a><div class="ch">The Voice of Anton</div><div class="why">12:25 a 75 BPM en la menor. Shakuhachi con banda electrica</div></td><td class="m">1980<br>76 BPM <span class=alt>(leyó 152)</span> · <span class="men">A minor</span><br>2k · 12:25</td></tr>
+<tr><td class="n">38</td><td>👍 <a href="https://www.youtube.com/watch?v=WxK0S8txh4w" target="_blank">やぎ Yagi - 降誕祭 Merry Christmas [Japan] Lo-Fi Ambient, Avantgarde (1986)</a><div class="ch">Music for empty rooms</div><div class="why">69 BPM en fa# menor. Ambient japones del 86</div></td><td class="m">1986<br>70 BPM · <span class="men">F# minor</span><br>11k · 6:33</td></tr>
+<tr><td class="n">39</td><td>👍 <a href="https://www.youtube.com/watch?v=KzOjhpmiwbI" target="_blank">堺正章 Masaaki Sakai - Porsche 959 Love Theme [Japan] Psych Ambient, Contemporary Classical (19</a><div class="ch">Music for empty rooms</div><div class="why">65 BPM en la menor. Tema de un auto, 1987, raro de verdad</div></td><td class="m">1987<br>66 BPM · <span class="men">A minor</span><br>16k · 3:03</td></tr>
+<tr><td class="n">40</td><td>👍 <a href="https://www.youtube.com/watch?v=RIaKCKNVS_U" target="_blank">本多信介 Shinsuke Honda - 日の出 Sunrise [Japan] Balearic Ambient (1985)</a><div class="ch">Music for empty rooms</div><div class="why">73 BPM, balearic japones del 85</div></td><td class="m">1985<br>73 BPM <span class=alt>(leyó 146)</span> · <span>A major</span><br>18k · 5:41</td></tr>
+</table></div>
+<div class="sec"><h2>Jazz Fusion · japonés y europeo</h2><p class="sub">Fusion mellow, eléctrico. Nada de trío de piano improvisando: eso no se puede samplear.</p><table>
+<tr><td class="n">41</td><td>🔥 <a href="https://www.youtube.com/watch?v=MUKhIlmGcj8" target="_blank">Osiris - A Story Of Love [Bahrain] Psych, Prog (1982)</a><div class="ch">Music for empty rooms</div><div class="why">Bahrein, 1982. 86 BPM en la menor. De las cosas mas raras de la tanda</div></td><td class="m">1982<br>86 BPM <span class=alt>(leyó 173)</span> · <span class="men">A minor</span><br>9k · 6:13</td></tr>
+<tr><td class="n">42</td><td>🔥 <a href="https://www.youtube.com/watch?v=jZTtf0Gblig" target="_blank">Ihsan Al-Munzer - بحبك يا لبنان = I Love You Lebanon 🇫🇷🇱🇧 1981</a><div class="ch">The Voice of Anton</div><div class="why">Libano. 99 BPM en la menor. Fusion arabe que no suena a nada conocido</div></td><td class="m">?<br>99 BPM · <span class="men">A minor</span><br>1k · 5:35</td></tr>
+<tr><td class="n">43</td><td>🔥 <a href="https://www.youtube.com/watch?v=17aCqWvjdCw" target="_blank">Robert Julian Horky - Ouranos (God Of Sky) [Austria] Dark Psych Ambient (1989)</a><div class="ch">Music for empty rooms</div><div class="why">Austria. 63 BPM en si menor, 5:50</div></td><td class="m">?<br>63 BPM · <span class="men">B minor</span><br>8k · 5:50</td></tr>
+<tr><td class="n">44</td><td>🔥 <a href="https://www.youtube.com/watch?v=EWdwUzCYOls" target="_blank">Eternal Moon - Follow The River Down: Estuary [UK] Ambient, Modern Classical (1986)</a><div class="ch">Music for empty rooms</div><div class="why">Reino Unido. 58 BPM en re menor. Ambiental y lento</div></td><td class="m">?<br>59 BPM · <span class="men">D minor</span><br>5k · 6:26</td></tr>
+<tr><td class="n">45</td><td>🔥 <a href="https://www.youtube.com/watch?v=UgTrvPCp5Ck" target="_blank">Tourniquet - Alone [US] Psych, Prog (1978)</a><div class="ch">Music for empty rooms</div><div class="why">57 BPM en la menor, 1978. Psych de sello chico</div></td><td class="m">?<br>58 BPM · <span class="men">A minor</span><br>2k · 5:48</td></tr>
+<tr><td class="n">46</td><td>🔥 <a href="https://www.youtube.com/watch?v=vWzlG9Gl3QE" target="_blank">Pierre Nadeau - Elle (Instrumental) (Canada, 1976)</a><div class="ch">The Voice of Anton</div><div class="why">Canada, 1976. 65 BPM, instrumental</div></td><td class="m">1976<br>66 BPM · <span>C major</span><br>2k · 4:35</td></tr>
+<tr><td class="n">47</td><td>🔥 <a href="https://www.youtube.com/watch?v=iKxYgOIcQbQ" target="_blank">Djama - Zay (Instrumental) (France, 1989)</a><div class="ch">The Voice of Anton</div><div class="why">Francia, 1989. 75 BPM en la menor, instrumental</div></td><td class="m">1989<br>76 BPM · <span class="men">A minor</span><br>2k · 4:25</td></tr>
+<tr><td class="n">48</td><td>👍 <a href="https://www.youtube.com/watch?v=S6nXKKNChsc" target="_blank">Locksley Hall - What Does A Lonely Heart Do? [US] Psych Lounge (1970)</a><div class="ch">Music for empty rooms</div><div class="why">65 BPM en la menor, psych norteamericano</div></td><td class="m">?<br>65 BPM · <span class="men">A minor</span><br>6k · 5:50</td></tr>
+<tr><td class="n">49</td><td>👍 <a href="https://www.youtube.com/watch?v=PtrEk0Oq57I" target="_blank">Arica – Mentations (Morning Cut) 1972 : US</a><div class="ch">The Voice of Anton</div><div class="why">59 BPM en la# menor, 1972, 6:45</div></td><td class="m">?<br>60 BPM · <span class="men">A# minor</span><br>1k · 6:45</td></tr>
+<tr><td class="n">50</td><td>👍 <a href="https://www.youtube.com/watch?v=5EaRRZus364" target="_blank">Rhythm &amp; Bliss - Song Of Earth And Sky 1979 : US</a><div class="ch">The Voice of Anton</div><div class="why">61 BPM en mi menor, 1979</div></td><td class="m">?<br>61 BPM <span class=alt>(leyó 122)</span> · <span class="men">E minor</span><br>1k · 6:08</td></tr>
+</table></div>
+<p class="sub" style="margin-top:30px">Tonalidades <span class="men">menores</span> resaltadas. El año sale del ℗ del distribuidor cuando está, si no del título. Tempo y tonalidad medidos sobre 45 s de audio real.</p>
+<!-- crate-marks v2: abiertos / agregados / descartados con motivo, persistido en localStorage por id de video -->
+<style>
+tr.seen td{opacity:.6}tr.seen a.yt::after{content:" ✓";color:#5a7a4a;font-weight:700}
+tr.added{background:#e9f2e3}tr.added td{opacity:1}
+tr.rej{background:#f6e9e6}tr.rej td{opacity:.75}tr.rej a.yt{text-decoration:line-through}
+.mk{font-size:.75rem;color:#6b5d4d;margin-left:10px;font-weight:400;white-space:nowrap;cursor:pointer}
+.mk input{vertical-align:middle}
+.why-sel{font-size:.72rem;margin-left:8px;color:#6b5d4d;border:1px solid #c9b8a0;background:#fbf8f2;border-radius:3px;padding:1px 3px;max-width:15em}
+.stars{margin-left:8px;cursor:default;user-select:none;white-space:nowrap}
+.stars .st{color:#b08d2e;font-size:1.05rem;cursor:pointer;padding:0 1px}
+.stars .st:hover{color:#8b2f1f}
+.why-nota{font-size:.72rem;margin-left:6px;border:1px solid #c9b8a0;background:#fbf8f2;border-radius:3px;padding:1px 4px;width:12em}
+#crate-bar{position:sticky;top:0;background:#f4efe6;border-bottom:1px solid #c9b8a0;padding:6px 0;font-size:.85rem;color:#6b5d4d;z-index:2}
+#crate-bar button{font-size:.75rem;margin-left:8px;cursor:pointer}
+</style>
+<script>
+(function(){
+  // Motivos de descarte. Editables: agregar/sacar líneas y listo.
+  var MOTIVOS=[
+    ['efusivo','muy alegre / efusivo'],
+    ['mayor','tonalidad mayor, no pega'],
+    ['rip','suena mal (rip/calidad)'],
+    ['bpm','BPM muy alto'],
+    ['ritmo','ritmo muy cargado'],
+    ['mainstream','muy conocido'],
+    ['tengo','ya lo tengo / lo conozco'],
+    ['nada','no hay nada para samplear'],
+    ['voz','la voz molesta / muy cantado'],
+    ['produccion','producción muy limpia/moderna'],
+    ['plano','no pasa nada / plano'],
+    ['corto','pasaje muy corto'],
+    ['otro','otro (ver nota)']
+  ];
+  var KEY='crate-marks', marks={};
+  try{marks=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(marks))}catch(e){}}
+  var rows=[];
+  document.querySelectorAll('a[href*="watch?v="]').forEach(function(a){
+    var m=a.href.match(/v=([A-Za-z0-9_-]{11})/); if(!m) return;
+    var id=m[1], tr=a.closest('tr'); if(!tr) return;
+    if(tr.dataset.crate) return; tr.dataset.crate='1'; a.className=(a.className?a.className+' ':'')+'yt';
+    var titulo=(a.textContent||'').trim();
+
+    var lab=document.createElement('label'); lab.className='mk';
+    var inp=document.createElement('input'); inp.type='checkbox';
+    lab.appendChild(inp); lab.appendChild(document.createTextNode(' lo agregué'));
+
+    var sel=document.createElement('select'); sel.className='why-sel';
+    sel.appendChild(new Option('✗ por qué no…',''));
+    MOTIVOS.forEach(function(mo){ sel.appendChild(new Option(mo[1],mo[0])); });
+
+    var nota=document.createElement('input'); nota.className='why-nota'; nota.type='text';
+    nota.placeholder='nota (opcional)'; nota.style.display='none';
+
+    // estrellas: solo aparecen cuando esta agregado. 1-5, volver a clickear la
+    // misma estrella la borra.
+    var stars=document.createElement('span'); stars.className='stars'; stars.style.display='none';
+    var sbtn=[];
+    for(var si=1; si<=5; si++){
+      (function(n){
+        var b=document.createElement('span'); b.className='st'; b.textContent='☆';
+        b.title=n+' de 5'; b.setAttribute('role','button');
+        b.addEventListener('click',function(ev){
+          ev.preventDefault(); ev.stopPropagation();
+          var cur=(marks[id]||{}).rate||0;
+          set({rate: cur===n ? 0 : n, added:true, seen:true});
+        });
+        stars.appendChild(b); sbtn.push(b);
+      })(si);
+    }
+
+    a.insertAdjacentElement('afterend', nota);
+    a.insertAdjacentElement('afterend', sel);
+    a.insertAdjacentElement('afterend', stars);
+    a.insertAdjacentElement('afterend', lab);
+
+    function apply(){
+      var s=marks[id]||{};
+      tr.classList.toggle('seen',!!s.seen);
+      tr.classList.toggle('added',!!s.added);
+      tr.classList.toggle('rej',!!s.rej && !s.added);
+      inp.checked=!!s.added;
+      sel.value=s.rej||'';
+      nota.value=s.nota||'';
+      nota.style.display=(s.rej||s.nota)?'':'none';
+      stars.style.display=s.added?'':'none';
+      var r=s.rate||0;
+      sbtn.forEach(function(b,i){ b.textContent = i<r ? '★' : '☆'; });
+      stars.title=r?(r+' de 5'):'puntuá del 1 al 5';
+    }
+    function set(patch){ marks[id]=Object.assign({},marks[id]||{},{titulo:titulo},patch); save(); apply(); bar(); }
+    function seen(){ set({seen:true}); }
+
+    // click normal, ctrl/shift+click, click con la rueda y Enter
+    a.addEventListener('click',seen);
+    a.addEventListener('auxclick',function(e){if(e.button===1) seen();});
+    a.addEventListener('mousedown',function(e){if(e.button===0||e.button===1) seen();});
+    a.addEventListener('keydown',function(e){if(e.key==='Enter') seen();});
+    inp.addEventListener('change',function(){ set({added:inp.checked,seen:true,rate:inp.checked?((marks[id]||{}).rate||0):0,rej:inp.checked?'':(marks[id]||{}).rej}); });
+    sel.addEventListener('change',function(){ set({rej:sel.value,seen:true,added:sel.value?false:(marks[id]||{}).added}); });
+    nota.addEventListener('change',function(){ set({nota:nota.value,seen:true}); });
+    rows.push({id:id,titulo:titulo,apply:apply}); apply();
+  });
+
+  var el=document.createElement('div'); el.id='crate-bar';
+  var h1=document.querySelector('h1'); (h1?h1.parentNode:document.body).insertBefore(el, h1||document.body.firstChild);
+  function bar(){
+    var seen=0,added=0,rej=0,rsum=0,rn=0;
+    rows.forEach(function(r){var s=marks[r.id]||{}; if(s.seen) seen++; if(s.added){added++; if(s.rate){rsum+=s.rate; rn++;}} if(s.rej&&!s.added) rej++;});
+    el.innerHTML='En esta página: <b>'+seen+'</b> abiertos · <b>'+added+'</b> agregados · <b>'+rej+'</b> descartados de '+rows.length+(rn?' · <b>'+(rsum/rn).toFixed(1)+'★</b> promedio ('+rn+' puntuados)':'')+
+      ' <button id="crate-exp">💾 exportar feedback</button><button id="crate-clear">limpiar esta página</button>';
+    document.getElementById('crate-exp').onclick=function(){
+      var data=rows.map(function(r){var s=marks[r.id]||{};
+        return {id:r.id,titulo:s.titulo||r.titulo,abierto:!!s.seen,agregado:!!s.added,estrellas:s.rate||0,motivo:s.rej||'',nota:s.nota||''};});
+      var blob=new Blob([JSON.stringify({pagina:document.title,fecha:new Date().toISOString(),temas:data},null,1)],{type:'application/json'});
+      var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+      a.download='crate-feedback-'+document.title.replace(/[^A-Za-z0-9]+/g,'-').toLowerCase()+'.json';
+      document.body.appendChild(a); a.click(); a.remove();
+    };
+    document.getElementById('crate-clear').onclick=function(){
+      if(!confirm('¿Borrar las marcas de los temas de esta página?')) return;
+      rows.forEach(function(r){delete marks[r.id]; r.apply();}); save(); bar();
+    };
+  }
+  bar();
+})();
+</script>
+</body></html>

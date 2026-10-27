@@ -1,0 +1,663 @@
+{"id": "0OWxZBYlF-c", "year": "1988", "phonogram": true, "views": 975325, "uploader": "Evelyn \"Champagne\" King - Topic", "title": "Kisses Don't Lie", "desc": 
+{"id": "eCDRdIvZnlQ", "year": "1984", "phonogram": true, "views": 16479, "uploader": "Angela Bofill - Topic", "title": "Who Knows You Better", "desc": "Provided
+{"id": "5LHrOjH1Ezs", "year": "1984", "phonogram": false, "views": 84701, "uploader": "Preserve", "title": "The S.O.S. Band - Weekend Girl", "desc": "The S.O.S.
+{"id": "9i56IQAeXUk", "year": null, "phonogram": false, "views": 5390, "uploader": "Family Old School Music", "title": "Tracie Spencer = Hide and Seek", "desc":
+{"id": "Ep-ywnneOVE", "year": "1987", "phonogram": true, "views": 6192, "uploader": "The Controllers - Topic", "title": "Love Is On Our Side", "desc": "Provided
+{"id": "R7K68MSxhHU", "error": "sin metadata"}
+{"id": "MgnRv27KBog", "error": "sin metadata"}
+{"id": "9ohCxtr7naE", "year": "1989", "phonogram": true, "views": 183872, "uploader": "Christopher Williams - Topic", "title": "I'm Your Present", "desc": "Prov
+{"id": "J7Pa03bK_BA", "year": "1986", "phonogram": true, "views": 469168, "uploader": "Babyface", "title": "Chivalry (Album Version)", "desc": "Provided to YouT
+{"id": "aVD1Zns6i9c", "year": null, "phonogram": false, "views": 117135, "uploader": "cleuzasp", "title": "Con Funk Shun - Love's train", "desc": "Con Funk Shun
+{"id": "8rupzPQedGY", "year": "1989", "phonogram": true, "views": 23858154, "uploader": "After 7 Music", "title": "Ready Or Not", "desc": "Provided to YouTube b
+{"id": "ihKtuE2edHQ", "year": "2012", "phonogram": true, "views": 29512, "uploader": "Surface - Topic", "title": "We're All Searchin'", "desc": "Provided to You
+{"id": "Ob_1V41B8JI", "year": "2012", "phonogram": true, "views": 27869, "uploader": "Surface - Topic", "title": "Gotta Make Love Tonight", "desc": "Provided to
+{"id": "yPyfMIxJsKw", "year": "1987", "phonogram": true, "views": 55519, "uploader": "The Deele - Topic", "title": "Let No One Separate Us", "desc": "Provided t
+{"id": "nqLfHGvdzcM", "year": "1986", "phonogram": true, "views": 307028, "uploader": "Loose Ends - Topic", "title": "Be Thankful (Mama's Song)", "desc": "Provi
+{"id": "b_7lEa0o0mw", "year": "1986", "phonogram": true, "views": 524056, "uploader": "Loose Ends - Topic", "title": "Gonna Make You Mine", "desc": "Provided to
+{"id": "5WutJTOwOEc", "year": "1986", "phonogram": true, "views": 427005, "uploader": "Loose Ends - Topic", "title": "I Can't Wait", "desc": "Provided to YouTub
+{"id": "aaUHziJRvB8", "year": "1983", "phonogram": false, "views": 672, "uploader": "My Vinyl Collection", "title": "Kashif - Kashif (1983) - A3 - I Just Gotta 
+{"id": "8_Eh4kEjJB8", "year": "1983", "phonogram": false, "views": 504, "uploader": "My Vinyl Collection", "title": "Kashif - Kashif (1983) - B2 - Say Something
+{"id": "L_Uh9K4c78o", "year": "1985", "phonogram": false, "views": 20879, "uploader": "Ja22s0ulg0spel", "title": "Chapter 8 - Don't Stop Loving Me", "desc": "Fr
+{"id": "PN47Xy2l6b0", "year": "1985", "phonogram": false, "views": 68117, "uploader": "Ja22s0ulg0spel", "title": "Chapter 8 - This Love's For Real", "desc": "Fr
+{"id": "WXKDjApjbd4", "year": null, "phonogram": false, "views": 38118, "uploader": "MizBabyGirl", "title": "Dee Dee Wilde Hold Me", "desc": " "}
+{"id": "_DkMtZcVDqY", "year": null, "phonogram": false, "views": 10724, "uploader": "BigPeter1086 Real Music Channel", "title": "Renee Diggs - If You Still Want
+{"id": "EiK8cafJB3g", "year": null, "phonogram": false, "views": 296084, "uploader": "MizBabyGirl", "title": "Benita Arterberry It's Always Been About You", "de
+{"id": "imnmxP7lyow", "year": "1986", "phonogram": true, "views": 669070, "uploader": "Babyface", "title": "Lovers (Album Version)", "desc": "Provided to YouTub
+{"id": "hoLO8ioxp8Q", "year": "1993", "phonogram": true, "views": 309285, "uploader": "Tisha Campbell - Topic", "title": "Love's Got A Hold On Me", "desc": "Pro
+{"id": "sk7-smsHTjA", "year": "1988", "phonogram": true, "views": 135983, "uploader": "Karyn White", "title": "Tell Me Tomorrow", "desc": "Provided to YouTube b
+{"id": "9c1I15sY3fc", "year": null, "phonogram": false, "views": 189902, "uploader": "BigPeter1086 Real Music Channel", "title": "Gary Adkins - You and Me", "de
+{"id": "iX6hs6QNz_w", "year": "1988", "phonogram": true, "views": 49000, "uploader": "Tracie Spencer - Topic", "title": "In My Dreams", "desc": "Provided to You
+{"id": "vdbI_sHC1f4", "year": "1988", "phonogram": true, "views": 244680, "uploader": "Tracie Spencer - Topic", "title": "My First Broken Heart", "desc": "Provi
+{"id": "MPm4UzU4yEM", "year": null, "phonogram": false, "views": 35593, "uploader": "BigPeter1027 Real Music Channel", "title": "Angela Winbush & Ronald Isley -
+{"id": "HKhgZwL8cKk", "year": "1987", "phonogram": false, "views": 15889720, "uploader": "AngelaWinbushVEVO", "title": "Angela Winbush - Angel", "desc": "Music 
+{"id": "jik4HeSjMlE", "year": "1997", "phonogram": true, "views": 21289925, "uploader": "Anita Baker", "title": "Good Love", "desc": "Provided to YouTube by Rhi
+{"id": "B9VqzetqTes", "year": "1987", "phonogram": true, "views": 28780, "uploader": "Peggi Blu - Topic", "title": "Tender Moments", "desc": "Provided to YouTub
+{"id": "RwaugjX0CeY", "year": "1988", "phonogram": true, "views": 426288, "uploader": "Norman Connors - Topic", "title": "I Am Your Melody", "desc": "Provided t
+{"id": "Ruz-1YUssDw", "year": "1983", "phonogram": true, "views": 313764, "uploader": "DAYTON", "title": "The Sound Of Music", "desc": "Provided to YouTube by U
+{"id": "QsJKlFMzexI", "year": "1996", "phonogram": true, "views": 2327769, "uploader": "Anita Baker", "title": "You're the Best Thing Yet", "desc": "Provided to
+{"id": "7qUBjhmigk4", "year": "2025", "phonogram": false, "views": 1548, "uploader": "Happy Charlie", "title": "George Benson - Turn Your Love Around (Remastere
+{"id": "oioVplJUMyg", "year": "1985", "phonogram": false, "views": 230562, "uploader": "dderm", "title": "Maze Featuring Frankie Beverly  - Too Many Games", "de
+{"id": "0-K1xUFuNGk", "year": "1988", "phonogram": false, "views": 5393, "uploader": "KFM85", "title": "Perri - I'm The One (1988) [Electrofunk/Soul] HQ", "desc
+{"id": "FZHXHLcTCnc", "year": null, "phonogram": false, "views": 123466, "uploader": "BigPeter86 Real Music Channel", "title": "O'Bryan - Is This For Real", "de
+{"id": "yQj2ivlctiE", "year": "1986", "phonogram": false, "views": 111093, "uploader": "veewee", "title": "William Bell - Headline News (Extended Dance Mix) (19
+{"id": "-xs8pfcDkj0", "year": null, "phonogram": false, "views": 1973866, "uploader": "BigPeter86 Real Music Channel", "title": "Alexander O'Neal - If You Were 
+{"id": "ldWv61w0BTE", "year": "1983", "phonogram": true, "views": 18434, "uploader": "The Deele - Topic", "title": "Just My Luck", "desc": "Provided to YouTube 
+{"id": "JtneJJoOwdc", "year": null, "phonogram": false, "views": 5662, "uploader": "RBsound Holland (Soul & Jazz Café)", "title": "Alexander O’Neal - A Broken H
+{"id": "sd1bMzCdaOM", "year": "1986", "phonogram": true, "views": 8858188, "uploader": "Freddie Jackson", "title": "Tasty Love", "desc": "Provided to YouTube by
+{"id": "1VMsd3JxuUY", "year": "1992", "phonogram": true, "views": 755571, "uploader": "Freddie Jackson", "title": "I Could Use A Little Love (Right Now)", "desc
+{"id": "PG1X6iPALz4", "year": "1990", "phonogram": true, "views": 488863, "uploader": "Freddie Jackson", "title": "Do Me Again", "desc": "Provided to YouTube by
+{"id": "FRvQmxCciH8", "year": "1985", "phonogram": true, "views": 690178, "uploader": "Freddie Jackson", "title": "Rock Me Tonight For Old Times Sake", "desc": 
+{"id": "czmMolkXB_Q", "year": "1980", "phonogram": false, "views": 10255, "uploader": "Old Skool 12\" Vinyl Rips", "title": "52nd Street - Tell Me How It Feels 
+{"id": "SPMyV7SOgxk", "year": null, "phonogram": false, "views": 552085, "uploader": "steverobert1", "title": "Fifth Of Heaven - Just A Little More", "desc": " 
+{"id": "oWf6dkmnu9g", "year": null, "phonogram": false, "views": 30796, "uploader": "steverobert1", "title": "Smoke City - I Really Want You", "desc": " "}
+{"id": "5-Pjd_pAHxw", "year": "1982", "phonogram": true, "views": 79745, "uploader": "STARPOINT", "title": "Bring Your Sweet Loving Back", "desc": "Provided to 
+{"id": "fTJm_KEVK5o", "year": "1988", "phonogram": true, "views": 1189195, "uploader": "The New Edition Music", "title": "New Edition - Can You Stand The Rain (
+{"id": "01xwWX8pmIY", "year": "1986", "phonogram": false, "views": 4659, "uploader": "Family Old School Music", "title": "Guinn =  Give Everything You Got For L
+{"id": "kso3LGBW9fg", "year": "1986", "phonogram": false, "views": 8003, "uploader": "Family Old School Music", "title": "Janice McClain  =  Let's Spend The Nig
+{"id": "4TRYOVfrBM4", "year": "1986", "phonogram": true, "views": 57824, "uploader": "Genobia Jeter - Topic", "title": "All of My Love", "desc": "Provided to Yo
+{"id": "PTVE7oghjb8", "year": "2012", "phonogram": true, "views": 551774, "uploader": "Kashif - Topic", "title": "Help Yourself to My Love", "desc": "Provided t
+{"id": "d-yLxnXpaEg", "year": "2023", "phonogram": true, "views": 700, "uploader": "Henry Porter - Topic", "title": "Things Are Going to Get Better", "desc": "P
+{"id": "njQwhBqvpLA", "year": "1993", "phonogram": true, "views": 122191, "uploader": "Walter & Scotty - Topic", "title": "Dirty Dancin' (Slow Motion)", "desc":
+{"id": "xROGGSQIV-4", "year": "1989", "phonogram": true, "views": 600446, "uploader": "Miki Howard", "title": "Come Home to Me", "desc": "Provided to YouTube by
+{"id": "Zszz0WevYX4", "year": "1990", "phonogram": true, "views": 82873, "uploader": "Tracie Spencer - Topic", "title": "I Like That", "desc": "Provided to YouT
+{"id": "Mex7aFNQYBk", "year": "1992", "phonogram": true, "views": 8749, "uploader": "Alyson Williams - Topic", "title": "So Special (Duet with Jeff Redd)", "des
+{"id": "xYeFckcDkIQ", "year": "1989", "phonogram": true, "views": 727066, "uploader": "Will Downing", "title": "The Love We Share", "desc": "Provided to YouTube
+{"id": "0yI9WfSwskw", "year": "1990", "phonogram": true, "views": 7383882, "uploader": "Jeffrey Osborne - Topic", "title": "Only Human", "desc": "Provided to Yo
+{"id": "bBVopwCwfqc", "year": "1992", "phonogram": true, "views": 2925150, "uploader": "Freddie Jackson", "title": "I Could Use A Little Love (Right Now)", "des
+{"id": "AxmbUzlrlpQ", "year": "1991", "phonogram": true, "views": 320009, "uploader": "Marva Hicks - Topic", "title": "One Good Reason (Edit)", "desc": "Provide
+{"id": "CcLkT2RkZI0", "year": "1991", "phonogram": true, "views": 1089250, "uploader": "Gary Taylor", "title": "Time After Time", "desc": "Provided to YouTube b
+{"id": "npBaBKgCTbQ", "year": "1991", "phonogram": true, "views": 292866, "uploader": "Eric Gable - Topic", "title": "Straight from My Heart", "desc": "Provided
+{"id": "Gke4fTwky18", "year": "1990", "phonogram": true, "views": 15404366, "uploader": "The Whispers - Official Channel", "title": "Is It Good To You", "desc":
+{"id": "WSFdafSrz3A", "year": "1994", "phonogram": true, "views": 265408, "uploader": "Phil Perry - Topic", "title": "Heaven", "desc": "Provided to YouTube by U
+{"id": "eP-EDohPhbk", "year": "1986", "phonogram": true, "views": 3162227, "uploader": "Howard Hewett - Topic", "title": "I'm for Real", "desc": "Provided to Yo
+{"id": "TFI2U8YEcx4", "year": "1987", "phonogram": true, "views": 31554432, "uploader": "Alexander O'Neal Official", "title": "Sunshine", "desc": "Provided to Y
+{"id": "uMu1amlfnwY", "year": "1991", "phonogram": true, "views": 110816, "uploader": "Marva Hicks - Topic", "title": "Never Been In Love Before", "desc": "Prov
+{"id": "Zod4oCNm80U", "year": "1992", "phonogram": true, "views": 137391, "uploader": "Everette Harp - Topic", "title": "If I Had To Live My Life Without You", 
+{"id": "RsWCzAn8240", "year": "2007", "phonogram": true, "views": 107734, "uploader": "Howard Hewett - Topic", "title": "Your Body Needs Healin'", "desc": "Prov
+{"id": "PqLsWrFn1WM", "year": "1988", "phonogram": true, "views": 192909, "uploader": "Howard Hewett - Topic", "title": "This Time", "desc": "Provided to YouTub
+{"id": "2lWrpT_Z9i8", "year": "1990", "phonogram": true, "views": 169903, "uploader": "Howard Hewett - Topic", "title": "When Will It Be", "desc": "Provided to 
+{"id": "nY3SvaA89rk", "year": "1990", "phonogram": true, "views": 49768, "uploader": "Howard Hewett - Topic", "title": "Shadow", "desc": "Provided to YouTube by
+{"id": "uX37bM5WPG8", "year": "1990", "phonogram": true, "views": 94188, "uploader": "Surface - Topic", "title": "Give Her Your Love", "desc": "Provided to YouT
+{"id": "oaE0kNgLSJY", "year": null, "phonogram": false, "views": 2624, "uploader": "Classic Music (Ballads)", "title": "Audrey Wheeler  Feat D Train - If You Ne
+{"id": "GuDrx7xpvZY", "year": "1988", "phonogram": true, "views": 164839, "uploader": "Rebbie Jackson - Topic", "title": "This Love Is Forever", "desc": "Provid
+{"id": "SLmIN6oy7xo", "year": "2015", "phonogram": true, "views": 8314454, "uploader": "Herb Alpert", "title": "Making Love In The Rain", "desc": "Provided to Y
+{"id": "cBw9m_4iaR0", "year": "1985", "phonogram": true, "views": 9479, "uploader": "Brandi Wells - Topic", "title": "Why Can't We Be Lovers", "desc": "Provided
+{"id": "yUPVrgiFJrI", "year": "1989", "phonogram": true, "views": 51700, "uploader": "The Good Girls - Topic", "title": "All For Your Love", "desc": "Provided t
+{"id": "OAbBT9M65dc", "year": "1989", "phonogram": false, "views": 25900, "uploader": "NandoGames Music", "title": "ANNE G. - LOVÉ''S HERE", "desc": "ATLANTIC R
+{"id": "vOoF5k9asso", "year": "1983", "phonogram": true, "views": 42728, "uploader": "Dazz Band - Topic", "title": "Laughin' At You", "desc": "Provided to YouTu
+{"id": "stMbc4aVwkE", "year": "2013", "phonogram": true, "views": 63828, "uploader": "Aurra - Topic", "title": "Baby Love", "desc": "Provided to YouTube by BMG 
+{"id": "1u2P94yyBOI", "year": null, "phonogram": false, "views": 72434, "uploader": "On the Rocks Records", "title": "Robin Joy - Midnight Lover", "desc": "Inst
+{"id": "71NsUi_Ncnk", "year": null, "phonogram": false, "views": 27691, "uploader": "skeenery", "title": "David Hudson - Send Her Back", "desc": "Waylo "}
+{"id": "sbGoLB5l9AA", "year": null, "phonogram": false, "views": 1652, "uploader": "Solar Radio", "title": "Imagination  -  The Last Time", "desc": "Imagination
+{"id": "TlC6Py8mYlE", "year": "1992", "phonogram": true, "views": 500087, "uploader": "Everette Harp - Topic", "title": "More Than You'll Ever Know", "desc": "P
+{"id": "eKqmapCs4eE", "year": "1992", "phonogram": true, "views": 229924, "uploader": "Everette Harp - Topic", "title": "There's Still Hope", "desc": "Provided 
+{"id": "EATTC3sNRP0", "year": "1991", "phonogram": true, "views": 21183, "uploader": "Giorge Pettus - Topic", "title": "This Is Your Night", "desc": "Provided t
+{"id": "eh9NLRYkuSY", "year": "1991", "phonogram": true, "views": 73433, "uploader": "Giorge Pettus - Topic", "title": "I Wish", "desc": "Provided to YouTube by
+{"id": "80i21q_kV6I", "year": "1990", "phonogram": true, "views": 70778, "uploader": "Gwen Guthrie - Topic", "title": "Sweet Bitter Love", "desc": "Provided to 
+{"id": "o_dn1mtTMUw", "year": "1991", "phonogram": true, "views": 521750, "uploader": "Keith Washington - Topic", "title": "Lovers After All", "desc": "Provided
+{"id": "ylZj8FMM4_E", "year": "1991", "phonogram": true, "views": 131960, "uploader": "The O'Jays", "title": "Closer To You", "desc": "Provided to YouTube by Un
+{"id": "fI7WnAbmMqw", "year": "1983", "phonogram": true, "views": 3178, "uploader": "Kaoru Sudo - Topic", "title": "Squall City", "desc": "Provided to YouTube b
+{"id": "og-Cduclw6Q", "year": "2021", "phonogram": true, "views": 12025, "uploader": "John White - Topic", "title": "Forbidden Love", "desc": "Provided to YouTu
+{"id": "AAGE_7zbA0E", "year": "1988", "phonogram": true, "views": 48060, "uploader": "Jean Carn", "title": "Ain't No Way", "desc": "Provided to YouTube by The O
+{"id": "P3cKrz1xHAY", "year": "2021", "phonogram": true, "views": 15245478, "uploader": "Virus Oficial", "title": "Virus - Amor Descartable (Official Audio)", "
+{"id": "wD4s_IpxARw", "year": "2021", "phonogram": true, "views": 2421605, "uploader": "Virus Oficial", "title": "Virus - Tomo Lo Que Encuentro (Official Audio)
+{"id": "mQNqA3WHaZE", "year": "2021", "phonogram": true, "views": 32209590, "uploader": "Virus Oficial", "title": "Virus - Luna de Miel en la Mano (Official Aud
+{"id": "nMQbSN-aAxE", "year": "2021", "phonogram": true, "views": 598207, "uploader": "Virus Oficial", "title": "Virus - Dicha Feliz (Official Audio)", "desc": 
+{"id": "4tqLDpGGwQg", "year": "7090", "phonogram": true, "views": 28, "uploader": "Gio Gomez - Topic", "title": "IT BEGINS 113 BPM", "desc": "Provided to YouTub
+{"id": "wXk_0jQkHsg", "year": "7090", "phonogram": true, "views": 30, "uploader": "Gio Gomez - Topic", "title": "A SONG 116 BPM", "desc": "Provided to YouTube b
+{"id": "Tg8tMUhBrJA", "year": "7090", "phonogram": true, "views": 12, "uploader": "Gio Gomez - Topic", "title": "BAG CHASIN 128 BPM", "desc": "Provided to YouTu
+{"id": "mndlwQPnjrI", "year": "7090", "phonogram": true, "views": 13, "uploader": "Gio Gomez - Topic", "title": "MIDNIGHT DRIVE 120 BPM", "desc": "Provided to Y
+{"id": "6VGowSe4064", "year": "7090", "phonogram": true, "views": 12, "uploader": "Gio Gomez - Topic", "title": "NO. 9 86 BPM", "desc": "Provided to YouTube by 
+{"id": "-m0hpYYB5p0", "year": "7090", "phonogram": true, "views": 11, "uploader": "Gio Gomez - Topic", "title": "PURPLE PARTY 126 BPM", "desc": "Provided to You
+{"id": "KsRiKQXRVF0", "year": "7090", "phonogram": true, "views": 10, "uploader": "Gio Gomez - Topic", "title": "RIVER IS PURPLE 140 BPM", "desc": "Provided to 
+{"id": "ggVwHoMHjAY", "year": "7090", "phonogram": true, "views": 7, "uploader": "Gio Gomez - Topic", "title": "SEE U LATER 120 BPM", "desc": "Provided to YouTu
+{"id": "sFDeIwTvYNI", "year": "7090", "phonogram": true, "views": 9, "uploader": "Gio Gomez - Topic", "title": "VICES 145 BPM", "desc": "Provided to YouTube by 
+{"id": "3K7oB2Yjf2Y", "year": "7090", "phonogram": true, "views": 12, "uploader": "Gio Gomez - Topic", "title": "YA GIVIN ME 88 BPM", "desc": "Provided to YouTu
+{"id": "ZeWpD7lcXuo", "year": null, "phonogram": false, "views": 557, "uploader": "Five Special Records", "title": "Reign - Let Me", "desc": " "}
+{"id": "FVt0t5lHOYo", "year": null, "phonogram": false, "views": 515, "uploader": "Five Special Records", "title": "Sonny Bey - Share Your Life", "desc": " "}
+{"id": "7LM9DbvVlmU", "year": null, "phonogram": false, "views": 290, "uploader": "Five Special Records", "title": "Renaizzance -Intimate Thoughts", "desc": " "
+{"id": "RxbiBdnOFmE", "year": null, "phonogram": false, "views": 318, "uploader": "BigPeter1027 Real Music Channel", "title": "Freedom - It's You", "desc": " "}
+{"id": "PcORApOmSX8", "year": null, "phonogram": false, "views": 494, "uploader": "Five Special Records", "title": "Osborne and Giles - I’ll make you an offer",
+{"id": "fQr5-eJgFRM", "year": null, "phonogram": false, "views": 409, "uploader": "Five Special Records", "title": "Rosalyn Keel - Crying Over You", "desc": " "
+{"id": "WdmvfA3EnFo", "year": null, "phonogram": false, "views": 526, "uploader": "Five Special Records", "title": "Tomorrow · Rhonda Clark", "desc": " "}
+{"id": "OnZU8hcExz0", "year": null, "phonogram": false, "views": 539, "uploader": "Five Special Records", "title": "Robert Brookins - Crazy 'Bout Your Lovin'", 
+{"id": "AQVx_MzKPpM", "year": null, "phonogram": false, "views": 388, "uploader": "Five Special Records", "title": "Charlie Coats - Never Stop Lovin'", "desc": 
+{"id": "VzlGzAAF1jY", "year": null, "phonogram": false, "views": 283995, "uploader": "Ace Records", "title": "Gil Scott-Heron - Did You Hear What They Said? (Of
+{"id": "8QEjyZKUyc0", "year": "1976", "phonogram": false, "views": 16031, "uploader": "Teen en Tander", "title": "Monk Higgins I'm In Love With You", "desc": "C
+{"id": "AEoPXLGJ47I", "year": "1976", "phonogram": true, "views": 8515, "uploader": "Pleasure - Topic", "title": "The Love Of My Life (Album Version)", "desc": 
+{"id": "gviUDLieRkY", "year": "1977", "phonogram": false, "views": 11630, "uploader": "Shirley Bassey Music & VIDS (Scotsas)", "title": "Shirley Bassey - This O
+{"id": "Oz31-xfeqtw", "year": "1979", "phonogram": false, "views": 10778, "uploader": "Music for empty rooms", "title": "Татьяна Кочергина Tana Kotcherhyna - Зв
+{"id": "U80hNtmymeM", "year": "1978", "phonogram": false, "views": 80524, "uploader": "Music for empty rooms", "title": "Darwin's Theory - I Hope You'll Be [US]
+{"id": "XtAk-Alc8wY", "year": "1970", "phonogram": false, "views": 341819, "uploader": "Rhythm andLife", "title": "The Egyptians - Thanks To You", "desc": "Swee
+{"id": "nabK70eW9nM", "year": "1976", "phonogram": false, "views": 20185, "uploader": "THE SOULPARANOS", "title": "BLUE MITCHELL - Delilah - 1976", "desc": "Jin
+{"id": "XylStr1NMHo", "year": "1971", "phonogram": false, "views": 35636, "uploader": "Music for empty rooms", "title": "Anna Ferrari - La Paura Di Soffrire °I 
+{"id": "Xrxge1d52bo", "year": null, "phonogram": false, "views": 17803, "uploader": "Rare Samples & Songs Oleg Tsoy", "title": "Minnie Riperton - Minnies Lament
+{"id": "09LzZp56bEo", "year": "1976", "phonogram": false, "views": 1493, "uploader": "WolfXCIX", "title": "Phil Medley - Sheila [Soul] (1976)", "desc": "Track 2
+{"id": "pYFAX4XKbiU", "year": "1970", "phonogram": false, "views": 19771, "uploader": "The Intruders", "title": "Guess Who Loves Me", "desc": "Provided to YouTu
+{"id": "0Xi8ouMbSMA", "year": "1970", "phonogram": true, "views": 87637, "uploader": "Smokey Robinson", "title": "This Guy's In Love With You", "desc": "Provide
+{"id": "DpvLYSVYtWs", "year": null, "phonogram": false, "views": 30056, "uploader": "J Kennedy", "title": "My Cherie Amour   Smokey Robinson and the Miracles", 
+{"id": "fHBn_0ONR5A", "year": "1970", "phonogram": true, "views": 188361, "uploader": "Smokey Robinson", "title": "If This World Were Mine", "desc": "Provided t
+{"id": "cvcSaBp5ikQ", "year": "2024", "phonogram": true, "views": 326016, "uploader": "Jalen Ngonda", "title": "Anyone In Love", "desc": "Provided to YouTube by
+{"id": "LlttGY3BeX4", "year": null, "phonogram": false, "views": 14684, "uploader": "Krem Soulz", "title": "Phillipe Wynne  - Take me as I am", "desc": "I am a 
+{"id": "EZ74QVeGKu8", "year": null, "phonogram": false, "views": 18469, "uploader": "Krem Soulz", "title": "Gloria Lynne - Visions", "desc": "I am a Soul Music 
+{"id": "cJzU87be7R0", "year": null, "phonogram": false, "views": 26173, "uploader": "Krem Soulz", "title": "Arnold Blair - I won the Big deal (This Time)", "des
+{"id": "NGQ2vgDiXeI", "year": "1977", "phonogram": false, "views": 12254, "uploader": "Music for empty rooms", "title": "Jerry Butler - I Wanna Do It To You [US
+{"id": "YBofCi1ksic", "year": "1982", "phonogram": false, "views": 189199, "uploader": "Good Sound Record Archive", "title": "Mckinley Sandifer – Holy Ghost Pow
+{"id": "TkTgQNGivlo", "year": null, "phonogram": false, "views": 13919, "uploader": "Rare Samples & Songs Oleg Tsoy", "title": "Brenda And The Tabulations - Hom
+{"id": "93D-fo0Q2Bk", "year": null, "phonogram": false, "views": 10827, "uploader": "TheRAREGROOVEMAN", "title": "RENEE GEYER   IF LOVING YOU IS WRONG", "desc":
+{"id": "Qoew8Bcv2BE", "year": null, "phonogram": false, "views": 61516, "uploader": "TheRAREGROOVEMAN", "title": "ARNOLD BLAIR   IS IT REAL LOVE", "desc": " "}
+{"id": "LPrXd2LhxJU", "year": null, "phonogram": false, "views": 285721, "uploader": "incrediblecHiller", "title": "Side Effect - The Loneliest Man in Town", "d
+{"id": "q_56cGOVsp0", "year": null, "phonogram": false, "views": 5679, "uploader": "Inspiration in sound", "title": "Albertina Walker - He's My Everything | SOU
+{"id": "mskZErA5ilY", "year": null, "phonogram": false, "views": 9939, "uploader": "Inspiration in sound", "title": "Gloria Lynne - Visions | Soul Sample", "des
+{"id": "wkkweaVj_b4", "year": null, "phonogram": false, "views": 7860, "uploader": "Inspiration in sound", "title": "Windy City - \"Win or Lose\" | Soul Sample"
+{"id": "3vMbwOYrXrY", "year": null, "phonogram": false, "views": 61680, "uploader": "McFadden & Whitehead", "title": "McFadden & Whitehead - I've Been Pushed As
+{"id": "lsEm5ZyZqAk", "year": null, "phonogram": false, "views": 107482, "uploader": "Rare Samples & Songs Oleg Tsoy", "title": "Al Foster - Love Eyes", "desc":
+{"id": "s3CrSI5axBg", "year": null, "phonogram": false, "views": 13711, "uploader": "Rare Samples & Songs Oleg Tsoy", "title": "Roberta Flack - I Can See The Su
+{"id": "ZynW_nVFKFY", "year": "1975", "phonogram": true, "views": 17607, "uploader": "Exile One - Topic", "title": "You Have Lost The Battle", "desc": "Provided
+{"id": "ENJXqnftAWQ", "year": "2022", "phonogram": true, "views": 45708, "uploader": "Brighter Side Of Darkness - Topic", "title": "He Made You Mine", "desc": "
+{"id": "RMtkvYEBU3w", "year": "1977", "phonogram": false, "views": 199920, "uploader": "si", "title": "Earth Child - There’s Nobody Like You (1977)", "desc": "h
+{"id": "7z4Ly_8g378", "year": null, "phonogram": false, "views": 27070, "uploader": "lolfox99", "title": "Arnold Blair - I Won the Big Deal This Time", "desc": 
+{"id": "9WzeqeI1boY", "year": "1981", "phonogram": false, "views": 25662, "uploader": "secondscene", "title": "The Conservatives - Happiness (Take Your Time) (1
+{"id": "kzbySlrQoxg", "year": null, "phonogram": false, "views": 34300, "uploader": "Krem Soulz", "title": "Atlantis - So Sad So Long", "desc": "I am a Soul Mus
+{"id": "wDsXibF4m0s", "year": null, "phonogram": false, "views": 642, "uploader": "Five Special Records", "title": "The Long Night - Who Can I Turn To", "desc":
+{"id": "-ivwwGrQt8A", "year": null, "phonogram": false, "views": 1125519, "uploader": "That's Love Records", "title": "54 Ultra - \"Heaven Knows\" (Official Vid
+{"id": "xJo7sG2pO5E", "year": "1971", "phonogram": true, "views": 30893, "uploader": "The Persuaders - Topic", "title": "If You Feel Like I Do", "desc": "Provid
+{"id": "eHhqjlPBnNs", "year": null, "phonogram": false, "views": 15431, "uploader": "Rare Samples & Songs Oleg Tsoy", "title": "The Three Degrees - Lonelier Are
+{"id": "aJnKN3TRsW8", "year": null, "phonogram": false, "views": 21929, "uploader": "André Navarro II", "title": "THE IMPRESSIONS - I could never make you stay"
+{"id": "FuKJDrK9Kl0", "year": "1967", "phonogram": true, "views": 23893, "uploader": "Patti LaBelle", "title": "I'm Still Waiting", "desc": "Provided to YouTube
+{"id": "Lwr8_Yh8XPI", "year": "2016", "phonogram": false, "views": 11032, "uploader": "Patti LaBelle", "title": "One Phone Call", "desc": "Provided to YouTube b
+{"id": "wE4-5Z8NzgU", "year": "1970", "phonogram": false, "views": 55916, "uploader": "The Main Ingredient", "title": "I'm Better Off Without You", "desc": "Pro
+{"id": "xSJ_2Z1rzXw", "year": "1984", "phonogram": true, "views": 8429, "uploader": "New Horizons - Topic", "title": "I See You There", "desc": "Provided to You
+{"id": "rW9VsxK2HPE", "year": "2006", "phonogram": true, "views": 80077, "uploader": "The Montclairs - Topic", "title": "Beggin' Is Hard To Do", "desc": "Provid
+{"id": "x3Or4AXE1bs", "year": null, "phonogram": false, "views": 241408, "uploader": "Philadelphia International Records", "title": "Silk - I Can't Stop (Turnin
+{"id": "YeyxGAdhqQ8", "year": null, "phonogram": false, "views": 26394, "uploader": "André Navarro II", "title": "WATER & POWER - We are through", "desc": "You'
+{"id": "3m50eShWODM", "year": null, "phonogram": false, "views": 82401, "uploader": "tony torres", "title": "The 11th Commandment-Have You Had Any Heartaches La
+{"id": "Iyap0SvWth8", "year": null, "phonogram": false, "views": 49183, "uploader": "André Navarro II", "title": "DEBBIE TAYLOR - I don't want to leave you", "d
+{"id": "YiRtJ-o2mSc", "year": null, "phonogram": false, "views": 12227, "uploader": "Rare Samples & Songs Oleg Tsoy", "title": "Gotham - Behind The Wall", "desc
+{"id": "_bCXyYUaEOI", "year": null, "phonogram": false, "views": 114620, "uploader": "Rare Samples & Songs Oleg Tsoy", "title": "Norman Feels - Something In Me"
+{"id": "O0tCOVyoDkQ", "year": null, "phonogram": false, "views": 734190, "uploader": "André Navarro II", "title": "THE CITATIONS - Hey Mr. Love", "desc": "This 
+{"id": "etL14o_AZ_k", "year": null, "phonogram": false, "views": 74084, "uploader": "Rare Samples & Songs Oleg Tsoy", "title": "Banks And Hampton - Passion And 
+{"id": "SRJY6Zwt9HU", "year": null, "phonogram": false, "views": 11237, "uploader": "Rare Samples & Songs Oleg Tsoy", "title": "Lonnie Liston Smith And The Cosm
+{"id": "6vyaFBCuYRo", "year": null, "phonogram": false, "views": 35067, "uploader": "NFY", "title": "Esther Phillips \"That's All Right With Me\" (loop)", "desc
+{"id": "A1JBiTWcGIw", "year": null, "phonogram": false, "views": 2619, "uploader": "Casen Fike", "title": "Arnold Blair   I won the Big deal This Time", "desc":
+{"id": "0f5lDgWXsPQ", "year": null, "phonogram": false, "views": 75283, "uploader": "André Navarro II", "title": "STELVIO CIPRIANI - The green eyes woman", "des
+{"id": "Gef8GZI7PFA", "year": "1980", "phonogram": false, "views": 3617, "uploader": "Sample Soul 70", "title": "Ja'net DuBois - Empty Space", "desc": "✨ Hello 
+{"id": "u-c-wzQZkaA", "year": null, "phonogram": false, "views": 52851, "uploader": "Sapien", "title": "The McDonald Sisters - I Thank You Lord", "desc": "Buy A
+{"id": "zWYiY32lFZE", "year": "1979", "phonogram": false, "views": 176332, "uploader": "Music for empty rooms", "title": "Johnny Mayes - Tell Me [US] Soul, Funk
+{"id": "_2hd3mH7i-U", "year": "1977", "phonogram": false, "views": 227202, "uploader": "foreal", "title": "JBC Band – Alone (Soul) (1977)", "desc": "Track by th
+{"id": "gX7Ogh4B1k0", "year": null, "phonogram": false, "views": 22303, "uploader": "Rare Samples & Songs Oleg Tsoy", "title": "Anita Ward - You Lied", "desc": 
+{"id": "OKe-PHJtWLo", "year": "1974", "phonogram": false, "views": 7690, "uploader": "mysoulfunkyworld", "title": "Norman Feels  ‎Movie", "desc": "album Where O
+{"id": "0PPjFjPGMvU", "year": null, "phonogram": false, "views": 56794, "uploader": "normsol Solomon", "title": "Norman Feels  -  Something in me", "desc": "Swe
+{"id": "QaWDDJqypm0", "year": null, "phonogram": false, "views": 64998, "uploader": "Krem Soulz", "title": "Side Effect - I Like Dreaming", "desc": "I am a Soul
+{"id": "WeK6c1iJw54", "year": "1981", "phonogram": false, "views": 66686, "uploader": "Music for empty rooms", "title": "Niteflyte - I Knew It Couldn't Happen [
+{"id": "zDKKdXRcNyc", "year": null, "phonogram": false, "views": 52041, "uploader": "Rare Samples & Songs Oleg Tsoy", "title": "One Way - You", "desc": "If you 
+{"id": "S88cJFlsqSM", "year": null, "phonogram": false, "views": 119146, "uploader": "Rare Samples & Songs Oleg Tsoy", "title": "Brenda And Albert - This Has Ha
+{"id": "-zO9xB6TnjM", "year": null, "phonogram": false, "views": 13199, "uploader": "Rare Samples & Songs Oleg Tsoy", "title": "Mass Production - I Dont Want To
+{"id": "kij6GbAMwuk", "year": "1972", "phonogram": false, "views": 285255, "uploader": "Music for empty rooms", "title": "Gayle Mccormick - Make Myself Over [US
+{"id": "sYChhG01py8", "year": "1977", "phonogram": false, "views": 27028, "uploader": "Music for empty rooms", "title": "Fernand Péna - Le Singe [France] Psych 
+{"id": "oXfsWmPvCKc", "year": "2025", "phonogram": true, "views": 36132, "uploader": "Release - Topic", "title": "Sad Man's Land", "desc": "Provided to YouTube 
+{"id": "-dSBBO-JER0", "year": "2023", "phonogram": true, "views": 136141, "uploader": "Mac DeMarco", "title": "20200802", "desc": "Provided to YouTube by Univer
+{"id": "A9hYkr34y4Q", "year": "1972", "phonogram": false, "views": 4248, "uploader": "Sample Soul 70", "title": "Jerry Butler – That's The Way It Was (That's Th
+{"id": "SCLS_7Q0Qm4", "year": null, "phonogram": false, "views": 42061, "uploader": "Rare Samples & Songs Oleg Tsoy", "title": "Freda Payne - A Song For You", "
+{"id": "Qgu6tgsatsY", "year": null, "phonogram": false, "views": 121730, "uploader": "TheRAREGROOVEMAN", "title": "SPANKY WILSON   LOVE SONG", "desc": " "}
+{"id": "Eo0bLW99HQ4", "year": null, "phonogram": false, "views": 3205, "uploader": "Casen Fike", "title": "Mighty Travelers   Jesus Will Never  Gospel Sample", 
+{"id": "mZc8iaOWW2s", "year": "1972", "phonogram": false, "views": 47886, "uploader": "Sample Soul 70", "title": "Donnie Elbert – Can't Get Over Losing You (197
+{"id": "CY0BGAEFgGw", "year": "1975", "phonogram": false, "views": 8165, "uploader": "Sample Soul 70", "title": "🎵 Barbara Blake And The Uniques – Superman (197
+{"id": "zDyU7bm4q6c", "year": "1975", "phonogram": false, "views": 6253, "uploader": "Sample Soul 70", "title": "🎵 Natural Four – Give This Love A Try (1975) 4k
+{"id": "p1S50KW1eCU", "year": "1974", "phonogram": false, "views": 119763, "uploader": "SOULCATCHER", "title": "Renée Geyer - And I Love Him", "desc": "1974 "}
+{"id": "sX4WEPUGdAs", "year": "1978", "phonogram": false, "views": 75793, "uploader": "Sample Soul 70", "title": "🎙️ Prince Phillip Mitchell – “If We Can't Be L
+{"id": "lnPCe_BMh0U", "year": null, "phonogram": false, "views": 745, "uploader": "Vintapes Samples & Sounds", "title": "Spanky Wilson - Love Song [ Soul Sample
+{"id": "88curXccRyE", "year": "1985", "phonogram": false, "views": 3226, "uploader": "foreal", "title": "Carletta Sue - You Keep Holding Back On Love (Soul) (Fu
+{"id": "uyEP_cxrJ9Q", "year": null, "phonogram": false, "views": 89, "uploader": "Elisio De Souza", "title": "Ghalib Ghallab  - That's The Way I Feel About Your
+{"id": "PZqQT5904_U", "year": null, "phonogram": false, "views": 9764405, "uploader": "Ubiquity Records", "title": "Darondo - \"Didn't I\" [HQ - REMASTER]", "de
+{"id": "vw8HYEqeh28", "year": "1975", "phonogram": false, "views": 8817, "uploader": "Sample Soul 70", "title": "Quiet Elegance – Do You Love Me (1975) Rare Sou
+{"id": "c3opdD8MAQc", "year": null, "phonogram": false, "views": 28698, "uploader": "Rare Samples & Songs Oleg Tsoy", "title": "Gloria Scott - I Just Couldnt Ta
+{"id": "IUxTPT3eJ9M", "year": "1979", "phonogram": false, "views": 928, "uploader": "Eric Selects", "title": "Secrets – Silk (US, 1979) Funk/Soul", "desc": "🎧 A
+{"id": "-6Wkgh3j39g", "year": "1976", "phonogram": false, "views": 6685, "uploader": "Sample Soul 70", "title": "🎵 The Edwards Generation – You're The One For M
+{"id": "G6P6rGVUd74", "year": "1970", "phonogram": false, "views": 20256, "uploader": "Reservoir Recordings", "title": "Chicago Gangsters - Don't Be Gone", "des
+{"id": "t4xKx5Znf0M", "year": null, "phonogram": false, "views": 164856, "uploader": "André Navarro II", "title": "THE CHECKMATES - I Must be dreaming", "desc":
+{"id": "odZszR49qBA", "year": "1974", "phonogram": false, "views": 19382, "uploader": "Sample Soul 70", "title": "The Checkmates Ltd. – I Must Be Dreaming (1974
+{"id": "4IaEYzV2c_s", "error": "sin metadata"}
+{"id": "LxCnijns-Gg", "error": "sin metadata"}
+{"id": "N5yfDVBUkio", "year": "1978", "phonogram": false, "views": 13110, "uploader": "Sample Soul 70", "title": "The Futures – Ain't No Time Fa Nothing (1978) 
+{"id": "u0_76JRjqDY", "year": "1972", "phonogram": true, "views": 18513452, "uploader": "Billy Paul", "title": "Me and Mrs. Jones", "desc": "Provided to YouTube
+{"id": "JUtXRRDUEuo", "year": null, "phonogram": false, "views": 4669, "uploader": "Vintapes Samples & Sounds", "title": "Freedom Machine - Stop Doubting My Lov
+{"id": "MUQE18DiASg", "error": "sin metadata"}
+{"id": "q9Qo56_818c", "year": "2005", "phonogram": false, "views": 85350, "uploader": "dirtydiscosecrets", "title": "Carrie Lucas- Questions- 1978 Soul", "desc"
+{"id": "4NfgypBsLJo", "year": "1974", "phonogram": false, "views": 631677, "uploader": "TheVinylNoise", "title": "The Crowns Of Glory - Lord hold me in your arm
+{"id": "FO_Wuw8LjYA", "error": "sin metadata"}
+{"id": "79gtVFJsmPw", "year": null, "phonogram": false, "views": 8841, "uploader": "allenheathv6", "title": "MATT COVINGTON - We Got One", "desc": "Modern soul 
+{"id": "6KkyisO_Cxk", "year": "1970", "phonogram": false, "views": 1784651, "uploader": "B Jones", "title": "L.T.D. ft. Jeffrey Osborne - Love Ballad", "desc": 
+{"id": "414_MrfGhvs", "error": "sin metadata"}
+{"id": "TQLbJc807vU", "error": "sin metadata"}
+{"id": "k_1P1eqTgpc", "error": "sin metadata"}
+{"id": "6pBr-W5x47M", "error": "sin metadata"}
+{"id": "tKM2ngpiP7Q", "year": "1983", "phonogram": false, "views": 187039, "uploader": "si", "title": "Flashbakk - Being Number One (1983)", "desc": "https://ww
+{"id": "aEpEuTJ9TU0", "year": "1981", "phonogram": false, "views": 51392, "uploader": "Priam231", "title": "T.S. Monk - More to Love", "desc": "The artist is th
+{"id": "zSjeL0u25_U", "error": "sin metadata"}
+{"id": "HDXjRovh0Go", "error": "sin metadata"}
+{"id": "uIsLNaWhsB8", "error": "sin metadata"}
+{"id": "vdb9TTCKIxQ", "error": "sin metadata"}
+{"id": "JsftJxegggM", "error": "sin metadata"}
+{"id": "tkUP6UZzijw", "error": "sin metadata"}
+{"id": "Fv8NyT1pW_8", "error": "sin metadata"}
+{"id": "vKtWqEBiS78", "year": null, "phonogram": false, "views": 6490, "uploader": "Krem Soulz", "title": "Perfect Touch - Don't even try it", "desc": "I am a S
+{"id": "VLdttu7L_sQ", "error": "sin metadata"}
+{"id": "ObhEIPMHFlY", "year": null, "phonogram": false, "views": 8959, "uploader": "TheRAREGROOVEMAN", "title": "WINDY CITY   HEY IT'S OVER", "desc": " "}
+{"id": "9OgrZQCTcWU", "error": "sin metadata"}
+{"id": "PT6KuDPzufs", "error": "sin metadata"}
+{"id": "mx8yFDC7GL8", "error": "sin metadata"}
+{"id": "FtIA7BpnD2c", "error": "sin metadata"}
+{"id": "daZW2SmdvLU", "error": "sin metadata"}
+{"id": "1EBRMQVszqw", "year": null, "phonogram": false, "views": 36195, "uploader": "Rare Samples & Songs Oleg Tsoy", "title": "Rahni Harris And Family Love - N
+{"id": "9VBVJRCS_W0", "error": "sin metadata"}
+{"id": "bYy5hsPrO6o", "error": "sin metadata"}
+{"id": "seNp8p_1tIU", "error": "sin metadata"}
+{"id": "RSfZ2UF_Dno", "error": "sin metadata"}
+{"id": "bHhW--sxcEE", "error": "sin metadata"}
+{"id": "ZbFIdAucWK0", "error": "sin metadata"}
+{"id": "2WUZfitfFb8", "error": "sin metadata"}
+{"id": "dfERWPi__Ek", "error": "sin metadata"}
+{"id": "Uh1Jj4BkY18", "error": "sin metadata"}
+{"id": "IkJNegK9bKk", "error": "sin metadata"}
+{"id": "dHMzyXWnGAE", "error": "sin metadata"}
+{"id": "hLGLxF7mCOI", "error": "sin metadata"}
+{"id": "GM9wh30Va9Q", "error": "sin metadata"}
+{"id": "_SsMId00acY", "error": "sin metadata"}
+{"id": "oepgDXEmDVc", "error": "sin metadata"}
+{"id": "oaaWXUst15g", "error": "sin metadata"}
+{"id": "VOXBtWj78Kc", "error": "sin metadata"}
+{"id": "ohXPYiXmPhE", "error": "sin metadata"}
+{"id": "tDYv2VW5l2g", "year": null, "phonogram": false, "views": 1595, "uploader": "Casen Fike", "title": "Nick Allen   Don't Make Me Be What You Don't Want Me 
+{"id": "XY-9524FWLA", "year": null, "phonogram": false, "views": 3040, "uploader": "Casen Fike", "title": "Terra Firma Band   Dreams  Soul Sample", "desc": " "}
+{"id": "j_0W7h1iQP8", "year": null, "phonogram": false, "views": 152, "uploader": "BigPeter1027 Real Music Channel", "title": "Ace Spectrum - Don't Let Me Be Lo
+{"id": "GO-eNQm28dQ", "year": null, "phonogram": false, "views": 813, "uploader": "Casen Fike", "title": "Chantique   I Know I'm Falling In Love  Soul Sample", 
+{"id": "yfLegyOzzcQ", "year": null, "phonogram": false, "views": 3338, "uploader": "Casen Fike", "title": "DEBBIE TAYLOR   I DON'T WANNA LEAVE YOU (SOUL SAMPLE)
+{"id": "WTDpy7XZQVo", "year": null, "phonogram": false, "views": 1857, "uploader": "Casen Fike", "title": "Brothers By Choice   No Time  Soul Sample", "desc": "
+{"id": "Stj_n9eYR7M", "year": null, "phonogram": false, "views": 468, "uploader": "Five Special Records", "title": "Ju. Thomas -  | Gotta Change My Ways", "desc
+{"id": "Iq2yrewqnf0", "year": null, "phonogram": false, "views": 5578, "uploader": "Casen Fike", "title": "Tomorrow's Promise   Should I follow my heart", "desc
+{"id": "_7yGoJCJQmU", "year": null, "phonogram": false, "views": 2641, "uploader": "Casen Fike", "title": "Anyone Can See ~ The Sequins", "desc": "Anyone Can Se
+{"id": "b-oiz0qsx-A", "year": null, "phonogram": false, "views": 388, "uploader": "BigPeter1027 Real Music Channel", "title": "Redd Hott - Love Is For Keeps", "
+{"id": "cF2RjVZVvmk", "year": null, "phonogram": false, "views": 385, "uploader": "BigPeter1027 Real Music Channel", "title": "Sho-Nuff - Don't Be Lonely", "des
+{"id": "nwP2r0U4Bbc", "error": "sin metadata"}
+{"id": "asnCnBOu7NI", "error": "sin metadata"}
+{"id": "cDKhURTFNRo", "error": "sin metadata"}
+{"id": "fuoOXI7HZI8", "error": "sin metadata"}
+{"id": "D00nJPlKiy0", "error": "sin metadata"}
+{"id": "x_8QDhFDzJQ", "error": "sin metadata"}
+{"id": "2xWI63QQXG8", "error": "sin metadata"}
+{"id": "4ePRbgLFooE", "error": "sin metadata"}
+{"id": "CAdlxmogejM", "error": "sin metadata"}
+{"id": "yG07WSu7Q9w", "error": "sin metadata"}
+{"id": "YAylXgbrykE", "error": "sin metadata"}
+{"id": "chBVLdoJChk", "error": "sin metadata"}
+{"id": "NwLFqYfK6aI", "error": "sin metadata"}
+{"id": "9jpmkUeXp3o", "error": "sin metadata"}
+{"id": "yV-12MU6j9M", "error": "sin metadata"}
+{"id": "-CPZoyMg9tw", "error": "sin metadata"}
+{"id": "D1O9gInrdME", "error": "sin metadata"}
+{"id": "zHD88gK5jsg", "error": "sin metadata"}
+{"id": "KUH8yym7Ml0", "error": "sin metadata"}
+{"id": "tOpbAj3QAps", "error": "sin metadata"}
+{"id": "VLDeNR5M_9A", "error": "sin metadata"}
+{"id": "O6r19v_NFk8", "error": "sin metadata"}
+{"id": "AF9W9OEAei0", "error": "sin metadata"}
+{"id": "cnH__LQMF5Q", "error": "sin metadata"}
+{"id": "HU4eYZEGGk0", "error": "sin metadata"}
+{"id": "Htf-uQJegYM", "error": "sin metadata"}
+{"id": "hxJlnM7tBkE", "error": "sin metadata"}
+{"id": "UOJFm3M-N-c", "error": "sin metadata"}
+{"id": "rieqGIbcEBY", "error": "sin metadata"}
+{"id": "X_esHWN5UWA", "error": "sin metadata"}
+{"id": "aaizl2PFTQs", "error": "sin metadata"}
+{"id": "jXE0XeLcPM4", "error": "sin metadata"}
+{"id": "Tm17nByrAqQ", "error": "sin metadata"}
+{"id": "iWdy3EG2eT8", "error": "sin metadata"}
+{"id": "VOkZx2If8vE", "error": "sin metadata"}
+{"id": "HmlTwWQCraE", "error": "sin metadata"}
+{"id": "ZqYMY4e657A", "error": "sin metadata"}
+{"id": "LoOpTBbNsPA", "error": "sin metadata"}
+{"id": "wRIQvh-ltb0", "error": "sin metadata"}
+{"id": "DPZWLCoNbcQ", "error": "sin metadata"}
+{"id": "DsUFi4vvpJU", "error": "sin metadata"}
+{"id": "__SOh65o9c8", "error": "sin metadata"}
+{"id": "LKgLckLRj7k", "error": "sin metadata"}
+{"id": "VDLQ6KNaKdc", "error": "sin metadata"}
+{"id": "FO4u1STvgbE", "error": "sin metadata"}
+{"id": "Q7U1jIW-IdA", "error": "sin metadata"}
+{"id": "WdVKbJFSm1o", "error": "sin metadata"}
+{"id": "XDaUdVXAcxg", "error": "sin metadata"}
+{"id": "bDAuhzqF75A", "error": "sin metadata"}
+{"id": "48vWDj1WIao", "error": "sin metadata"}
+{"id": "J0pzgj4opJU", "error": "sin metadata"}
+{"id": "TCGPzyfhHy4", "error": "sin metadata"}
+{"id": "BIb4lsJop_E", "error": "sin metadata"}
+{"id": "U29SUg-JhSQ", "error": "sin metadata"}
+{"id": "GL3fdn90YyQ", "error": "sin metadata"}
+{"id": "hBec2A0iHnw", "error": "sin metadata"}
+{"id": "m_3mjXtSE3k", "error": "sin metadata"}
+{"id": "6IK9rMgyeZs", "error": "sin metadata"}
+{"id": "JhjeXouo5J8", "error": "sin metadata"}
+{"id": "FpU1fCn4AMg", "error": "sin metadata"}
+{"id": "3nsIXn2nyUQ", "error": "sin metadata"}
+{"id": "3jL2NFK_CC8", "error": "sin metadata"}
+{"id": "ergkDKEAaMM", "error": "sin metadata"}
+{"id": "LvU1JC-1auo", "error": "sin metadata"}
+{"id": "DNF4pqaGtEw", "error": "sin metadata"}
+{"id": "ePaYJ6a5r4E", "error": "sin metadata"}
+{"id": "TchA2N5WIfk", "error": "sin metadata"}
+{"id": "hsD08fdtUPc", "error": "sin metadata"}
+{"id": "-J5A95-RTVA", "error": "sin metadata"}
+{"id": "Yjb31hSa1TY", "error": "sin metadata"}
+{"id": "k2XE8yT-KKg", "error": "sin metadata"}
+{"id": "x35bxgJt8SI", "error": "sin metadata"}
+{"id": "1wmBleSrl04", "error": "sin metadata"}
+{"id": "KjQSSYOTXzk", "error": "sin metadata"}
+{"id": "pdB0ngR-ZEk", "error": "sin metadata"}
+{"id": "8t88by3jYRk", "error": "sin metadata"}
+{"id": "57DKvbDQHPA", "error": "sin metadata"}
+{"id": "1Tk3a99wTs4", "error": "sin metadata"}
+{"id": "choelVy5DBw", "error": "sin metadata"}
+{"id": "8W3e-aJ-NZ8", "error": "sin metadata"}
+{"id": "TdA3swVkPSk", "error": "sin metadata"}
+{"id": "rwjQCguFZZg", "error": "sin metadata"}
+{"id": "2ayIYrj5zh0", "error": "sin metadata"}
+{"id": "byI1q82-MuU", "error": "sin metadata"}
+{"id": "21kwgMDXIX0", "error": "sin metadata"}
+{"id": "XGeybWv0rTg", "error": "sin metadata"}
+{"id": "Rfh4mJOTHss", "error": "sin metadata"}
+{"id": "NH3jaA_bCDA", "error": "sin metadata"}
+{"id": "WTddUm919Ok", "error": "sin metadata"}
+{"id": "wMtINsX5jmY", "error": "sin metadata"}
+{"id": "3P9JMUQItsg", "error": "sin metadata"}
+{"id": "d2Q_Vym3wcI", "error": "sin metadata"}
+{"id": "T-Ba5Oyds_8", "error": "sin metadata"}
+{"id": "q5GESbV9G9M", "error": "sin metadata"}
+{"id": "W96MAr_9iBw", "error": "sin metadata"}
+{"id": "1NKM8l4WsNE", "error": "sin metadata"}
+{"id": "tVfV8qGcNcE", "error": "sin metadata"}
+{"id": "pZkOZlB_G78", "error": "sin metadata"}
+{"id": "G1L2fQQkcxs", "error": "sin metadata"}
+{"id": "bvxjgKFTML8", "error": "sin metadata"}
+{"id": "6CWPp--rG2M", "error": "sin metadata"}
+{"id": "mts4y0llGGM", "error": "sin metadata"}
+{"id": "Pe0RYiQQR6M", "error": "sin metadata"}
+{"id": "GhXQiL7xV4w", "error": "sin metadata"}
+{"id": "H0C2N3wA2WY", "error": "sin metadata"}
+{"id": "2GNgh9OUj7U", "error": "sin metadata"}
+{"id": "tIiIsiGfd7Q", "error": "sin metadata"}
+{"id": "P5_Zv7JKTV8", "error": "sin metadata"}
+{"id": "iQI2-BJPA3I", "error": "sin metadata"}
+{"id": "yjDNGE81Gt4", "year": null, "phonogram": false, "views": 481, "uploader": "BigPeter1027 Real Music Channel", "title": "Fat Gaines Band Presents Zorina -
+{"id": "LjChlx0frhg", "year": null, "phonogram": false, "views": 323, "uploader": "Five Special Records", "title": "Zoom - Love Seasons", "desc": " "}
+{"id": "lIqMB7K9wS0", "year": null, "phonogram": false, "views": 233, "uploader": "BigPeter1027 Real Music Channel", "title": "Fats Gaines Band Presents Zorina 
+{"id": "9a7CCRrSEzU", "year": null, "phonogram": false, "views": 356, "uploader": "BigPeter1027 Real Music Channel", "title": "Fredi Grace And Rhinestone - Tell
+{"id": "QC7zB9FLqsQ", "year": null, "phonogram": false, "views": 211, "uploader": "BigPeter1027 Real Music Channel", "title": "Fredi Grace And Rhinestone - One 
+{"id": "dy4t7-Cbt_A", "year": null, "phonogram": false, "views": 633, "uploader": "Five Special Records", "title": "Conquest - Never Alone", "desc": " "}
+{"id": "N7f2_Xq0ldA", "year": null, "phonogram": false, "views": 254, "uploader": "Five Special Records", "title": "Astrology - Love Moods", "desc": " "}
+{"id": "_op-6icEGFE", "error": "sin metadata"}
+{"id": "13h0uZJJEfw", "error": "sin metadata"}
+{"id": "y-NoSrZU3gM", "year": null, "phonogram": false, "views": 218, "uploader": "BigPeter1027 Real Music Channel", "title": "Redd Hott - Remember", "desc": " 
+{"id": "NCHB-D05emo", "year": null, "phonogram": false, "views": 274, "uploader": "BigPeter1027 Real Music Channel", "title": "Jimmy Dockett & Barbara Stroman -
+{"id": "dx5nTSfPYww", "year": null, "phonogram": false, "views": 271, "uploader": "BigPeter1027 Real Music Channel", "title": "Black Ivory - Rest Inside My Love
+{"id": "S9WmmglmmGk", "year": null, "phonogram": false, "views": 331, "uploader": "BigPeter1027 Real Music Channel", "title": "Banks & Hampton - Passion And Pro
+{"id": "Dz8SlpYal_k", "year": null, "phonogram": false, "views": 1176, "uploader": "Casen Fike", "title": "Gregory James    Dream Lady  Soul Sample", "desc": " 
+{"id": "eZDDotgZs8E", "year": null, "phonogram": false, "views": 214, "uploader": "BigPeter1027 Real Music Channel", "title": "Ace Spectrum - I Can't Keep Holdi
+{"id": "nYzQ8T5Mz1Y", "year": null, "phonogram": false, "views": 280, "uploader": "BigPeter1027 Real Music Channel", "title": "Ace Spectrum - Me And My Love", "
+{"id": "YWcx1A89fmg", "year": null, "phonogram": false, "views": 465, "uploader": "Five Special Records", "title": "F.B.I. - Let Me Love You", "desc": " "}
+{"id": "H5MDjH5ljjM", "year": null, "phonogram": false, "views": 2563, "uploader": "Casen Fike", "title": "Jerry Peters   If You Leave Me Now  Soul Sample", "de
+{"id": "GisTvXpGE5o", "year": null, "phonogram": false, "views": 2060, "uploader": "Casen Fike", "title": "Water & Power If You Don't Want Me", "desc": "Water &
+{"id": "P9iVJojn2m8", "year": null, "phonogram": false, "views": 257, "uploader": "BigPeter1027 Real Music Channel", "title": "Jimmy Dockett & Barbara Stroman -
+{"id": "Lr-A_2-HzsA", "year": null, "phonogram": false, "views": 147, "uploader": "BigPeter1027 Real Music Channel", "title": "Brandi Wells - Hate To See You Go
+{"id": "9XFnQu5G6OQ", "year": null, "phonogram": false, "views": 162, "uploader": "BigPeter1027 Real Music Channel", "title": "Freedom - Summer Memory", "desc":
+{"id": "fobOZQIC0A0", "year": null, "phonogram": false, "views": 771, "uploader": "BigPeter1027 Real Music Channel", "title": "I.N D. - I Just Got To Have You",
+{"id": "AUXXYRgnN6E", "error": "sin metadata"}
+{"id": "_ukNOviTxAc", "year": null, "phonogram": false, "views": 584, "uploader": "Five Special Records", "title": "TOGETHER - CLING TO YOU", "desc": " "}
+{"id": "BCBMiC_BxbI", "year": null, "phonogram": false, "views": 380, "uploader": "Five Special Records", "title": "Yvonne Gage - Tonight (I Wanna Love You)", "
+{"id": "vvDgMNa7aVc", "error": "sin metadata"}
+{"id": "5W0AzwsLyiA", "error": "sin metadata"}
+{"id": "7b03QWfKYWM", "error": "sin metadata"}
+{"id": "LtAlNF-TlN4", "error": "sin metadata"}
+{"id": "HZgAJF_jibw", "error": "sin metadata"}
+{"id": "dtcgWXWtoyY", "error": "sin metadata"}
+{"id": "m_LtNmzSjyY", "error": "sin metadata"}
+{"id": "zr_sgZEUZKA", "error": "sin metadata"}
+{"id": "akd1ZJE3jTs", "error": "sin metadata"}
+{"id": "7NpJb9vx3UE", "error": "sin metadata"}
+{"id": "b_m4jr79Ork", "error": "sin metadata"}
+{"id": "5kp9sohxFs4", "error": "sin metadata"}
+{"id": "BoIEaqMczNI", "error": "sin metadata"}
+{"id": "XqsVKJyL-OA", "error": "sin metadata"}
+{"id": "otLW1t84Gc4", "error": "sin metadata"}
+{"id": "YVOyQqXHAL4", "error": "sin metadata"}
+{"id": "QSB7c_pfwBQ", "error": "sin metadata"}
+{"id": "oo9vFFwCsjw", "error": "sin metadata"}
+{"id": "Q0cVOkkmUxk", "error": "sin metadata"}
+{"id": "xUFGaadOBX8", "error": "sin metadata"}
+{"id": "7sfNtRjM_qw", "error": "sin metadata"}
+{"id": "qUULdoHaVys", "error": "sin metadata"}
+{"id": "YAkvCClmcGs", "error": "sin metadata"}
+{"id": "fG9Odmp_1qk", "error": "sin metadata"}
+{"id": "KAYEdk-0OkU", "error": "sin metadata"}
+{"id": "dJA7fL9xFHU", "error": "sin metadata"}
+{"id": "70B1XxhY3O8", "error": "sin metadata"}
+{"id": "LOnXYPsC8Vg", "error": "sin metadata"}
+{"id": "cBq43CCYqjI", "error": "sin metadata"}
+{"id": "_IwJx5qlejo", "error": "sin metadata"}
+{"id": "e1r4CFseyLw", "error": "sin metadata"}
+{"id": "zBOzSlSUrNo", "error": "sin metadata"}
+{"id": "cUJ6X5ROBS8", "error": "sin metadata"}
+{"id": "mOcytmP6f0k", "error": "sin metadata"}
+{"id": "YPk-ya2AKuc", "year": "1982", "phonogram": false, "views": 39906, "uploader": "ants kask", "title": "Tomoko Aran - Blue Note  -1982", "desc": "Country: 
+{"id": "kD8szhcwvNU", "year": "1985", "phonogram": false, "views": 1627, "uploader": "ants kask", "title": "Hitomi  Tohyama (当山ひとみ)  - Velvet Morning - 1985 - J
+{"id": "XaxxBzfysnI", "year": "1981", "phonogram": false, "views": 32959, "uploader": "ants kask", "title": "Tomoko Soryo (惣領 智子) - Penthouse Cocktail - 1981 - 
+{"id": "Gd2fzn28CI4", "year": "1984", "phonogram": false, "views": 14116, "uploader": "ants kask", "title": "Kimiko Kasai (笠井紀美子) - You'll Never Know - 1984 - J
+{"id": "JdN8QtFqQ8c", "year": "1980", "phonogram": false, "views": 7240, "uploader": "ants kask", "title": "Bakers Shop With Haruko Kuwana - Somewhere In The Ni
+{"id": "MmCEqeJXxQ8", "year": "1984", "phonogram": false, "views": 8967, "uploader": "ants kask", "title": "Cathi Linn - Never Gonna Say Goodbye - 1984 - Japan"
+{"id": "HsVrj2TW1hE", "year": "1986", "phonogram": false, "views": 2144, "uploader": "ants kask", "title": "Hidemi Ishikawa - B5 冬場面 (Fuyu bamen) - 1986 - Japan
+{"id": "DqaVcMKTj5E", "year": "1983", "phonogram": false, "views": 265, "uploader": "JefferyBeats", "title": "三宅純 (Jun Miyake) Eve - A Thoughtful Touch (Japanes
+{"id": "xIOD2mXW3Co", "error": "sin metadata"}
+{"id": "F5RdMlX4oIo", "error": "sin metadata"}
+{"id": "PrYVo6ZDvOQ", "error": "sin metadata"}
+{"id": "m-_IkHTu6_Q", "error": "sin metadata"}
+{"id": "SBtkblGRE1M", "error": "sin metadata"}
+{"id": "MPuWsdNVjA8", "error": "sin metadata"}
+{"id": "IYCHNstWTNE", "error": "sin metadata"}
+{"id": "yMDGsBwZWSE", "error": "sin metadata"}
+{"id": "Zj3KzSJ1vNk", "error": "sin metadata"}
+{"id": "TsLN63djWyY", "error": "sin metadata"}
+{"id": "PHPjEWQvgXE", "error": "sin metadata"}
+{"id": "_QyMvavBhfU", "error": "sin metadata"}
+{"id": "RS3maOxk-Ig", "error": "sin metadata"}
+{"id": "s-cTtHiUph4", "error": "sin metadata"}
+{"id": "oqzFYWlOa14", "error": "sin metadata"}
+{"id": "xQag6Q3jcMY", "error": "sin metadata"}
+{"id": "SEScrunC6Y0", "error": "sin metadata"}
+{"id": "EnNWNeg7C5s", "error": "sin metadata"}
+{"id": "ShTTq_kjhv4", "error": "sin metadata"}
+{"id": "ZbrnTbhnVkU", "error": "sin metadata"}
+{"id": "Ci9lhvztkvc", "error": "sin metadata"}
+{"id": "gJ2te8oYF4Y", "error": "sin metadata"}
+{"id": "MtkJwmCzGaU", "error": "sin metadata"}
+{"id": "ApZlrTxQHEY", "error": "sin metadata"}
+{"id": "uKErxD8K30M", "error": "sin metadata"}
+{"id": "ETFX9FfHHjE", "error": "sin metadata"}
+{"id": "ri8jretrpqY", "error": "sin metadata"}
+{"id": "mEJDYS3850c", "error": "sin metadata"}
+{"id": "2Kr2ynAv7gk", "error": "sin metadata"}
+{"id": "ECXMtqoiaug", "error": "sin metadata"}
+{"id": "gxmT9QO48ZM", "error": "sin metadata"}
+{"id": "YUTXxed2nMw", "error": "sin metadata"}
+{"id": "RDlofTueVa8", "error": "sin metadata"}
+{"id": "tqwoZe94jZY", "error": "sin metadata"}
+{"id": "7tjDI09twFQ", "error": "sin metadata"}
+{"id": "p3hAUgagApU", "error": "sin metadata"}
+{"id": "oYv3CIma5E4", "error": "sin metadata"}
+{"id": "cglihxuclk4", "error": "sin metadata"}
+{"id": "K1S38RRUGlc", "error": "sin metadata"}
+{"id": "Qk_zgp5Zipk", "error": "sin metadata"}
+{"id": "BufxMdkUdOI", "error": "sin metadata"}
+{"id": "AfAnHPMNkKw", "error": "sin metadata"}
+{"id": "v0cYJjSj6Gk", "error": "sin metadata"}
+{"id": "bDxmlndHrJY", "error": "sin metadata"}
+{"id": "rnSAPzW2AFk", "error": "sin metadata"}
+{"id": "Mw01kIM1k6k", "error": "sin metadata"}
+{"id": "cCR8Af4-gyk", "error": "sin metadata"}
+{"id": "4i4dLVaidFM", "error": "sin metadata"}
+{"id": "67z1qaTatss", "error": "sin metadata"}
+{"id": "imvwLDVgRxI", "error": "sin metadata"}
+{"id": "UsBVdSloMPg", "error": "sin metadata"}
+{"id": "MNesfOtfVUw", "error": "sin metadata"}
+{"id": "uUF7NNpEZyg", "error": "sin metadata"}
+{"id": "DLQpmQfxr9g", "error": "sin metadata"}
+{"id": "s00MmHFu-jI", "error": "sin metadata"}
+{"id": "hi5Th8TSEW8", "error": "sin metadata"}
+{"id": "6mPxFxRNx34", "error": "sin metadata"}
+{"id": "9oIVfX5Ss7o", "error": "sin metadata"}
+{"id": "CKlYXaXGa7Q", "error": "sin metadata"}
+{"id": "43Uw6c7E6nU", "error": "sin metadata"}
+{"id": "bDDOsZuFXIA", "error": "sin metadata"}
+{"id": "FfyI_jOxyKY", "error": "sin metadata"}
+{"id": "Ls4qyioCloQ", "error": "sin metadata"}
+{"id": "47krhyfIQY8", "error": "sin metadata"}
+{"id": "FMpVRloctlg", "error": "sin metadata"}
+{"id": "QliXEJRpKbE", "error": "sin metadata"}
+{"id": "00mtQL9R0W0", "error": "sin metadata"}
+{"id": "B1BOOU9rLxw", "error": "sin metadata"}
+{"id": "--haVGkNkCI", "error": "sin metadata"}
+{"id": "p1NgpwrL_qo", "error": "sin metadata"}
+{"id": "pPbFe0UEFNI", "error": "sin metadata"}
+{"id": "6hhbLaHnM3Y", "error": "sin metadata"}
+{"id": "DNi7vq-hk9M", "error": "sin metadata"}
+{"id": "5_BN2dgeigE", "error": "sin metadata"}
+{"id": "L1VuYeENyLw", "error": "sin metadata"}
+{"id": "5mp2xQOyhe4", "error": "sin metadata"}
+{"id": "PHWtQzUHQj0", "error": "sin metadata"}
+{"id": "Fkj54SS5zCs", "error": "sin metadata"}
+{"id": "qfRWS2OOAdI", "error": "sin metadata"}
+{"id": "Dz0JQiHq8ys", "error": "sin metadata"}
+{"id": "VeL2FaWNRbg", "error": "sin metadata"}
+{"id": "JhNC3u0h0-U", "error": "sin metadata"}
+{"id": "pxIarDTybRs", "error": "sin metadata"}
+{"id": "WCl3VO2Roxs", "error": "sin metadata"}
+{"id": "VSRSnBTFEq0", "error": "sin metadata"}
+{"id": "5bkZhVF9siQ", "error": "sin metadata"}
+{"id": "5Z0U7GgIAHY", "error": "sin metadata"}
+{"id": "bsBNN4ai-FQ", "error": "sin metadata"}
+{"id": "z1RfCKlEptY", "error": "sin metadata"}
+{"id": "b-pYtdmM38g", "error": "sin metadata"}
+{"id": "l9W8CChegig", "error": "sin metadata"}
+{"id": "qNFRpl1-J6E", "error": "sin metadata"}
+{"id": "bRZSpva_6ZM", "error": "sin metadata"}
+{"id": "kB9jqol4pc8", "error": "sin metadata"}
+{"id": "EL1sXf9JC8Y", "error": "sin metadata"}
+{"id": "gI5e8w02zNU", "error": "sin metadata"}
+{"id": "Q_K2UcyXmWk", "error": "sin metadata"}
+{"id": "F2zu16GrzLI", "error": "sin metadata"}
+{"id": "UpggXW1SsdA", "error": "sin metadata"}
+{"id": "KNatlBOu6cY", "error": "sin metadata"}
+{"id": "Nj5nJkFZ92Q", "error": "sin metadata"}
+{"id": "vxjhH-Ixtgo", "error": "sin metadata"}
+{"id": "mDpb1-Wajpk", "error": "sin metadata"}
+{"id": "8jJkh84oaWE", "error": "sin metadata"}
+{"id": "aq98ga0MKaQ", "error": "sin metadata"}
+{"id": "NvAgRTlQapA", "error": "sin metadata"}
+{"id": "uvuazyNaLRU", "error": "sin metadata"}
+{"id": "jOsPEi-bRjs", "error": "sin metadata"}
+{"id": "qlqrfGIqiUg", "error": "sin metadata"}
+{"id": "ID790236ems", "year": "1985", "phonogram": false, "views": 5291, "uploader": "MartyMcflies v2", "title": "[1985] Himiko Kikuchi - Shinra Banshou (森羅万象) 
+{"id": "5aa736zo5Xw", "error": "sin metadata"}
+{"id": "_pkNhLXADFE", "error": "sin metadata"}
+{"id": "8-C3rNj7G-A", "error": "sin metadata"}
+{"id": "y9uwyUUsqPo", "error": "sin metadata"}
+{"id": "T7wX6hCDbCY", "error": "sin metadata"}
+{"id": "XaC7braEJ1w", "error": "sin metadata"}
+{"id": "403GCMhZ89Q", "error": "sin metadata"}
+{"id": "BtPec862uyY", "error": "sin metadata"}
+{"id": "DU6vsBX5DWg", "error": "sin metadata"}
+{"id": "lPPMISYK5wI", "year": null, "phonogram": false, "views": 17812, "uploader": "Rare Samples & Songs Oleg Tsoy", "title": "Phil Moon - Indigo", "desc": "If
+{"id": "zP1g4E4gmq0", "error": "sin metadata"}
+{"id": "34GlV2_3C6w", "error": "sin metadata"}
+{"id": "AKId8EsAWLs", "error": "sin metadata"}
+{"id": "YemUlMwi9fA", "error": "sin metadata"}
+{"id": "DZd-s8747OQ", "error": "sin metadata"}
+{"id": "TNHo3QmcYWc", "error": "sin metadata"}
+{"id": "Q-fWXlFDldc", "error": "sin metadata"}
+{"id": "mXX3uq__SJE", "error": "sin metadata"}
+{"id": "t4RI8XS_qb8", "error": "sin metadata"}
+{"id": "EGTx_a7hOi0", "error": "sin metadata"}
+{"id": "Vqd5gd8VQpc", "error": "sin metadata"}
+{"id": "zY5M8S4rznQ", "error": "sin metadata"}
+{"id": "luyTauqlkzA", "error": "sin metadata"}
+{"id": "iWwxtLtX2TE", "error": "sin metadata"}
+{"id": "yrn37up8MMQ", "error": "sin metadata"}
+{"id": "CxBPHzf7Bf4", "error": "sin metadata"}
+{"id": "JokrlSGq2RU", "error": "sin metadata"}
+{"id": "PQAuKM-cdBY", "error": "sin metadata"}
+{"id": "EahKe9zCVs8", "error": "sin metadata"}
+{"id": "zG_KQsdzpaQ", "error": "sin metadata"}
+{"id": "_TcbhRNjoLs", "error": "sin metadata"}
+{"id": "MrvtYnkZm0g", "error": "sin metadata"}
+{"id": "TH71XVfbeDo", "error": "sin metadata"}
+{"id": "bM0mSgo3ja8", "error": "sin metadata"}
+{"id": "5dzhgOxlr-U", "error": "sin metadata"}
+{"id": "kvhZzJp5vco", "error": "sin metadata"}
+{"id": "WQfvpGHUGtk", "error": "sin metadata"}
+{"id": "ifFQrdneuLo", "error": "sin metadata"}
+{"id": "DBtYnhbZ_vI", "error": "sin metadata"}
+{"id": "JbJW8QTfWKU", "error": "sin metadata"}
+{"id": "BbsaLDnXWAs", "error": "sin metadata"}
+{"id": "xin1ZeYRggU", "error": "sin metadata"}
+{"id": "3H7y4uCCBvs", "error": "sin metadata"}
+{"id": "wOaw7lKXGEg", "error": "sin metadata"}
+{"id": "kOAU8rMR7hg", "error": "sin metadata"}
+{"id": "IaU5WVxReQ4", "error": "sin metadata"}
+{"id": "CclypDe7r0Y", "error": "sin metadata"}
+{"id": "Eu6bKhw_E3Q", "error": "sin metadata"}
+{"id": "5YclA2ay1Rg", "error": "sin metadata"}
+{"id": "-UelRZm02Dk", "error": "sin metadata"}
+{"id": "kPYTJKcr7jk", "error": "sin metadata"}
+{"id": "1xwy92jXTYA", "error": "sin metadata"}
+{"id": "VUdMQyWnZwY", "error": "sin metadata"}
+{"id": "nTOEmZxSOWQ", "error": "sin metadata"}
+{"id": "2lMbHPRqdVo", "error": "sin metadata"}
+{"id": "sZvhl-ePwIo", "error": "sin metadata"}
+{"id": "8pkH69IHvBI", "error": "sin metadata"}
+{"id": "eQKNtU7Qnt8", "error": "sin metadata"}
+{"id": "BA40pc0JVAM", "error": "sin metadata"}
+{"id": "zQ26PfCrpIA", "error": "sin metadata"}
+{"id": "FVf46LUPvuc", "error": "sin metadata"}
+{"id": "ZeAexTOUdlw", "error": "sin metadata"}
+{"id": "SflMlVlrClM", "error": "sin metadata"}
+{"id": "T2WP7O345og", "error": "sin metadata"}
+{"id": "0BXCHPS3nxo", "error": "sin metadata"}
+{"id": "CmQXm4mTsXk", "error": "sin metadata"}
+{"id": "xoJdLtUZsKM", "error": "sin metadata"}
+{"id": "NIYNdf3syYo", "error": "sin metadata"}
+{"id": "KfxnqWakWn8", "error": "sin metadata"}
+{"id": "NN7KRujfNJE", "error": "sin metadata"}
+{"id": "xT2viwFWRyc", "error": "sin metadata"}
+{"id": "_DFi7thEBu0", "error": "sin metadata"}
+{"id": "H8Wf0nQFOrE", "error": "sin metadata"}
+{"id": "haldIY5_mIk", "error": "sin metadata"}
+{"id": "RAEVN38cyec", "error": "sin metadata"}
+{"id": "ebRVTzQ9tUQ", "error": "sin metadata"}
+{"id": "VwBkDNholpI", "error": "sin metadata"}
+{"id": "Y3GFx9rcs-M", "error": "sin metadata"}
+{"id": "MhrIaCf-Dbc", "error": "sin metadata"}
+{"id": "2jVVyQe7mN8", "error": "sin metadata"}
+{"id": "8bMe_hLH4Bw", "error": "sin metadata"}
+{"id": "s0P-YTvsQyE", "error": "sin metadata"}
+{"id": "98EibnfOJcE", "error": "sin metadata"}
+{"id": "3iAdYlAzzfY", "error": "sin metadata"}
+{"id": "5izZhzQeJag", "error": "sin metadata"}
+{"id": "oOdCG2NT5A0", "error": "sin metadata"}
+{"id": "7bd0T5ttKps", "error": "sin metadata"}
+{"id": "KJSXAKm1q8Y", "year": "1976", "phonogram": false, "views": 477, "uploader": "JefferyBeats", "title": "大野雄二 (Yuji Ohno) - 孤独 (Japanese Jazz)", "desc": "大
+{"id": "FmnHL4Mq0ZQ", "year": "1977", "phonogram": false, "views": 267, "uploader": "JefferyBeats", "title": "大野雄二 (Yuji Ohno) His Project - Reminiscences Of Ki
+{"id": "RW2uOJjPnBM", "year": "1978", "phonogram": false, "views": 524, "uploader": "JefferyBeats", "title": "山本邦山 (Hozan Yamamoto) 今井裕 – 天銀堂事件 (Japanese Jazz F
+{"id": "9_rZYInp0VY", "year": "1986", "phonogram": false, "views": 175, "uploader": "JefferyBeats", "title": "松岡直也 (Naoya Matsuoka) - オールドハワイ・コナ (Japanese Groov
+{"id": "WIupT6_5bEA", "error": "sin metadata"}
+{"id": "HCzkBtVvyGg", "error": "sin metadata"}
+{"id": "GAVNkEtD3-4", "error": "sin metadata"}
+total en cache: 1021

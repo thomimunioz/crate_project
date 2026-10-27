@@ -1,0 +1,143 @@
+{"id": "PP4rZurxlPM", "bpm": 50.2, "bpm_conf": 0.62, "key": "D major", "key_conf": 0.84, "dur": 406}
+{"id": "REW3xzO1ON4", "error": "ERROR: [youtube] REW3xzO1ON4: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github"}
+{"id": "mtA2JkJ3ark", "error": "ERROR: [youtube] mtA2JkJ3ark: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github"}
+{"id": "8tMaFb3145c", "error": "ERROR: [youtube] 8tMaFb3145c: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github"}
+{"id": "1YrQ-eRfzrc", "error": "ERROR: [youtube] 1YrQ-eRfzrc: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github"}
+{"id": "3Rjh4Oj5Bx8", "error": "ERROR: [youtube] 3Rjh4Oj5Bx8: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github"}
+{"id": "Lvxf4m3Ntf4", "error": "ERROR: [youtube] Lvxf4m3Ntf4: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github"}
+{"id": "9hC472mEEx0", "error": "ERROR: [youtube] 9hC472mEEx0: Sign in to confirm you\u2019re not a bot. {"id": "05Nkd1AeWKI", "error": "ERROR: [youtube] 05Nkd1AeWKI: Sign in to confirm you\u2{"id": "05Nkd1AeWKI", "error": "ERROR: [youtube] 05Nkd1AeWKI: Sign in to confirm you\u2019re not a bot. {"id": "fvTF-P3ycrA", "error": "ERROR: [youtube] fvTF-P3ycrA: Sign in to confirm you\u2{"id": "fvTF-P3ycrA", "error": "ERROR: [youtube] fvTF-P3ycrA: Sign in to confirm you\u2019re not a bot. {"id": "RGLcnRRTnyo", "error": "ERROR: [youtube] RGLcnRRTnyo: Sign in to confirm you\u2{"id": "RGLcnRRTnyo", "error": "ERROR: [youtube] RGLcnRRTnyo: Sign in to confirm you\u2019re not a bot. {"id": "zS7Sl-DVvUc", "error": "ERROR: [youtube] zS7Sl-DVvUc: Sign in to confirm you\u2{"id": "zS7Sl-DVvUc", "error": "ERROR: [youtube] zS7Sl-DVvUc: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github"}
+{"id": "epZr-7nbQ_s", "error": "ERROR: [youtube] epZr-7nbQ_s: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github"}
+{"id": "SF1dPGQZNVw", "error": "ERROR: [youtube] SF1dPGQZNVw: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github"}
+{"id": "xIBRQ6N7Ecw", "error": "ERROR: [youtube] xIBRQ6N7Ecw: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github"}
+{"id": "3T83xuSTGS0", "error": "ERROR: [youtube] 3T83xuSTGS0: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github"}
+{"id": "XVGLcC5ZgmQ", "bpm": 62.0, "bpm_conf": 0.76, "key": "C minor", "key_conf": 0.83, "dur": 249}
+{"id": "SDrB-Vs6H5I", "error": "ERROR: [youtube] SDrB-Vs6H5I: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github"}
+{"id": "pPokXQq7-B4", "error": "ERROR: [youtube] pPokXQq7-B4: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github"}
+{"id": "qLmTAF_gMig", "error": "ERROR: [youtube] qLmTAF_gMig: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github"}
+{"id": "ZR998TALFXw", "error": "ERROR: [youtube] ZR998TALFXw: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github"}
+{"id": "qUGYNnEm15U", "error": "ERROR: [youtube] qUGYNnEm15U: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github"}
+{"id": "EtuVZ-kNW34", "error": "ERROR: [youtube] EtuVZ-kNW34: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github"}
+{"id": "zfGtuOay--Y", "error": "ERROR: [youtube] zfGtuOay--Y: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github"}
+{"id": "peeN4fNSbXc", "error": "ERROR: [youtube] peeN4fNSbXc: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github"}
+{"id": "UtsGumw6H8c", "error": "ERROR: [youtube] UtsGumw6H8c: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github"}
+{"id": "fcRHQp4bMlM", "error": "ERROR: [youtube] fcRHQp4bMlM: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github"}
+{"id": "R13pSUM4L6w", "error": "ERROR: [youtube] R13pSUM4L6w: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github"}
+{"id": "sTLaENUZGTA", "error": "ERROR: [youtube] sTLaENUZGTA: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github"}
+{"id": "pg-HWwli0NU", "error": "ERROR: [youtube] pg-HWwli0NU: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github"}
+{"id": "snVEd-RQKx4", "error": "ERROR: [youtube] snVEd-RQKx4: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github"}
+{"id": "qUEL8Th3HHg", "bpm": 111.1, "bpm_conf": 0.77, "key": "A# minor", "key_conf": 0.88, "dur": 432}
+{"id": "BuYzXa9j5Ok", "bpm": 65.4, "bpm_conf": 0.37, "key": "B major", "key_conf": 0.7, "dur": 325}
+{"id": "FqAzf0Y1eqQ", "bpm": 60.2, "bpm_conf": 0.62, "key": "A minor", "key_conf": 0.78, "dur": 315}
+{"id": "-9nyPpD8kEo", "bpm": 59.9, "bpm_conf": 0.84, "key": "A# major", "key_conf": 0.8, "dur": 338}
+{"id": "Es54HiTTuJ4", "bpm": 62.0, "bpm_conf": 0.82, "key": "F# minor", "key_conf": 0.71, "dur": 267}
+{"id": "Hb5TYJy-6bA", "bpm": 99.7, "bpm_conf": 0.74, "key": "E major", "key_conf": 0.94, "dur": 231}
+{"id": "F0ehCtQI6FM", "bpm": 62.9, "bpm_conf": 0.78, "key": "A# minor", "key_conf": 0.71, "dur": 217}
+{"id": "2ooUIyD4h_k", "bpm": 58.2, "bpm_conf": 0.72, "key": "F# minor", "key_conf": 0.92, "dur": 267}
+{"id": "bBgC-svgyuw", "bpm": 63.3, "bpm_conf": 0.96, "key": "B minor", "key_conf": 0.86, "dur": 212}
+{"id": "0iUunKjyDI8", "bpm": 92.4, "bpm_conf": 0.84, "key": "A major", "key_conf": 0.89, "dur": 161}
+{"id": "YJ_jy6AzY5A", "bpm": 121.9, "bpm_conf": 0.42, "key": "D minor", "key_conf": 0.86, "dur": 235}
+{"id": "F9CIPj7etG8", "bpm": 71.2, "bpm_conf": 0.86, "key": "D major", "key_conf": 0.82, "dur": 279}
+{"id": "1KgNnZESWCk", "bpm": 50.6, "bpm_conf": 0.69, "key": "B minor", "key_conf": 0.84, "dur": 397}
+{"id": "QGUbGkmxfYw", "bpm": 80.0, "bpm_conf": 0.66, "key": "G major", "key_conf": 0.91, "dur": 219}
+{"id": "higU9wX_2-c", "bpm": 116.5, "bpm_conf": 0.65, "key": "F# minor", "key_conf": 0.71, "dur": 290}
+{"id": "utpW-4YLQbs", "bpm": 52.6, "bpm_conf": 0.29, "key": "B minor", "key_conf": 0.84, "dur": 275}
+{"id": "HimFHsEFm_4", "bpm": 190.8, "bpm_conf": 0.36, "key": "E major", "key_conf": 0.96, "dur": 323}
+{"id": "QS1SSZkfelw", "bpm": 52.2, "bpm_conf": 0.89, "key": "G minor", "key_conf": 0.84, "dur": 423}
+{"id": "Glko2ZIv-rE", "bpm": 146.6, "bpm_conf": 0.78, "key": "F# minor", "key_conf": 0.72, "dur": 258}
+{"id": "cSBowaktOVI", "bpm": 97.4, "bpm_conf": 0.8, "key": "A major", "key_conf": 0.79, "dur": 364}
+{"id": "xQpp-zwrY2A", "bpm": 197.0, "bpm_conf": 0.86, "key": "C# major", "key_conf": 0.77, "dur": 308}
+{"id": "1jQ8Bxljyq8", "bpm": 55.5, "bpm_conf": 0.95, "key": "G major", "key_conf": 0.9, "dur": 448}
+{"id": "X1vkgNbZ39Q", "bpm": 121.8, "bpm_conf": 0.58, "key": "F# minor", "key_conf": 0.67, "dur": 274}
+{"id": "izyVzIDvPc0", "bpm": 229.5, "bpm_conf": 0.24, "key": "D# major", "key_conf": 0.83, "dur": 241}
+{"id": "7B0ZN25zLvU", "bpm": 116.7, "bpm_conf": 0.67, "key": "E major", "key_conf": 0.81, "dur": 207}
+{"id": "0Fcj2KB8B8U", "bpm": 87.6, "bpm_conf": 0.47, "key": "G major", "key_conf": 0.86, "dur": 444}
+{"id": "1JpHIAiCBnk", "bpm": 55.0, "bpm_conf": 0.57, "key": "E minor", "key_conf": 0.88, "dur": 258}
+{"id": "xZtZ92Xdn94", "bpm": 102.2, "bpm_conf": 0.33, "key": "A minor", "key_conf": 0.81, "dur": 280}
+{"id": "FUPDI7jb4vg", "bpm": 79.8, "bpm_conf": 0.31, "key": "C major", "key_conf": 0.96, "dur": 245}
+{"id": "ODnek_fLFCY", "bpm": 62.9, "bpm_conf": 0.46, "key": "B minor", "key_conf": 0.83, "dur": 238}
+{"id": "7-NnVVjCsfg", "bpm": 103.5, "bpm_conf": 0.66, "key": "C major", "key_conf": 0.9, "dur": 165}
+{"id": "XMa3ZwD-KDM", "bpm": 76.6, "bpm_conf": 0.75, "key": "G major", "key_conf": 0.94, "dur": 267}
+{"id": "yB6NLMIZYXg", "bpm": 63.2, "bpm_conf": 0.75, "key": "C# minor", "key_conf": 0.89, "dur": 162}
+{"id": "Rjs3IQHUXTQ", "bpm": 140.2, "bpm_conf": 0.86, "key": "F major", "key_conf": 0.78, "dur": 223}
+{"id": "vpqDVLaPTTo", "bpm": 94.1, "bpm_conf": 0.79, "key": "A major", "key_conf": 0.79, "dur": 394}
+{"id": "vJPardsKiJc", "bpm": 145.2, "bpm_conf": 0.73, "key": "G major", "key_conf": 0.85, "dur": 209}
+{"id": "shSsAf3KMDI", "bpm": 76.2, "bpm_conf": 0.72, "key": "B major", "key_conf": 0.88, "dur": 299}
+{"id": "4kdvNvT1EsM", "bpm": 100.7, "bpm_conf": 0.7, "key": "A minor", "key_conf": 0.96, "dur": 113}
+{"id": "Z9NxIHYXf8k", "bpm": 114.5, "bpm_conf": 0.63, "key": "C minor", "key_conf": 0.72, "dur": 189}
+{"id": "h3aFh31kXII", "bpm": 105.7, "bpm_conf": 0.74, "key": "F major", "key_conf": 0.81, "dur": 467}
+{"id": "wstnCXjDuHY", "bpm": 70.7, "bpm_conf": 0.49, "key": "E major", "key_conf": 0.82, "dur": 404}
+{"id": "t0kDloVDr70", "bpm": 60.5, "bpm_conf": 0.65, "key": "F major", "key_conf": 0.96, "dur": 410}
+{"id": "GzuKUXd_lPg", "bpm": 107.7, "bpm_conf": 0.7, "key": "D# major", "key_conf": 0.82, "dur": 249}
+{"id": "kW9W1O8olQ4", "bpm": 141.2, "bpm_conf": 0.49, "key": "A minor", "key_conf": 0.94, "dur": 429}
+{"id": "rflM8mOJeSU", "bpm": 175.3, "bpm_conf": 0.88, "key": "D minor", "key_conf": 0.82, "dur": 192}
+{"id": "rT7Ysv284OQ", "bpm": 96.2, "bpm_conf": 0.98, "key": "D major", "key_conf": 0.95, "dur": 188}
+{"id": "JcyBCn_JH6I", "bpm": 85.2, "bpm_conf": 0.4, "key": "C minor", "key_conf": 0.74, "dur": 355}
+{"id": "VUYcS2YsfbM", "bpm": 51.5, "bpm_conf": 0.79, "key": "E minor", "key_conf": 0.84, "dur": 228}
+{"id": "TqXY0WXcA30", "bpm": 64.4, "bpm_conf": 0.61, "key": "E minor", "key_conf": 0.77, "dur": 211}
+{"id": "leI1PLayFoc", "bpm": 60.8, "bpm_conf": 0.86, "key": "A# minor", "key_conf": 0.84, "dur": 171}
+{"id": "luuKReybVGE", "bpm": 78.8, "bpm_conf": 0.43, "key": "D# major", "key_conf": 0.83, "dur": 209}
+{"id": "9EWWWp1xhSg", "bpm": 63.1, "bpm_conf": 0.61, "key": "D minor", "key_conf": 0.85, "dur": 292}
+{"id": "Get9rRgjPhE", "bpm": 133.2, "bpm_conf": 0.74, "key": "C minor", "key_conf": 0.89, "dur": 138}
+{"id": "rFt5RhebjH4", "bpm": 98.2, "bpm_conf": 0.45, "key": "A major", "key_conf": 0.95, "dur": 197}
+{"id": "LURNTfyoDoc", "bpm": 83.1, "bpm_conf": 0.62, "key": "D# minor", "key_conf": 0.64, "dur": 147}
+{"id": "tpiqVGRdBMg", "bpm": 91.6, "bpm_conf": 0.4, "key": "E major", "key_conf": 0.97, "dur": 223}
+{"id": "oLTFkKEIBDk", "bpm": 166.2, "bpm_conf": 0.41, "key": "C minor", "key_conf": 0.8, "dur": 268}
+{"id": "aq-YWqHc1x0", "bpm": 111.4, "bpm_conf": 0.69, "key": "F major", "key_conf": 0.83, "dur": 280}
+{"id": "LLGHxswfAHc", "bpm": 60.1, "bpm_conf": 0.88, "key": "E minor", "key_conf": 0.76, "dur": 200}
+{"id": "muS4vrAYOLg", "bpm": 61.4, "bpm_conf": 0.78, "key": "A minor", "key_conf": 0.79, "dur": 121}
+{"id": "vOP50s1fI48", "bpm": 195.7, "bpm_conf": 0.81, "key": "F# minor", "key_conf": 0.83, "dur": 152}
+{"id": "f7kmTiR-7PM", "bpm": 93.3, "bpm_conf": 0.84, "key": "A major", "key_conf": 0.79, "dur": 170}
+{"id": "NTO1l1UPLTc", "bpm": 76.9, "bpm_conf": 0.73, "key": "B minor", "key_conf": 0.88, "dur": 333}
+{"id": "caaKLre3zUQ", "bpm": 92.8, "bpm_conf": 0.86, "key": "D minor", "key_conf": 0.85, "dur": 240}
+{"id": "Z5p_WOE6A78", "bpm": 95.0, "bpm_conf": 0.95, "key": "F major", "key_conf": 0.91, "dur": 238}
+{"id": "8XymrPsFKMQ", "bpm": 99.9, "bpm_conf": 0.89, "key": "A major", "key_conf": 0.9, "dur": 103}
+{"id": "W6-2hTQB-No", "bpm": 86.9, "bpm_conf": 0.39, "key": "G# major", "key_conf": 0.88, "dur": 189}
+{"id": "HcW3nRz3GUo", "bpm": 66.7, "bpm_conf": 0.69, "key": "D# major", "key_conf": 0.77, "dur": 200}
+{"id": "ImVRSgoEeew", "bpm": 215.5, "bpm_conf": 0.72, "key": "A major", "key_conf": 0.89, "dur": 212}
+{"id": "QIBjHelqoQU", "bpm": 65.2, "bpm_conf": 0.87, "key": "D major", "key_conf": 0.71, "dur": 175}
+{"id": "22NGxNrfKpM", "bpm": 50.5, "bpm_conf": 0.92, "key": "D major", "key_conf": 0.94, "dur": 221}
+{"id": "LGU3FIh8FU8", "bpm": 65.1, "bpm_conf": 0.93, "key": "D major", "key_conf": 0.85, "dur": 301}
+{"id": "g_0BVoaM2iM", "bpm": 129.5, "bpm_conf": 0.64, "key": "C# minor", "key_conf": 0.89, "dur": 304}
+{"id": "qhBzCzYu1c8", "bpm": 78.2, "bpm_conf": 0.81, "key": "F major", "key_conf": 0.86, "dur": 388}
+{"id": "iWUjaE8Vg3I", "bpm": 78.8, "bpm_conf": 0.87, "key": "E minor", "key_conf": 0.73, "dur": 354}
+{"id": "Aeme6ygVUQA", "bpm": 98.0, "bpm_conf": 0.73, "key": "F minor", "key_conf": 0.86, "dur": 414}
+{"id": "T5C3-K5-HvM", "bpm": 107.5, "bpm_conf": 0.67, "key": "E major", "key_conf": 0.87, "dur": 397}
+{"id": "I43NVr1jKTQ", "bpm": 66.1, "bpm_conf": 0.82, "key": "F major", "key_conf": 0.9, "dur": 278}
+{"id": "iTwxWgYW-oo", "bpm": 132.7, "bpm_conf": 0.74, "key": "G major", "key_conf": 0.92, "dur": 140}
+{"id": "PM1Ep5KnomM", "bpm": 94.4, "bpm_conf": 0.84, "key": "D# minor", "key_conf": 0.67, "dur": 195}
+{"id": "PSEM6LJXbSs", "bpm": 139.1, "bpm_conf": 0.77, "key": "A major", "key_conf": 0.77, "dur": 210}
+{"id": "LsCkkFyWig0", "bpm": 96.5, "bpm_conf": 0.88, "key": "G# major", "key_conf": 0.78, "dur": 146}
+{"id": "EcbyCHweb10", "bpm": 79.1, "bpm_conf": 0.78, "key": "C major", "key_conf": 0.9, "dur": 222}
+{"id": "wtXYIPU6Op8", "bpm": 121.6, "bpm_conf": 0.62, "key": "A major", "key_conf": 0.95, "dur": 185}
+{"id": "-o2YKkt4GSU", "bpm": 109.2, "bpm_conf": 0.72, "key": "D minor", "key_conf": 0.77, "dur": 428}
+{"id": "e2CG2iXEFZ0", "bpm": 65.8, "bpm_conf": 0.71, "key": "G major", "key_conf": 0.82, "dur": 168}
+{"id": "q99fOmCvx7g", "bpm": 85.8, "bpm_conf": 0.75, "key": "G# minor", "key_conf": 0.65, "dur": 363}
+{"id": "9kGunSLz83Q", "bpm": 53.9, "bpm_conf": 0.41, "key": "C major", "key_conf": 0.81, "dur": 300}
+{"id": "6w-ma8ZQwwk", "bpm": 51.8, "bpm_conf": 0.48, "key": "A major", "key_conf": 0.89, "dur": 207}
+{"id": "1IfNzOA1QLY", "bpm": 63.3, "bpm_conf": 0.83, "key": "E major", "key_conf": 0.86, "dur": 218}
+{"id": "luw74AVWUM8", "bpm": 51.6, "bpm_conf": 0.84, "key": "B major", "key_conf": 0.72, "dur": 137}
+{"id": "MDAJrp47i48", "bpm": 125.2, "bpm_conf": 0.77, "key": "F minor", "key_conf": 0.87, "dur": 519}
+{"id": "tp5sTY33vXA", "bpm": 122.0, "bpm_conf": 0.81, "key": "D minor", "key_conf": 0.87, "dur": 248}
+{"id": "Le1tXLC26KE", "bpm": 91.8, "bpm_conf": 0.94, "key": "A major", "key_conf": 0.86, "dur": 185}
+{"id": "EI4vNmbfn40", "bpm": 123.5, "bpm_conf": 0.91, "key": "E minor", "key_conf": 0.86, "dur": 197}
+{"id": "OjN4jYe1_Ts", "bpm": 125.1, "bpm_conf": 0.79, "key": "C major", "key_conf": 0.93, "dur": 166}
+{"id": "uzk7K7wrg6E", "bpm": 131.1, "bpm_conf": 0.76, "key": "G major", "key_conf": 0.83, "dur": 223}
+{"id": "m4dwOXq7IF8", "bpm": 54.4, "bpm_conf": 0.67, "key": "D major", "key_conf": 0.93, "dur": 251}
+{"id": "4DUA3NRLzOo", "bpm": 220.5, "bpm_conf": 0.66, "key": "A minor", "key_conf": 0.68, "dur": 791}
+{"id": "P21t2aGTgXY", "bpm": 82.9, "bpm_conf": 0.81, "key": "A major", "key_conf": 0.9, "dur": 347}
+{"id": "ST-ikxOddrU", "bpm": 58.0, "bpm_conf": 0.75, "key": "E minor", "key_conf": 0.84, "dur": 215}
+{"id": "LKJ7RjjSsEc", "bpm": 74.2, "bpm_conf": 0.83, "key": "A major", "key_conf": 0.88, "dur": 245}
+{"id": "KH9uDQ5KrwY", "bpm": 63.4, "bpm_conf": 0.64, "key": "G minor", "key_conf": 0.82, "dur": 389}
+{"id": "qPt_dwLqN1A", "bpm": 182.7, "bpm_conf": 0.73, "key": "D minor", "key_conf": 0.83, "dur": 232}
+{"id": "ulCAfbblT2s", "bpm": 92.7, "bpm_conf": 0.56, "key": "D minor", "key_conf": 0.82, "dur": 224}
+{"id": "vobEdkGACuQ", "bpm": 61.8, "bpm_conf": 0.47, "key": "C# minor", "key_conf": 0.81, "dur": 530}
+{"id": "uh9F-putoUU", "bpm": 57.9, "bpm_conf": 0.48, "key": "A minor", "key_conf": 0.89, "dur": 216}
+{"id": "UdfzreuYB_g", "bpm": 70.5, "bpm_conf": 0.45, "key": "D major", "key_conf": 0.97, "dur": 153}
+{"id": "Vc0TfZv79FA", "bpm": 83.2, "bpm_conf": 0.55, "key": "B major", "key_conf": 0.89, "dur": 193}
+{"id": "H5y0VA28iTg", "bpm": 79.1, "bpm_conf": 0.82, "key": "C minor", "key_conf": 0.91, "dur": 374}
+{"id": "8bch22jRO-s", "bpm": 102.4, "bpm_conf": 0.57, "key": "A major", "key_conf": 0.94, "dur": 357}
+{"id": "xKkdfhy5sNo", "bpm": 60.1, "bpm_conf": 0.83, "key": "D# major", "key_conf": 0.72, "dur": 483}
+{"id": "OxupVoxyCIw", "bpm": 69.2, "bpm_conf": 0.8, "key": "A major", "key_conf": 0.89, "dur": 227}
+{"id": "5ayqNzmh-cA", "bpm": 107.4, "bpm_conf": 0.54, "key": "F# major", "key_conf": 0.88, "dur": 253}
+{"id": "dzwmTM7cgYY", "bpm": 228.1, "bpm_conf": 0.37, "key": "A# minor", "key_conf": 0.88, "dur": 370}
+{"id": "d-PkCMKREoM", "bpm": 198.8, "bpm_conf": 0.59, "key": "A minor", "key_conf": 0.81, "dur": 518}

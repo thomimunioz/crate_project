@@ -1,0 +1,26 @@
+{"id": "vZpjX16QPrM", "error": "ERROR: [youtube] vZpjX16QPrM: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  http"}
+{"id": "quFszKY7j24", "error": "ERROR: [youtube] quFszKY7j24: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  http"}
+{"id": "HzGg7artRRc", "error": "ERROR: [youtube] HzGg7artRRc: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  http"}
+{"id": "PyuUciqcsIs", "error": "ERROR: [youtube] PyuUciqcsIs: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  http"}
+{"id": "jnHXwJEV9J4", "error": "ERROR: [youtube] jnHXwJEV9J4: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  http"}
+{"id": "OO-NqPmIF3A", "error": "ERROR: [youtube] OO-NqPmIF3A: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  http"}
+{"id": "yjDNGE81Gt4", "error": "ERROR: [youtube] yjDNGE81Gt4: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  http"}
+{"id": "lIqMB7K9wS0", "error": "ERROR: [youtube] lIqMB7K9wS0: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  http"}
+{"id": "j_0W7h1iQP8", "corte_hz": 14858, "energia_agudos": 0.00025, "clipping": 1e-05, "crackle": 2.036, "piso_ruido": 0.3068, "rango_dinamico": 0.1294}
+{"id": "S9WmmglmmGk", "error": "ERROR: [youtube] S9WmmglmmGk: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  http"}
+{"id": "dx5nTSfPYww", "error": "ERROR: [youtube] dx5nTSfPYww: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  http"}
+{"id": "9a7CCRrSEzU", "corte_hz": 16225, "energia_agudos": 0.00163, "clipping": 0.0, "crackle": 2.7861, "piso_ruido": 0.1708, "rango_dinamico": 0.1626}
+{"id": "QC7zB9FLqsQ", "corte_hz": 18271, "energia_agudos": 0.00396, "clipping": 0.0, "crackle": 3.9618, "piso_ruido": 0.0721, "rango_dinamico": 0.2988}
+{"id": "NCHB-D05emo", "corte_hz": 15396, "energia_agudos": 0.0007, "clipping": 0.0, "crackle": 2.511, "piso_ruido": 0.3471, "rango_dinamico": 0.1774}
+{"id": "y-NoSrZU3gM", "corte_hz": 14449, "energia_agudos": 8e-05, "clipping": 0.0, "crackle": 2.2928, "piso_ruido": 0.3583, "rango_dinamico": 0.1168}
+{"id": "RxbiBdnOFmE", "corte_hz": 16333, "energia_agudos": 0.00166, "clipping": 0.00012, "crackle": 2.171, "piso_ruido": 0.1313, "rango_dinamico": 0.301}
+{"id": "eZDDotgZs8E", "corte_hz": 15536, "energia_agudos": 0.00085, "clipping": 1e-05, "crackle": 2.0886, "piso_ruido": 0.2414, "rango_dinamico": 0.2086}
+{"id": "nYzQ8T5Mz1Y", "corte_hz": 14761, "energia_agudos": 0.00023, "clipping": 1e-05, "crackle": 2.2037, "piso_ruido": 0.3095, "rango_dinamico": 0.1929}
+{"id": "P9iVJojn2m8", "corte_hz": 15321, "energia_agudos": 0.00056, "clipping": 0.0, "crackle": 3.6828, "piso_ruido": 0.2836, "rango_dinamico": 0.2038}
+{"id": "b-oiz0qsx-A", "corte_hz": 14718, "energia_agudos": 0.00012, "clipping": 0.0, "crackle": 3.665, "piso_ruido": 0.3356, "rango_dinamico": 0.121}
+{"id": "RcnDw_9cpsA", "corte_hz": 15558, "energia_agudos": 0.001, "clipping": 0.0, "crackle": 1.2751, "piso_ruido": 0.2781, "rango_dinamico": 0.1611}
+{"id": "t-_Vs14qeKM", "corte_hz": 15407, "energia_agudos": 0.00054, "clipping": 0.0, "crackle": 2.694, "piso_ruido": 0.2048, "rango_dinamico": 0.134}
+{"id": "dkbdNyRkOFA", "corte_hz": 16817, "energia_agudos": 0.00241, "clipping": 0.0, "crackle": 2.2797, "piso_ruido": 0.2566, "rango_dinamico": 0.1441}
+{"id": "summF2zXXLs", "corte_hz": 15601, "energia_agudos": 0.00106, "clipping": 0.0, "crackle": 2.5361, "piso_ruido": 0.2073, "rango_dinamico": 0.2425}
+{"id": "UgiHCU6QXk8", "corte_hz": 16731, "energia_agudos": 0.00195, "clipping": 0.0, "crackle": 3.3128, "piso_ruido": 0.1013, "rango_dinamico": 0.1609}
+{"id": "aRz4p0Mr5FY", "corte_hz": 14987, "energia_agudos": 0.00028, "clipping": 0.0, "crackle": 2.4041, "piso_ruido": 0.3399, "rango_dinamico": 0.1075}
