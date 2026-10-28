@@ -136,6 +136,18 @@ h1{
 }
 .tag{font-family:var(--mono);font-size:.68rem;letter-spacing:.17em;text-transform:uppercase;
   border-left:2px solid var(--stxt);padding-left:11px;line-height:1.75}
+footer .apagar{margin-left:8px;border-color:var(--suave);color:var(--suave)}
+footer .apagar:hover{border-color:var(--estrella);color:var(--estrella)}
+footer .apagar.preg{border-color:var(--estrella);color:var(--estrella);
+  background:transparent;font-weight:700}
+/* la pantalla de despedida: la app ya no existe, no tiene sentido dejar la
+   tabla ahi como si todavia funcionara */
+.chau{min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:10px;text-align:center;background:var(--fondo)}
+.chau b{font-family:var(--display);font-size:2rem;letter-spacing:.08em;
+  color:var(--fuerte)}
+.chau span{font-family:var(--mono);font-size:.78rem;color:var(--medio)}
+.chau .chico{font-size:.68rem;color:var(--suave)}
 .sello{font-family:var(--mono);font-size:.56rem;letter-spacing:.06em;
   margin-left:10px;padding:1px 5px;border:1px solid var(--suave);border-radius:2px;
   color:var(--suave);white-space:nowrap}

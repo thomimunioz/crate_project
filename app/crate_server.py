@@ -31,6 +31,7 @@ try:
                                   "slskd_key.txt")).read().strip()
 except Exception:
     pass
+SERVIDOR = [None]       # el server vivo, para que /api/apagar lo corte
 CACHE_AUDIO = {}        # id -> (url, cuando) ; las URLs de YouTube caducan
 
 
@@ -298,6 +299,19 @@ class Handler(SimpleHTTPRequestHandler):
                 con.close()
             return self._json({"ok": True, "usuario": usuario})
 
+        if ruta == "/api/apagar":
+            # Cerrar la pestaña no apaga nada: el servidor no tiene ventana y
+            # slskd se queda conectado a Soulseek ocupando 166 MB. Esto apaga
+            # las dos cosas. Se contesta ANTES de cortar, si no el navegador
+            # ve la conexion caida y muestra un error en vez del aviso.
+            subprocess.run(["powershell", "-NoProfile", "-Command",
+                            "Get-Process slskd -ErrorAction SilentlyContinue | "
+                            "Stop-Process -Force"],
+                           capture_output=True)
+            self._json({"ok": True})
+            threading.Timer(0.4, lambda: SERVIDOR[0].shutdown()).start()
+            return
+
         if ruta == "/api/playlist":
             vid = datos.get("id")
             lista = (datos.get("playlist") or "").strip()
@@ -522,6 +536,7 @@ def main():
         print("  o apagala con:  crate parar")
         return 1
     srv.daemon_threads = True
+    SERVIDOR[0] = srv
     url = "http://127.0.0.1:%d/mi-crate.html" % PUERTO
     print("CRATE sirviendo en %s" % url)
     print("  escucha solo en 127.0.0.1, no sale de esta maquina")

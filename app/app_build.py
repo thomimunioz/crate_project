@@ -134,8 +134,9 @@ DOC = """<!doctype html>
 
 <footer>
   <span>click en las ★ para puntuar &nbsp;·&nbsp; doble click en la fila = ya lo tenés
-        &nbsp;·&nbsp; ⇩ slsk copia el nombre limpio</span>
-  <span><button class="chip" id="exp">exportar cambios</button></span>
+        &nbsp;·&nbsp; ⇩ slsk lo busca en Soulseek</span>
+  <span><button class="chip" id="exp">exportar cambios</button>
+        <button class="chip apagar" id="apagar" title="cierra el servidor y Soulseek">apagar</button></span>
 </footer>
 
 </div>

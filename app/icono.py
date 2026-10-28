@@ -105,6 +105,61 @@ def dibujar(lado):
     return img.resize((lado, lado), Image.LANCZOS)
 
 
+def dibujar_cerrar(lado):
+    """Variante apagada, para el acceso directo que cierra la app.
+
+    Mismo objeto para que se lean como pareja, pero sin vida: el disco en
+    gris, la etiqueta sin rojo y el cajon apagado. Asi se distinguen de un
+    vistazo en la barra sin tener que leer el nombre.
+    """
+    E = 4
+    S = lado * E
+    grande = lado >= 48
+    medio = lado >= 32
+    img = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+
+    GRIS = (150, 152, 148)
+    GRIS_F = (96, 99, 96)
+    FONDO = (231, 230, 219)
+
+    redondeado(d, (0, 0, S - 1, S - 1), int(S * 0.22), FONDO)
+
+    if medio:
+        cx, cy, r = S * 0.50, S * 0.44, S * 0.30
+        top = S * 0.72
+    else:
+        cx, cy, r = S * 0.50, S * 0.50, S * 0.39
+        top = None
+
+    if top:
+        redondeado(d, (0, top, S - 1, S - 1), int(S * 0.22), GRIS)
+        d.rectangle((0, top, S - 1, top + S * 0.14), fill=GRIS)
+
+    d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=GRIS_F)
+    if grande:
+        for k in (0.90, 0.80, 0.70):
+            rr = r * k
+            d.ellipse((cx - rr, cy - rr, cx + rr, cy + rr),
+                      outline=GRIS, width=max(1, int(S * 0.007)))
+
+    re = r * (0.40 if medio else 0.46)
+    d.ellipse((cx - re, cy - re, cx + re, cy + re), fill=GRIS)
+    rp = r * 0.09
+    d.ellipse((cx - rp, cy - rp, cx + rp, cy + rp), fill=FONDO)
+
+    if top:
+        frente = S * 0.845
+        redondeado(d, (0, frente, S - 1, S - 1), int(S * 0.22), GRIS)
+        d.rectangle((0, frente, S - 1, frente + S * 0.08), fill=GRIS)
+        if grande:
+            for fx in (0.33, 0.67):
+                x = S * fx
+                d.line((x, frente + S * 0.028, x, S * 0.955),
+                       fill=FONDO, width=max(1, int(S * 0.022)))
+    return img.resize((lado, lado), Image.LANCZOS)
+
+
 def main():
     capas = []
     for t in TAMANOS:
@@ -114,6 +169,16 @@ def main():
     capas[0].save(ico, format="ICO",
                   sizes=[(t, t) for t in TAMANOS])
     print("icono -> %s" % ico)
+
+    apagadas = [dibujar_cerrar(t) for t in TAMANOS]
+    ico2 = os.path.join(RAIZ, "crate-cerrar.ico")
+    apagadas[0].save(ico2, format="ICO", sizes=[(t, t) for t in TAMANOS])
+    print("icono -> %s" % ico2)
+
+    par = Image.new("RGB", (620, 300), (32, 32, 32))
+    par.paste(capas[0], (40, 22), capas[0])
+    par.paste(apagadas[0], (324, 22), apagadas[0])
+    par.save(os.path.join(HERE, "icono-par.png"))
 
     # tira de prueba: como se ve en cada tamaño, sobre claro y sobre oscuro,
     # que es lo unico que dice si de verdad funciona

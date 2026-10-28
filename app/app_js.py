@@ -296,8 +296,12 @@ document.addEventListener('click', e => {
     }
     return;
   }
-  const c = e.target.closest('.chip');
+  const c = e.target.closest('.chip[data-f]');
   if(c){
+    // Ojo con el selector: "exportar cambios" y "apagar" tambien son .chip,
+    // pero no son filtros. Sin el [data-f] se colaba un undefined en el Set
+    // y pintar() reventaba en f.startsWith — la tabla quedaba vacia y el
+    // error solo se veia en la consola.
     const f = c.dataset.f;
     filtros.has(f) ? filtros.delete(f) : filtros.add(f);
     c.classList.toggle('on'); pintar();
@@ -828,6 +832,27 @@ $('#bhot').onclick = async () => {
     $('#bvolver').style.display = '';
   }catch(e){ flash('no pude traer el hotlist'); }
   finally{ $('#bhot').textContent = '★ hotlist'; }
+};
+
+/* Apagar de verdad: cerrar la pestaña no apaga nada, porque el servidor no
+   tiene ventana y slskd se queda conectado a Soulseek ocupando 166 MB.
+   Dos clicks, como el ✕ de quitar: el primero pregunta. */
+$('#apagar').onclick = async function(){
+  if(!servidor){ flash('esto necesita el servidor'); return; }
+  if(!this.classList.contains('preg')){
+    this.classList.add('preg');
+    this.textContent = '¿apagar todo?';
+    clearTimeout(this._t);
+    this._t = setTimeout(()=>{ this.classList.remove('preg'); this.textContent='apagar'; }, 3500);
+    return;
+  }
+  this.textContent = 'apagando…';
+  try{ await fetch('/api/apagar', {method:'POST'}); }catch(e){}
+  document.body.classList.add('apagado');
+  document.body.innerHTML =
+    '<div class="chau"><b>CRATE apagado</b>'
+  + '<span>el servidor y Soulseek se cerraron. Ya podés cerrar la pestaña.</span>'
+  + '<span class="chico">para volver a abrirlo, el ícono de la barra de tareas</span></div>';
 };
 
 pintar();

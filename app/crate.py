@@ -12,7 +12,7 @@
     crate limpiar         saca canales de IA y arregla años de reedicion
     crate slsk            prende solo slskd (si se te cayo)
     crate abrir           lo que usa el acceso directo: prende todo y abre
-    crate parar           apaga el servidor
+    crate parar           apaga todo (servidor + soulseek)
 
 Cada subcomando es uno de los scripts de siempre: esto no agrega logica, solo
 evita tener que acordarse de cual era.
@@ -99,36 +99,43 @@ def abrir():
 
 
 def parar():
-    """Apaga el servidor y limpia cualquier resto.
+    """Apaga TODO lo que prende `crate`: el servidor y slskd.
+
+    Cerrar la pestaña del navegador no apaga nada —el servidor no tiene
+    ventana— y slskd se queda conectado a la red de Soulseek ocupando 166 MB.
+    Si "parar" dejara slskd prendido no estaria parando nada en la practica.
 
     No alcanza con mirar el puerto: pueden quedar procesos vivos que NO lo
-    tienen (paso el 28-oct, cinco a la vez). Si solo se mira el puerto y esta
-    cerrado, se contesta "no estaba prendido" y los huerfanos siguen ahi.
+    tienen. Si se mira solo el puerto y esta cerrado, se contesta "no estaba
+    prendido" y los huerfanos siguen ahi.
     """
     # Ojo con el filtro: si se busca solo por linea de comando, el PowerShell
     # que hace la consulta TAMBIEN la contiene (esta en su propio comando) y
     # se cuenta —y se intenta matar— a si mismo. Por eso se exige ademas que
     # el proceso sea python. Costo media hora de numeros inflados el 28-oct.
-    ps = ("Get-CimInstance Win32_Process | Where-Object { "
-          "$_.Name -like 'python*' -and "
-          "$_.CommandLine -like '*crate_server*' } | "
-          "ForEach-Object { $_.ProcessId }")
-    antes = subprocess.run(["powershell", "-NoProfile", "-Command", ps],
-                           capture_output=True, text=True).stdout.split()
-    if not antes:
+    ps_srv = ("Get-CimInstance Win32_Process | Where-Object { "
+              "$_.Name -like 'python*' -and "
+              "$_.CommandLine -like '*crate_server*' } | "
+              "ForEach-Object { $_.ProcessId }")
+    ps_slsk = "Get-Process slskd -ErrorAction SilentlyContinue | % { $_.Id }"
+
+    def pids(cmd):
+        return subprocess.run(["powershell", "-NoProfile", "-Command", cmd],
+                              capture_output=True, text=True).stdout.split()
+
+    srv, slsk = pids(ps_srv), pids(ps_slsk)
+    if not srv and not slsk:
         print("no habia nada prendido")
         return 0
-    subprocess.run(["powershell", "-NoProfile", "-Command",
-                    ps + " | ForEach-Object { Stop-Process -Id $_ -Force }"],
-                   capture_output=True, text=True)
+    for cmd in (ps_srv, ps_slsk):
+        subprocess.run(["powershell", "-NoProfile", "-Command",
+                        cmd + " | ForEach-Object { Stop-Process -Id $_ -Force }"],
+                       capture_output=True, text=True)
     time.sleep(1.0)
-    quedan = subprocess.run(["powershell", "-NoProfile", "-Command", ps],
-                            capture_output=True, text=True).stdout.split()
-    print("apagados %d de %d" % (len(antes) - len(quedan), len(antes)))
-    if quedan:
-        print("  no pude con: %s" % ", ".join(quedan))
-        return 1
-    return 0
+    q_srv, q_slsk = pids(ps_srv), pids(ps_slsk)
+    print("servidor: %s" % ("apagado" if not q_srv else "sigue vivo"))
+    print("soulseek: %s" % ("apagado" if not q_slsk else "sigue vivo"))
+    return 1 if (q_srv or q_slsk) else 0
 
 
 def correr(script, resto):
