@@ -83,8 +83,19 @@ function limpiar(t){
     .replace(/\s+/g,' ').trim();
 }
 const estado = d => local[d.id] || {};
-const tiene  = d => estado(d).bajado !== undefined ? estado(d).bajado : d.tiene > 0;
-const estrellasDe = d => estado(d).estrellas !== undefined ? estado(d).estrellas : d.estrellas;
+const tiene  = d => !d ? false
+  : (estado(d).bajado !== undefined ? estado(d).bajado : d.tiene > 0);
+/* Un tema puede estar en el crate (D) o venir de una busqueda o del hotlist
+   (BUSQUEDA). Buscar solo en D fue la causa de tres bugs distintos: el hover
+   de las estrellas y el doble click no andaban en el hotlist, porque d salia
+   undefined y el manejador se moria sin decir nada. Se busca SIEMPRE con
+   esto, nunca con D.find a mano. */
+function tema(id){
+  return D.find(x => x.id === id) || (BUSQUEDA || []).find(x => x.id === id);
+}
+
+const estrellasDe = d => !d ? 0
+  : (estado(d).estrellas !== undefined ? estado(d).estrellas : d.estrellas);
 
 /* las listas donde puede ir un tema. Las cinco de siempre mas las que pidio
    el 27-oct: piano, folk y dark. */
@@ -222,7 +233,6 @@ document.addEventListener('click', e => {
   if(s){                                     // puntuar: click en la estrella misma
     const cont = s.closest('.estrellas');
     const id = cont.dataset.est;
-    const d  = D.find(x=>x.id===id);
     const n  = +s.dataset.n;
     ponerEstrellas(id, n);          // la estrella solo PONE; quitar es aparte
     pintar(); if(sonando && sonando.id===id) pintarEstrellasPlayer();
@@ -253,7 +263,7 @@ document.addEventListener('click', e => {
     const cont = op.closest('.clasif');
     const id = cont.dataset.cl;
     const L = op.dataset.l;
-    const d = D.find(x=>x.id===id) || (BUSQUEDA||[]).find(x=>x.id===id);
+    const d = tema(id);
     const mias = listasDe(d);
     const quitar = mias.includes(L);
     const nuevas = quitar ? mias.filter(x=>x!==L) : mias.concat([L]);
@@ -313,7 +323,7 @@ document.addEventListener('mouseover', e => {
   const s = e.target.closest('.estrellas .s');
   if(!s) return;
   const cont = s.closest('.estrellas');
-  const d = D.find(x => x.id === cont.dataset.est);
+  const d = tema(cont.dataset.est);
   const act = estrellasDe(d) || 0;
   const n = +s.dataset.n;
   cont.querySelectorAll('.s').forEach(x => {
@@ -335,7 +345,7 @@ document.addEventListener('click', e => {
 document.addEventListener('dblclick', e => {
   const tr = e.target.closest('tr[data-id]');
   if(!tr) return;
-  const id = tr.dataset.id, d = D.find(x=>x.id===id);
+  const id = tr.dataset.id, d = tema(id);
   const v = !tiene(d);
   local[id] = Object.assign({}, local[id], {bajado: v});
   guardarLocal(); aServidor('/api/archivo', {id, tiene:v}); pintar(); marcarSonando();
@@ -471,8 +481,8 @@ function noEmbebible(id){
   noEmb[id] = Date.now();
   try{ localStorage.setItem(NOEMB, JSON.stringify(noEmb)); }catch(e){}
   if(servidor){ porAudio(id); return; }      // respaldo: sin salir de la app
-  const d = D.find(x=>x.id===id) || (BUSQUEDA||[]).find(x=>x.id===id);
-  const nom = d ? (d.artista || d.titulo) : 'este tema';
+  const d = tema(id);
+  const nom = d ? (d.nombre || d.titulo) : 'este tema';
   $('#player .pa').textContent = nom;
   $('#player .pt').innerHTML =
       'no se puede escuchar acá — <a href="https://www.youtube.com/watch?v='+id+'" '
@@ -492,7 +502,7 @@ function porAudio(id){
   $('#player .pt').textContent = 'trayendo el audio…';
 
   const d = sonando;
-  const detalle = d ? [d.nombre, d.anio, d.bpm?d.bpm+' bpm':'', d.tonalidad]
+  const detalle = d ? [d.artista, d.anio, d.bpm?d.bpm+' bpm':'', d.tonalidad]
                         .filter(Boolean).join(' · ') : '';
 
   /* "no pude reproducirlo" tapaba cinco causas distintas: el servidor
@@ -562,7 +572,7 @@ const fmt = s => isFinite(s) ? Math.floor(s/60)+':'+String(Math.floor(s%60)).pad
 function reproducir(id){
   if(!servido){ avisar('abrí la app con crate_server.py para escuchar acá'); return false; }
   if(!YT_OK || !yt){ avisar('cargando reproductor…'); return false; }
-  const d = D.find(x=>x.id===id) || (BUSQUEDA||[]).find(x=>x.id===id);
+  const d = tema(id);
   if(!d) return false;
   sonando = d;
   // limpieza completa: sin esto, a los 5 o 6 temas el reproductor se traba
@@ -581,8 +591,10 @@ function reproducir(id){
   $('#cover').src = 'https://i.ytimg.com/vi/'+id+'/mqdefault.jpg';
   $('#cover').onerror = ()=>{ $('#cover').style.visibility='hidden'; };
   $('#cover').style.visibility='visible';
-  $('#player .pa').textContent = d.artista || d.titulo;
-  $('#player .pt').textContent = [d.nombre, d.anio, d.bpm?d.bpm+' bpm':'', d.tonalidad]
+  // Misma jerarquia que la tarjeta: arriba y grande el TEMA, abajo el
+  // artista con el resto de la ficha. Estaban al reves.
+  $('#player .pa').textContent = d.nombre || d.titulo;
+  $('#player .pt').textContent = [d.artista, d.anio, d.bpm?d.bpm+' bpm':'', d.tonalidad]
       .filter(Boolean).join(' · ');
   pintarEstrellasPlayer();
   marcarSonando();
@@ -674,12 +686,17 @@ function pintarBusqueda(res){
         // firma de abajo. Antes el titulo entero era el <a>, asi que si el
         // reproductor todavia estaba cargando el click se escapaba al link y
         // se abria una pestaña. Ahora no hay forma de que eso pase.
+        + (tiene(d) ? '<span class="bajado" title="ya está en el disco">EN DISCO</span>' : '')
         + '<span class="tem">'+esc(d.nombre || d.titulo)+'</span>'
         + '<a class="art" href="https://www.youtube.com/watch?v='+d.id+'"'
         +   ' target="_blank" rel="noopener" title="abrir en YouTube">'
         +   esc(firmaDe(d))+'</a>'
         + '<button class="slsk" data-q="'+esc(limpiar(d.titulo))+'" data-id="'+esc(d.id)+'">⇩ slsk</button>'
         + '<div class="meta">'+esc(d.canal||'')+'</div>'
+        + '<div class="meta2">'
+        +   (d.genero ? '<span class="sug">sugerido</span>'
+                      + '<span class="pl '+clg(d.genero)+'">'+esc(d.genero)+'</span>' : '')
+        + '</div>'
         + (raz?'<div class="razon">'+esc(raz)+'</div>':'')
       + '</td>'
       // Las TRES celdas llevan etiqueta, si o si. .v es display:block, asi que
@@ -846,7 +863,7 @@ $('#slsklista').addEventListener('click', async e => {
       if(SLSK_TEMA){                        // ya lo tenes: que se vea al toque
         local[SLSK_TEMA] = Object.assign({}, local[SLSK_TEMA], {tiene:1});
         guardarLocal();
-        const d = D.find(x=>x.id===SLSK_TEMA);
+        const d = tema(SLSK_TEMA);
         if(d){ d.tiene = 1; pintar(); }
       }
     } else {
@@ -871,7 +888,7 @@ $('#bhot').onclick = async () => {
       id:x.id, titulo:x.titulo, artista:x.artista, nombre:x.nombre,
       canal:x.canal, anio:x.anio, dur:x.duracion, views:x.views,
       bpm:x.bpm, tonalidad:x.tonalidad, menor:x.menor,
-      razones:x.razones, pts:x.pts
+      razones:x.razones, pts:x.pts, genero:x.genero
     }));
     if(!t.length){ flash('el hotlist está vacío — generá una tanda'); return; }
     BUSQUEDA = t;

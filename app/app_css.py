@@ -148,6 +148,11 @@ footer .apagar.preg{border-color:var(--estrella);color:var(--estrella);
   color:var(--fuerte)}
 .chau span{font-family:var(--mono);font-size:.78rem;color:var(--medio)}
 .chau .chico{font-size:.68rem;color:var(--suave)}
+/* la etiqueta de genero en el hotlist: misma pastilla de color que en el
+   crate, para que se lea como el mismo idioma */
+.meta2{display:flex;align-items:center;gap:6px;margin-top:3px}
+.meta2 .sug{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--suave)}
 .sello{font-family:var(--mono);font-size:.56rem;letter-spacing:.06em;
   margin-left:10px;padding:1px 5px;border:1px solid var(--suave);border-radius:2px;
   color:var(--suave);white-space:nowrap}

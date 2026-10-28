@@ -9,6 +9,14 @@ Cada regla dice de dónde salió. Nada inventado.
 """
 import re, unicodedata
 
+_B = chr(92) + "b"
+
+
+def rx(*trozos):
+    """Alternativa de palabras completas. El borde se construye: escrito a
+    mano a traves de un heredoc llega convertido en chr(8) y falla mudo."""
+    return re.compile(_B + "(?:" + "|".join(trozos) + ")" + _B, re.I)
+
 # ---------------------------------------------------------------- escenas
 # Thomas escribe una palabra; esto la convierte en varias busquedas que
 # apuntan a donde realmente aparece lo bueno.
@@ -72,6 +80,108 @@ CANALES = {
 ESTRELLAS = {"DJ Vinyl Goblin": 3.75, "Krem Soulz": 3.50, "Casen Fike": 2.80,
              "Soultwinz": 2.00}
 BASE = .36                                  # hit rate global
+
+# ------------------------------------------------------- genero de un tema
+# Thomas trabaja ocho listas. Las cinco primeras son "lo que venimos
+# trabajando" (27-oct: "en hotlist siempre tiene que estar la verdadera
+# crema... lo que venimos trabajando es el fuerte"); PIANO, DARK y FOLK
+# todavia se estan poblando y entran como recomendacion, en minoria.
+FUERTES = ["SOUL", "R&B SOUL", "80s", "CITY POP", "JAZZ FUSION"]
+EN_FORMACION = ["PIANO", "DARK", "FOLK"]
+
+# De que sube cada canal. Sale de mirar sus uploads, no de adivinar.
+CANAL_GEN = {
+ "Krem Soulz": "SOUL", "TheRAREGROOVEMAN": "SOUL", "Soultwinz": "SOUL",
+ "Casen Fike": "SOUL", "aaappleknocker": "SOUL", "Athens of The North": "SOUL",
+ "mikeejaylovessoul": "SOUL", "DJ Vinyl Goblin": "SOUL",
+ "Five Special Records": "R&B SOUL", "skeenery": "R&B SOUL",
+ "Neglected Trax": "R&B SOUL", "On the Rocks Records": "R&B SOUL",
+ "BigPeter1027 Real Music Channel": "80s",
+ "André Navarro II": "CITY POP", "ants kask": "CITY POP",
+ "JefferyBeats": "CITY POP",
+ "JazzManDean": "JAZZ FUSION", "Cool Breeze": "JAZZ FUSION",
+ "Elwood P. Dowd": "JAZZ FUSION", "The Voice of Anton": "JAZZ FUSION",
+ "Vinyle Archeologie": "JAZZ FUSION", "foreal": "JAZZ FUSION",
+ "Music for empty rooms": "JAZZ FUSION",
+ "Rare Samples & Songs Oleg Tsoy": "JAZZ FUSION",
+}
+
+JAPON = re.compile(r"[぀-ヿ一-鿿]")
+_JP_NOMBRE = rx("yamashita", "ohashi", "kubota", "kadomatsu", "anri", "takeuchi",
+                "matsubara", "ohno", "hosono", "sakamoto", "minako", "mariya",
+                "taeko", "junko", "akiko", "toshiki", "tatsuro", "casiopea",
+                "momoko", "rajie", "miki", "city pop")
+_80S = rx("boogie", "quiet storm", "slow jam", "modern soul", "synth",
+          "electro", "freestyle", "19(8[0-9])")
+_SOUL = rx("soul", "funk", "motown", "philly", "gospel", "rare groove",
+           "sweet soul", "deep soul", "northern soul")
+_RNB = rx("r ?& ?b", "rnb", "new jack", "slow jam", "ballad", "lovers")
+_FUSION = rx("fusion", "jazz", "rhodes", "library", "bossa", "mpb",
+             "brazil", "latin", "samba", "spiritual")
+
+# Las tres en formacion solo se reconocen cuando NINGUN genero fuerte pega:
+# un soul con la palabra "piano" en el titulo sigue siendo soul. Y la pista
+# tiene que estar del lado del TEMA, no del artista: "Rhodes" es apellido
+# (Cynthia Rhodes no toca un Fender Rhodes, canta).
+_PIANO_G = rx("piano", "rhodes", "wurlitzer", "wurli", "clavinet",
+              "harpsichord", "electric piano", "pianist")
+_DARK_G = rx("dark", "melancholy", "melancholic", "sombre", "somber", "moody",
+             "lament", "sorrow", "mourning", "noir", "requiem", "elegy",
+             "haunting", "nocturne", "midnight", "despair", "grief")
+_FOLK_G = rx("folk", "acoustic", "acustico", "violao", "troubadour",
+             "singer.?songwriter", "loner", "psych folk", "acid folk",
+             "fingerstyle", "fingerpicking", "banjo", "mandolin", "pastoral")
+_SEPARADOR = re.compile(r"\s(?:[-–—/|:]|‎-)\s")
+
+
+def parte_tema(titulo):
+    """El titulo sin el artista, que es donde valen las pistas de genero."""
+    t = titulo or ""
+    partes = _SEPARADOR.split(t, 1)
+    return partes[1] if len(partes) > 1 else t
+
+
+def genero_de(titulo, canal=None, veta=None):
+    """A que lista de Thomas se parece esto. None si no se puede decir.
+
+    Primero la veta (es explicita), despues el canal (que es el dato que mas
+    predice: de un canal del que ya guardo, guarda 16-22% contra 3% del
+    resto) y recien al final las palabras del titulo, que es lo mas debil.
+    """
+    if veta and veta.upper() in EN_FORMACION:
+        return veta.upper()
+    t = titulo or ""
+    if canal and canal in CANAL_GEN:
+        g = CANAL_GEN[canal]
+        # el canal manda, salvo que el titulo grite otra cosa muy fuerte
+        if g == "JAZZ FUSION" and (JAPON.search(t) or _JP_NOMBRE.search(t)):
+            return "CITY POP"
+        return g
+    # Las palabras valen del lado del TEMA. Mirando el titulo entero, un
+    # apellido decide el genero: "Cynthia Rhodes - Finding Out The Hard Way"
+    # caia en JAZZ FUSION porque _FUSION incluye "rhodes". Ella canta, no toca
+    # un Fender. El japones es la excepcion: ahi el nombre del artista SI es
+    # la pista que vale.
+    nom = parte_tema(t)
+    if JAPON.search(t) or _JP_NOMBRE.search(t):
+        return "CITY POP"
+    if _80S.search(nom):
+        return "80s"
+    if _RNB.search(nom):
+        return "R&B SOUL"
+    if _SOUL.search(nom):
+        return "SOUL"
+    if _FUSION.search(nom):
+        return "JAZZ FUSION"
+    # recien ahora las que se estan poblando
+    if _PIANO_G.search(nom):
+        return "PIANO"
+    if _FOLK_G.search(nom):
+        return "FOLK"
+    if _DARK_G.search(nom):
+        return "DARK"
+    return None
+
 
 # ------------------------------------------------------------------ descartes
 BASURA = re.compile(
