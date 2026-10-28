@@ -23,7 +23,12 @@ SEP = chr(92) + "t"
 HERE = os.path.dirname(os.path.abspath(__file__))
 RAIZ = r"G:\Thomi - Mi Carpeta\crate_project"
 DB = os.path.join(RAIZ, "crate.db")
+# Se puede levantar una segunda instancia en otro puerto para probar sin
+# tocar la que esta en uso: python crate_server.py --puerto 7788
 PUERTO = 7777
+for _i, _a in enumerate(sys.argv):
+    if _a == "--puerto" and _i + 1 < len(sys.argv):
+        PUERTO = int(sys.argv[_i + 1])
 SLSKD = "http://127.0.0.1:5030"
 SLSKD_KEY = ""
 try:
@@ -158,6 +163,51 @@ class Handler(SimpleHTTPRequestHandler):
                 except Exception:
                     f["razones"] = []
             return self._json({"ok": True, "temas": filas})
+        if ruta == "/api/kpi":
+            con = db()
+            q = lambda s, *a: con.execute(s, a).fetchall()
+            uno = lambda s, *a: con.execute(s, a).fetchone()[0]
+            # hit rate = de lo que juzgaste, cuanto te quedaste. Lo que esta
+            # en `visto` no cuenta: no lo juzgaste, solo pasó por delante.
+            guard = uno("SELECT count(*) FROM marca WHERE estado='guardado'")
+            rech = uno("SELECT count(*) FROM marca WHERE estado='rechazado'")
+            d = {
+              "ok": True,
+              "hit": {"guardados": guard, "rechazados": rech,
+                      "tasa": round(100.0 * guard / max(1, guard + rech))},
+              "tandas": [{"nombre": r[0], "guardados": r[1], "rechazados": r[2],
+                          "tasa": round(100.0 * r[1] / max(1, r[1] + r[2]))}
+                         for r in q("""SELECT tanda,
+                                sum(estado='guardado'), sum(estado='rechazado')
+                                FROM marca
+                                -- 'app' no es una veta: es lo que marcaste
+                                -- desde la app, mezclado de todo. Mostrarlo
+                                -- al lado de los lotes confunde.
+                                WHERE tanda IS NOT NULL AND tanda <> 'app'
+                                GROUP BY tanda
+                                HAVING sum(estado='guardado')+sum(estado='rechazado') >= 8
+                                ORDER BY 2 DESC LIMIT 10""")],
+              "estrellas": [{"n": r[0], "cuantos": r[1]} for r in
+                            q("""SELECT estrellas, count(*) FROM marca
+                                 WHERE estrellas > 0 GROUP BY estrellas
+                                 ORDER BY estrellas DESC""")],
+              "listas": [{"nombre": r[0], "cuantos": r[1]} for r in
+                         q("""SELECT playlist, count(*) FROM en_playlist
+                              GROUP BY playlist ORDER BY 2 DESC""")],
+              "canales": [{"nombre": r[0], "temas": r[1]} for r in
+                          q("""SELECT canal, count(*) FROM tema
+                               WHERE canal IS NOT NULL GROUP BY canal
+                               ORDER BY 2 DESC LIMIT 8""")],
+              "disco": {"bajados": uno("SELECT count(*) FROM archivo"),
+                        "por_bajar": uno("SELECT count(*) FROM por_bajar")},
+              "base": {"temas": uno("SELECT count(*) FROM tema"),
+                       "analizados": uno("SELECT count(*) FROM analisis"),
+                       "descubiertos": uno(
+                           "SELECT count(*) FROM canal_descubierto") if uno(
+                           "SELECT count(*) FROM sqlite_master WHERE name='canal_descubierto'") else 0},
+            }
+            con.close()
+            return self._json(d)
         if ruta == "/api/estado":
             con = db()
             q = lambda s: con.execute(s).fetchone()[0]

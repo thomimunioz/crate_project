@@ -63,6 +63,7 @@ DOC = """<!doctype html>
       </div>
     </div>
   </div>
+  <button class="chip panelbtn" id="bkpi" title="cómo venís (K)">◴ números</button>
   <div class="cifras">
     <div class="cifra"><b>%d</b><span>temas propios</span></div>
     <div class="cifra"><b>%s</b><span>en la base</span></div>
@@ -70,6 +71,11 @@ DOC = """<!doctype html>
     <div class="cifra"><b>%d</b><span>puntuados</span></div>
   </div>
 </header>
+
+<div id="kpi"><div class="kcaja">
+  <div class="kcab"><b>Cómo venís</b><button id="kx" title="cerrar">&#10005;</button></div>
+  <div class="kcuerpo" id="kcuerpo"></div>
+</div></div>
 
 <div class="panel">
   <div class="fila1">

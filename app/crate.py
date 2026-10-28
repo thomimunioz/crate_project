@@ -14,6 +14,8 @@
     crate abrir           lo que usa el acceso directo: prende todo y abre
     crate parar           apaga todo (servidor + soulseek)
     crate ui              barrido de la interfaz (necesita la app levantada)
+    crate diggers         busca diggers NUEVOS que tengan tus joyas
+    crate cavar-canal X   cava un canal descubierto
 
 Cada subcomando es uno de los scripts de siempre: esto no agrega logica, solo
 evita tener que acordarse de cual era.
@@ -223,6 +225,15 @@ def main():
         return parar()
     if cmd == "ui":
         return barrido_ui()
+    if cmd == "diggers":
+        return correr("diggers.py", resto or ["--guardar"])
+    if cmd in ("cavar-canal", "cavarcanal"):
+        if not resto:
+            print('decime que canal:  crate cavar-canal "Wendel Ajoe"')
+            return 1
+        sys.path.insert(0, HERE)
+        import diggers
+        return diggers.cavar_canal(" ".join(resto))
     if cmd in ("slsk", "soulseek"):
         print("soulseek: %s" % levantar_slskd())
         return 0

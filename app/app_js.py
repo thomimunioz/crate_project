@@ -71,7 +71,9 @@ function flash(txt){
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const norm = s => (s||'').normalize('NFKD').replace(/[̀-ͯ]/g,'').toLowerCase();
-const esc  = s => (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// acepta numeros: se usa en todos lados y un 63 sin comillas
+// reventaba el panel entero con "replace is not a function"
+const esc  = v => String(v == null ? '' : v).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 let orden = 'estrellas', desc = true;
 const filtros = new Set();
@@ -397,6 +399,7 @@ document.addEventListener('keydown', e => {
   if(e.key === 'n' || e.key === 'N'){ siguiente(1); }
   if(e.key === 'p' || e.key === 'P'){ siguiente(-1); }
   if(e.key === 's' || e.key === 'S'){ alternarMezcla(); }
+  if(e.key === 'k' || e.key === 'K'){ verKpi(); }
   if(/^[1-5]$/.test(e.key) && sonando){
     ponerEstrellas(sonando.id, +e.key);
     pintarEstrellasPlayer(); pintar(); marcarSonando();
@@ -994,6 +997,73 @@ $('#apagar').onclick = async function(){
   + '<span>el servidor y Soulseek se cerraron. Ya podés cerrar la pestaña.</span>'
   + '<span class="chico">para volver a abrirlo, el ícono de la barra de tareas</span></div>';
 };
+
+/* =======================================================================
+   NUMEROS: como venis. Thomas, 28-oct: "algun kpi taria bueno, me gustaria
+   un panelcito copado lindo, con los colores de los generos".
+
+   El que importa es el hit rate: de lo que JUZGASTE, cuanto te quedaste. Lo
+   que quedo en "visto" no cuenta — no lo juzgaste, solo paso por delante.
+   ======================================================================= */
+const pct = (a, b) => Math.round(100 * a / Math.max(1, b));
+
+function barra(nombre, valor, maximo, clase, etiqueta){
+  const ancho = Math.max(2, pct(valor, maximo));
+  return '<div class="kfila">'
+    + '<span class="knom">' + esc(nombre) + '</span>'
+    + '<span class="kbar"><i class="' + (clase||'') + '" style="width:' + ancho + '%"></i></span>'
+    + '<span class="kval">' + esc(etiqueta != null ? etiqueta : valor) + '</span>'
+    + '</div>';
+}
+
+async function verKpi(){
+  if(!servidor){ flash('esto necesita el servidor'); return; }
+  const caja = $('#kpi');
+  caja.classList.add('on');
+  $('#kcuerpo').innerHTML = '<div class="vacio2">midiendo…</div>';
+  let d;
+  try{ d = await (await fetch('/api/kpi')).json(); }
+  catch(e){ $('#kcuerpo').innerHTML = '<div class="vacio2">no pude medir</div>'; return; }
+  if(!d.ok){ $('#kcuerpo').innerHTML = '<div class="vacio2">no pude medir</div>'; return; }
+
+  const h = [];
+  h.push('<div class="kgrande"><b>' + d.hit.tasa + '%</b>'
+       + '<span>de lo que juzgaste te lo quedaste</span>'
+       + '<span class="kchico">' + d.hit.guardados + ' guardados · '
+       + d.hit.rechazados + ' rechazados</span></div>');
+
+  if(d.tandas.length){
+    const mx = Math.max(...d.tandas.map(t => t.tasa));
+    h.push('<div class="ktit">qué veta rinde</div>');
+    d.tandas.forEach(t => h.push(barra(t.nombre, t.tasa, mx,
+      t.tasa >= d.hit.tasa ? 'bien' : 'flojo', t.tasa + '%')));
+  }
+
+  if(d.listas.length){
+    const mx = Math.max(...d.listas.map(l => l.cuantos));
+    h.push('<div class="ktit">tu crate</div>');
+    d.listas.forEach(l => h.push(barra(l.nombre, l.cuantos, mx, clg(l.nombre))));
+  }
+
+  if(d.estrellas.length){
+    const mx = Math.max(...d.estrellas.map(e => e.cuantos));
+    h.push('<div class="ktit">cómo puntuás</div>');
+    d.estrellas.forEach(e => h.push(
+      barra('★'.repeat(e.n), e.cuantos, mx, 'estr')));
+  }
+
+  h.push('<div class="ktit">el pozo</div>');
+  h.push('<div class="kcifras">'
+    + '<div><b>' + d.base.temas.toLocaleString('es') + '</b><span>temas</span></div>'
+    + '<div><b>' + d.base.analizados + '</b><span>con BPM</span></div>'
+    + '<div><b>' + d.base.descubiertos + '</b><span>diggers nuevos</span></div>'
+    + '<div><b>' + d.disco.por_bajar + '</b><span>por bajar</span></div>'
+    + '</div>');
+
+  $('#kcuerpo').innerHTML = h.join('');
+}
+$('#bkpi').onclick = verKpi;
+$('#kx').onclick = () => $('#kpi').classList.remove('on');
 
 pintar();
 """

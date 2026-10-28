@@ -278,6 +278,45 @@ tr:hover .btn-cl,.clasif.abierto .btn-cl{visibility:visible}
 .menu-cl .sep{height:1px;background:var(--sombra);margin:4px 2px}
 
 /* ---------- resultados de Soulseek ---------- */
+/* =============== NUMEROS: como venis =============== */
+.panelbtn{position:absolute;right:0;top:0}
+header{position:relative}
+#kpi{position:fixed;inset:0;z-index:70;display:none;align-items:flex-start;
+  justify-content:center;padding:40px 16px;overflow:auto;
+  background:rgba(16,50,79,.42)}
+#kpi.on{display:flex}
+.kcaja{width:100%;max-width:620px;background:var(--sobre);border-radius:4px;
+  box-shadow:0 18px 50px var(--sombra);overflow:hidden}
+.kcab{display:flex;align-items:center;justify-content:space-between;
+  padding:13px 18px;background:var(--barra);color:var(--barratxt)}
+.kcab b{font-family:var(--display);font-size:1.2rem;letter-spacing:.08em}
+.kcab button{background:transparent;border:0;color:var(--barratxt);cursor:pointer;
+  font-size:1rem;line-height:1}
+.kcuerpo{padding:18px}
+.kgrande{text-align:center;padding:6px 0 18px;border-bottom:1px solid var(--sombra)}
+.kgrande b{display:block;font-family:var(--display);font-size:3.2rem;
+  line-height:1;color:var(--acento)}
+.kgrande span{display:block;font-family:var(--mono);font-size:.74rem;
+  color:var(--medio);margin-top:6px}
+.kgrande .kchico{font-size:.64rem;color:var(--suave);margin-top:3px}
+.ktit{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--suave);margin:18px 0 8px}
+.kfila{display:flex;align-items:center;gap:9px;margin-bottom:5px}
+.knom{flex:0 0 32%;font-family:var(--mono);font-size:.68rem;color:var(--fuerte);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kbar{flex:1;height:13px;background:var(--fondo);border-radius:2px;overflow:hidden}
+.kbar i{display:block;height:100%;background:var(--medio);border-radius:2px}
+.kbar i.bien{background:var(--acento2)}
+.kbar i.flojo{background:var(--suave)}
+.kbar i.estr{background:var(--estrella)}
+.kbar i[class*='g-']{background:var(--g,var(--medio))}
+.kval{flex:0 0 46px;text-align:right;font-family:var(--mono);font-size:.7rem;
+  font-weight:700;color:var(--fuerte)}
+.kcifras{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:4px}
+.kcifras div{text-align:center;padding:9px 4px;background:var(--fondo);border-radius:3px}
+.kcifras b{display:block;font-family:var(--display);font-size:1.3rem;color:var(--fuerte)}
+.kcifras span{font-family:var(--mono);font-size:.58rem;color:var(--suave)}
+
 #slsk{position:fixed;right:16px;bottom:104px;width:420px;max-height:62vh;z-index:55;
   background:var(--sobre);border:1.5px solid var(--fuerte);border-radius:5px;
   box-shadow:0 10px 34px rgba(0,0,0,.26);display:none;flex-direction:column}
