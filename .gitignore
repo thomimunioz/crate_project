@@ -58,3 +58,4 @@ slskd/
 CRATE.lnk
 app/icono-*.png
 mi-crate-captura.html
+app/tests/ui/*.png

@@ -5,6 +5,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from app_css import CSS, FUENTES
 from app_js import JS
+from app_tinder import JS as JS_TINDER, CSS as CSS_TINDER
 
 DB = r"G:\Thomi - Mi Carpeta\crate_project\crate.db"
 OUT = r"G:\Thomi - Mi Carpeta\crate_project\mi-crate.html"
@@ -72,6 +73,21 @@ DOC = """<!doctype html>
   </div>
 </header>
 
+<div id="tinder"><div class="tcaja">
+  <div class="tcab">
+    <span id="tpos">0 / 0</span>
+    <button id="tx" title="salir (Esc)">&#10005;</button>
+  </div>
+  <div class="tficha" id="tficha"></div>
+  <div class="tacciones">
+    <button class="tbtn no"  id="tno"   title="no va (←)">&#10005;</button>
+    <button class="tbtn pl"  id="tplay" title="play / pausa (espacio)">&#10074;&#10074;</button>
+    <button class="tbtn si"  id="tsi"   title="guardar (→)">&#9733;</button>
+  </div>
+  <div class="testrellas" id="testrellas"></div>
+  <div class="tpie">← no va &nbsp;·&nbsp; → me lo guardo &nbsp;·&nbsp; 1-5 puntuás &nbsp;·&nbsp; espacio pausa</div>
+</div></div>
+
 <div id="kpi"><div class="kcaja">
   <div class="kcab"><b>Cómo venís</b><button id="kx" title="cerrar">&#10005;</button></div>
   <div class="kcuerpo" id="kcuerpo"></div>
@@ -119,6 +135,7 @@ DOC = """<!doctype html>
     <input id="qy" placeholder="soul · city pop · piano · folk · dark · fusion">
     <button class="chip b on" id="bcavar">buscar</button>
     <button class="chip m" id="bhot" title="lo mejor sin escuchar, renovado cada semana">★ hotlist</button>
+    <button class="chip m" id="bses" title="modo sesión: un tema por vez, arranca en el pasaje (T)">▶ sesión</button>
     <button class="chip" id="bvolver" style="display:none">volver a mi crate</button>
     <span id="cavinfo"></span>
   </div>
@@ -178,9 +195,10 @@ DOC = """<!doctype html>
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>const DATOS=%s;</script>
 <script>%s</script>
-</body></html>""" % (FUENTES, CSS, hoy, sello, len(datos), "{:,}".format(tot).replace(",","."),
+</body></html>""" % (FUENTES, CSS + CSS_TINDER, hoy, sello, len(datos), "{:,}".format(tot).replace(",","."),
                      med, n_est, chips_pl,
-                     json.dumps(datos, ensure_ascii=False, separators=(",", ":")), JS)
+                     json.dumps(datos, ensure_ascii=False, separators=(",", ":")),
+                     JS + JS_TINDER)
 
 open(OUT, "w", encoding="utf-8").write(DOC)
 print("%d temas -> %s  (%.0f KB)" % (len(datos), OUT, os.path.getsize(OUT) / 1024))

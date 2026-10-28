@@ -400,6 +400,7 @@ document.addEventListener('keydown', e => {
   if(e.key === 'p' || e.key === 'P'){ siguiente(-1); }
   if(e.key === 's' || e.key === 'S'){ alternarMezcla(); }
   if(e.key === 'k' || e.key === 'K'){ verKpi(); }
+  if(e.key === 't' || e.key === 'T'){ tAbrir(); }
   if(/^[1-5]$/.test(e.key) && sonando){
     ponerEstrellas(sonando.id, +e.key);
     pintarEstrellasPlayer(); pintar(); marcarSonando();
