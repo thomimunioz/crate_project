@@ -299,6 +299,15 @@ tr:hover .btn-cl,.clasif.abierto .btn-cl{visibility:visible}
 #slsk .fmt.mp3{background:var(--suave)}
 #slsk .usr{font-family:var(--mono);font-size:.62rem;color:var(--suave);white-space:nowrap}
 /* el boton de bajar: discreto hasta que lo apuntas, verde cuando quedo pedido */
+/* al azar: apagado se ve como un control mas; prendido toma el color del
+   reproductor para que se note de un vistazo cual es el estado */
+.pbtn.mez{display:inline-flex;align-items:center;justify-content:center;opacity:.55}
+.pbtn.mez:hover{opacity:1}
+.pbtn.mez.on{opacity:1;color:var(--barranum)}
+.pbtn.mez.on::after{content:'';position:absolute;left:50%;bottom:2px;width:4px;
+  height:4px;margin-left:-2px;border-radius:50%;background:var(--barranum)}
+.pbtn.mez{position:relative}
+
 #slsk .bajar{margin-left:4px;border:1px solid var(--acento);background:transparent;
   color:var(--acento);font-family:var(--mono);font-size:.62rem;letter-spacing:.06em;
   text-transform:uppercase;padding:3px 8px;border-radius:2px;cursor:pointer;

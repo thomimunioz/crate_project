@@ -396,6 +396,7 @@ document.addEventListener('keydown', e => {
   if(e.code === 'Space' && sonando){ e.preventDefault(); $('#pplay').click(); }
   if(e.key === 'n' || e.key === 'N'){ siguiente(1); }
   if(e.key === 'p' || e.key === 'P'){ siguiente(-1); }
+  if(e.key === 's' || e.key === 'S'){ alternarMezcla(); }
   if(/^[1-5]$/.test(e.key) && sonando){
     ponerEstrellas(sonando.id, +e.key);
     pintarEstrellasPlayer(); pintar(); marcarSonando();
@@ -641,11 +642,63 @@ function pintarEstrellasPlayer(){
   $('#player .pest').innerHTML = [1,2,3,4,5]
     .map(n=>'<span class="s '+(n<=e?'on':'off')+'" data-pn="'+n+'">★</span>').join('');
 }
+/* AL AZAR: cavar en lo que ya cavaste. Thomas, 28-oct: "esta bueno para
+   diggear en tu propio diggin ya hecho y encontrar algun sample lindo cuando
+   no sabes q samplear".
+
+   Recorre la cola entera antes de repetir, en vez de sortear cada vez: con
+   un sorteo simple, sobre 50 temas te vuelve a salir el mismo cada tanto y
+   parece que esta roto. Se baraja una sola vez y se avanza. */
+const MEZCLA = 'crate-mezcla';
+let mezclando = false;
+try{ mezclando = localStorage.getItem(MEZCLA) === '1'; }catch(e){}
+let baraja = [], iBaraja = -1;
+
+function barajar(desde){
+  baraja = cola.slice();
+  for(let i = baraja.length - 1; i > 0; i--){        // Fisher-Yates
+    const j = Math.floor(Math.random() * (i + 1));
+    [baraja[i], baraja[j]] = [baraja[j], baraja[i]];
+  }
+  if(desde){                                          // el actual va primero
+    const k = baraja.indexOf(desde);
+    if(k > 0){ baraja.splice(k, 1); baraja.unshift(desde); }
+  }
+  iBaraja = 0;
+}
+
+function pintarMezcla(){
+  const b = $('#pmez');
+  if(b){ b.classList.toggle('on', mezclando); b.setAttribute('aria-pressed', mezclando); }
+}
+
+function alternarMezcla(){
+  mezclando = !mezclando;
+  try{ localStorage.setItem(MEZCLA, mezclando ? '1' : '0'); }catch(e){}
+  if(mezclando) barajar(sonando && sonando.id);
+  pintarMezcla();
+  flash(mezclando ? 'al azar: cavando en tu crate' : 'al azar apagado');
+}
+
 function siguiente(d=1){
   if(!cola.length) return;
+  if(mezclando){
+    // si la cola cambio (cambiaste de vista o filtraste), rebarajar
+    if(baraja.length !== cola.length || !baraja.every(x => cola.includes(x))){
+      barajar(sonando && sonando.id);
+    }
+    iBaraja = (iBaraja + d + baraja.length) % baraja.length;
+    const id = baraja[iBaraja];
+    iCola = cola.indexOf(id);
+    reproducir(id);
+    return;
+  }
   iCola = (iCola + d + cola.length) % cola.length;
   reproducir(cola[iCola]);
 }
+$('#pmez').onclick = alternarMezcla;
+pintarMezcla();
+
 $('#pista').addEventListener('click', e=>{
   const r = e.currentTarget.getBoundingClientRect();
   const f = (e.clientX - r.left)/r.width;

@@ -166,8 +166,13 @@ def barrido_ui():
     if not os.path.exists(os.path.join(d, "node_modules")):
         print("instalando playwright (una sola vez)...")
         subprocess.call("npm install --silent", cwd=d, shell=True)
-    return subprocess.call('node "%s"' % os.path.join(d, "barrido.mjs"),
-                           cwd=d, shell=True)
+    malas = 0
+    for prueba in ("barrido.mjs", "azar.mjs"):
+        print()
+        print("--- %s ---" % prueba)
+        malas += bool(subprocess.call('node "%s"' % os.path.join(d, prueba),
+                                      cwd=d, shell=True))
+    return 1 if malas else 0
 
 
 def correr(script, resto):

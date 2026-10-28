@@ -155,6 +155,12 @@ DOC = """<!doctype html>
   <button class="pbtn" id="pprev" title="anterior (P)">&#9664;&#9664;</button>
   <button class="pbtn gde" id="pplay" title="play / pausa (espacio)">&#9654;</button>
   <button class="pbtn" id="pnext" title="siguiente (N)">&#9654;&#9654;</button>
+  <button class="pbtn mez" id="pmez" title="al azar: cavá en tu propio crate (S)">
+    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+         aria-hidden="true"><path d="M16 3h5v5"/><path d="M4 20 21 3"/>
+         <path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/></svg>
+  </button>
   <div class="barra">
     <span class="ptiempo" id="ptact">0:00</span>
     <div class="pista" id="pista"><div class="av"></div><div class="bolita"></div></div>
