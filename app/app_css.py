@@ -151,6 +151,7 @@ footer .apagar.preg{border-color:var(--estrella);color:var(--estrella);
 /* la etiqueta de genero en el hotlist: misma pastilla de color que en el
    crate, para que se lea como el mismo idioma */
 .meta2{display:flex;align-items:center;gap:6px;margin-top:3px}
+.meta2 .sug.ya{color:var(--acento2)}
 .meta2 .sug{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;
   text-transform:uppercase;color:var(--suave)}
 .sello{font-family:var(--mono);font-size:.56rem;letter-spacing:.06em;

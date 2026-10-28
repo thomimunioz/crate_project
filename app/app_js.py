@@ -21,6 +21,12 @@ function aServidor(ruta, cuerpo){
    tabla recien cuando el servidor lo guarda. Lo sumamos en caliente, sin F5. */
 function sumarACrate(fila){
   if(!fila || !fila.id) return false;
+  // Tambien hay que actualizar BUSQUEDA: es la lista que dibuja el hotlist y
+  // el buscador. Tocando solo D, clasificabas un tema del hotlist y la fila
+  // que estabas mirando seguia mostrando el estado viejo.
+  const j = (BUSQUEDA || []).findIndex(x => x.id === fila.id);
+  if(j >= 0) BUSQUEDA[j] = Object.assign({}, BUSQUEDA[j], fila);
+
   const i = D.findIndex(x => x.id === fila.id);
   if(i >= 0){ D[i] = Object.assign({}, D[i], fila); return false; }
   fila.cat = 'CR·' + String(D.length + 1).padStart(4, '0');
@@ -280,7 +286,13 @@ document.addEventListener('click', e => {
             // el servidor manda la fila ya armada: el tema queda buscable y
             // filtrable al instante, sin recargar
             const es_nuevo = sumarACrate(j.tema);
-            delete local[id];            // ya esta en la base, sin pendiente
+            // NO borrar local[id]: ahi viven tambien las estrellas. Borrarlo
+            // entero hacia desaparecer el puntaje de la tarjeta al clasificar.
+            // Solo se suelta lo que el servidor ya tiene: las listas.
+            if(local[id]){
+              delete local[id].listas;
+              if(!Object.keys(local[id]).length) delete local[id];
+            }
             guardarLocal();
             pintar(); marcarSonando();
             if(es_nuevo) flash('va a ' + L + ' · ya es tuyo');
@@ -678,6 +690,7 @@ function pintarBusqueda(res){
   $('#cuerpo').innerHTML = res.length ? res.map((d,i)=>{
     const e = estrellasDe(d)||0;
     const raz = (d.razones||[]).slice(0,2).join(' · ');
+    const mias = listasDe(d);          // donde ya lo guardaste, si lo hiciste
     return '<tr data-id="'+d.id+'" class="nuevo">'
       + '<td class="cat">+'+String(i+1).padStart(3,'0')+'</td>'
       + '<td>'
@@ -696,6 +709,9 @@ function pintarBusqueda(res){
         + '<div class="meta2">'
         +   (d.genero ? '<span class="sug">sugerido</span>'
                       + '<span class="pl '+clg(d.genero)+'">'+esc(d.genero)+'</span>' : '')
+        +   (mias.length ? '<span class="sug ya">guardado en</span>'
+                         + mias.map(x=>'<span class="pl '+clg(x)+'">'+esc(x)+'</span>').join('')
+                         : '')
         + '</div>'
         + (raz?'<div class="razon">'+esc(raz)+'</div>':'')
       + '</td>'

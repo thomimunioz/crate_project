@@ -50,6 +50,15 @@ def servible(ruta):
     return ruta.lower().endswith(SERVIBLE)
 
 
+# En Windows, cada proceso que se lanza abre su propia ventana de consola si
+# no se le dice lo contrario. Thomas, 28-oct: "QUE ES ESTA VENTANA DE CMD Q SE
+# ME ABRE CADA VEZ Q TOCO UN TEMA". Eran slskd y yt-dlp, que se lanzan desde
+# el servidor. Todo subprocess de este proyecto pasa por aca.
+SIN_VENTANA = {}
+if sys.platform == "win32":
+    SIN_VENTANA = {"creationflags": 0x08000000}      # CREATE_NO_WINDOW
+
+
 def db():
     con = sqlite3.connect(DB, timeout=10)
     con.row_factory = sqlite3.Row
@@ -176,7 +185,7 @@ class Handler(SimpleHTTPRequestHandler):
                     [YT, "-f", "bestaudio/best", "--js-runtimes", "node",
                      "--no-warnings", "-q", "-g",
                      "https://www.youtube.com/watch?v=" + vid],
-                    capture_output=True, text=True, timeout=70)
+                    capture_output=True, text=True, timeout=70, **SIN_VENTANA)
             except subprocess.TimeoutExpired:
                 return self._json({"ok": False, "error": "tardo demasiado"}, 504)
             linea = (r.stdout or "").strip().splitlines()
@@ -307,7 +316,7 @@ class Handler(SimpleHTTPRequestHandler):
             subprocess.run(["powershell", "-NoProfile", "-Command",
                             "Get-Process slskd -ErrorAction SilentlyContinue | "
                             "Stop-Process -Force"],
-                           capture_output=True)
+                           capture_output=True, **SIN_VENTANA)
             self._json({"ok": True})
             threading.Timer(0.4, lambda: SERVIDOR[0].shutdown()).start()
             return
@@ -439,7 +448,7 @@ def ytsearch(q, n=22):
            % (SEP, SEP, SEP, SEP), "ytsearch%d:%s" % (n, q)]
     try:
         r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8",
-                           errors="replace", timeout=90)
+                           errors="replace", timeout=90, **SIN_VENTANA)
     except subprocess.TimeoutExpired:
         return []
     out = []

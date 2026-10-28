@@ -13,6 +13,7 @@
     crate slsk            prende solo slskd (si se te cayo)
     crate abrir           lo que usa el acceso directo: prende todo y abre
     crate parar           apaga todo (servidor + soulseek)
+    crate ui              barrido de la interfaz (necesita la app levantada)
 
 Cada subcomando es uno de los scripts de siempre: esto no agrega logica, solo
 evita tener que acordarse de cual era.
@@ -43,6 +44,15 @@ SLSKD = os.path.join(RAIZ, "slskd")
 PUERTO = 7777
 
 
+# En Windows, cada proceso que se lanza abre su propia ventana de consola si
+# no se le dice lo contrario. Thomas, 28-oct: "QUE ES ESTA VENTANA DE CMD Q SE
+# ME ABRE CADA VEZ Q TOCO UN TEMA". Eran slskd y yt-dlp, que se lanzan desde
+# el servidor. Todo subprocess de este proyecto pasa por aca.
+SIN_VENTANA = {}
+if sys.platform == "win32":
+    SIN_VENTANA = {"creationflags": 0x08000000}      # CREATE_NO_WINDOW
+
+
 def puerto_abierto(puerto, host="127.0.0.1"):
     with socket.socket() as s:
         s.settimeout(0.4)
@@ -65,7 +75,7 @@ def levantar_slskd():
     try:
         subprocess.Popen([exe, "--config", os.path.join(SLSKD, "slskd.yml")],
                          cwd=SLSKD, stdout=subprocess.DEVNULL,
-                         stderr=subprocess.DEVNULL)
+                         stderr=subprocess.DEVNULL, **SIN_VENTANA)
         return "prendido (tarda ~10s en conectarse a la red)"
     except Exception as e:
         return "no pude prenderlo: %s" % str(e)[:60]
@@ -86,7 +96,7 @@ def abrir():
         exe = pyw if os.path.exists(pyw) else PY       # sin consola negra
         subprocess.Popen([exe, os.path.join(HERE, "crate_server.py"),
                           "--sin-navegador"], cwd=HERE,
-                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, **SIN_VENTANA)
         for _ in range(60):                            # hasta 15 s
             if puerto_abierto(PUERTO):
                 break
@@ -121,7 +131,7 @@ def parar():
 
     def pids(cmd):
         return subprocess.run(["powershell", "-NoProfile", "-Command", cmd],
-                              capture_output=True, text=True).stdout.split()
+                              capture_output=True, text=True, **SIN_VENTANA).stdout.split()
 
     srv, slsk = pids(ps_srv), pids(ps_slsk)
     if not srv and not slsk:
@@ -130,7 +140,7 @@ def parar():
     for cmd in (ps_srv, ps_slsk):
         subprocess.run(["powershell", "-NoProfile", "-Command",
                         cmd + " | ForEach-Object { Stop-Process -Id $_ -Force }"],
-                       capture_output=True, text=True)
+                       capture_output=True, text=True, **SIN_VENTANA)
     time.sleep(1.0)
     q_srv, q_slsk = pids(ps_srv), pids(ps_slsk)
     print("servidor: %s" % ("apagado" if not q_srv else "sigue vivo"))
@@ -138,8 +148,30 @@ def parar():
     return 1 if (q_srv or q_slsk) else 0
 
 
+def barrido_ui():
+    """Ejercita la interfaz entera con un navegador de verdad.
+
+    Es lo unico que caza los bugs de estado entre las dos vistas: puntuar,
+    hover, reproducir, clasificar, EN DISCO. Pytest no los ve porque viven en
+    el JavaScript generado.
+    """
+    d = os.path.join(HERE, "tests", "ui")
+    if not puerto_abierto(PUERTO):
+        print("levanta la app primero (crate) y volve a correr esto")
+        return 1
+    # OJO: aca NO va SIN_VENTANA. Ese flag esconde la consola del hijo y con
+    # ella se va la salida, que es justo lo unico que interesa de este
+    # comando. Sirve para los procesos de fondo (slskd, yt-dlp), no para uno
+    # que corres vos en una terminal para leer el resultado.
+    if not os.path.exists(os.path.join(d, "node_modules")):
+        print("instalando playwright (una sola vez)...")
+        subprocess.call("npm install --silent", cwd=d, shell=True)
+    return subprocess.call('node "%s"' % os.path.join(d, "barrido.mjs"),
+                           cwd=d, shell=True)
+
+
 def correr(script, resto):
-    return subprocess.call([PY, os.path.join(HERE, script)] + resto)
+    return subprocess.call([PY, os.path.join(HERE, script)] + resto, **SIN_VENTANA)
 
 
 def estado():
@@ -184,6 +216,8 @@ def main():
         return abrir()
     if cmd in ("parar", "apagar", "stop"):
         return parar()
+    if cmd == "ui":
+        return barrido_ui()
     if cmd in ("slsk", "soulseek"):
         print("soulseek: %s" % levantar_slskd())
         return 0

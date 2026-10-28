@@ -67,6 +67,9 @@ JOIN tema t ON t.id = h.id
 LEFT JOIN analisis a ON a.id = h.id
 WHERE t.oculto = 0
   AND NOT EXISTS (SELECT 1 FROM marca m WHERE m.id = h.id)
+  -- mandarlo a una lista tambien es haberlo resuelto: no tiene por que
+  -- seguir ofreciendose como sugerencia sin escuchar
+  AND NOT EXISTS (SELECT 1 FROM en_playlist p WHERE p.id = h.id)
 ORDER BY h.pts DESC;
 """
 
