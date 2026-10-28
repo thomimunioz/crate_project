@@ -447,9 +447,28 @@ const NOEMB = 'crate-noemb';
 let noEmb = {};
 try{ noEmb = JSON.parse(localStorage.getItem(NOEMB)||'{}')||{}; }catch(e){}
 
+const UNA_SEMANA = 7 * 24 * 3600 * 1000;
+
+/* Marcado como no embebible, pero solo si la marca es reciente. Las viejas se
+   olvidan: asi un tema mal marcado por un error pasajero vuelve al
+   reproductor de YouTube, que es mas rapido que bajar el audio. */
+function marcadoNoEmb(id){
+  const t = noEmb[id];
+  if(!t) return false;
+  if(t === 1) return true;                 // marcas viejas, sin fecha
+  if(Date.now() - t < UNA_SEMANA) return true;
+  delete noEmb[id];
+  try{ localStorage.setItem(NOEMB, JSON.stringify(noEmb)); }catch(e){}
+  return false;
+}
+
 function noEmbebible(id){
   if(!id) return;
-  noEmb[id] = 1;
+  // Se guarda CUANDO, no un simple 1. El onError de YouTube salta tambien
+  // por cosas pasajeras (la red, un hipo del reproductor), y con una marca
+  // permanente un tema que si se puede embeber queda para siempre yendo por
+  // el camino del audio. A la semana se vuelve a probar.
+  noEmb[id] = Date.now();
   try{ localStorage.setItem(NOEMB, JSON.stringify(noEmb)); }catch(e){}
   if(servidor){ porAudio(id); return; }      // respaldo: sin salir de la app
   const d = D.find(x=>x.id===id) || (BUSQUEDA||[]).find(x=>x.id===id);
@@ -475,14 +494,39 @@ function porAudio(id){
   const d = sonando;
   const detalle = d ? [d.nombre, d.anio, d.bpm?d.bpm+' bpm':'', d.tonalidad]
                         .filter(Boolean).join(' · ') : '';
-  const fallo = () => {
-    $('#player .pt').innerHTML = 'no pude reproducirlo — '
-      + '<a href="https://www.youtube.com/watch?v='+id+'" target="_blank" '
-      + 'style="color:var(--acento);text-decoration:underline">abrir en YouTube</a>';
+
+  /* "no pude reproducirlo" tapaba cinco causas distintas: el servidor
+     apagado, un error del proxy, Chrome bloqueando el audio, un formato que
+     no decodifica y el aguante agotado. Sin saber cual, no hay nada que
+     hacer salvo mirar. Cada una dice lo suyo y, donde se puede, trae el
+     boton que lo arregla. */
+  const link = '<a href="https://www.youtube.com/watch?v='+id+'" target="_blank" '
+             + 'style="color:var(--acento);text-decoration:underline">abrir en YouTube</a>';
+  const mostrar = (txt, accion) => {
+    $('#player .pt').innerHTML = txt + ' — '
+      + (accion ? '<a href="#" id="reintentar" style="color:var(--acento);'
+                + 'text-decoration:underline">' + accion + '</a> · ' : '')
+      + link;
+    const r = $('#reintentar');
+    if(r) r.onclick = (ev) => { ev.preventDefault(); porAudio(id); };
   };
 
-  // llamar a play() apenas se setea el src falla: el elemento todavia no tiene
-  // datos. Hay que esperar a que pueda reproducir.
+  const porQueFallo = async () => {
+    // preguntarle al servidor: distingue "esta apagado" de "no pudo con este
+    // tema", que son problemas completamente distintos
+    try{
+      const r = await fetch('/api/audio/' + id, {headers:{Range:'bytes=0-1'}});
+      if(r.ok) return mostrar('el audio llegó pero no se pudo reproducir',
+                              'reintentar');
+      let det = '';
+      try{ det = (await r.json()).error || ''; }catch(e){}
+      return mostrar('el servidor no pudo traerlo' + (det? ': '+det.slice(0,70) : ''),
+                     'reintentar');
+    }catch(e){
+      return mostrar('el servidor no responde (¿apretaste apagar?)', null);
+    }
+  };
+
   AUD.oncanplay = null; AUD.onerror = null;
   AUD.src = '/api/audio/' + id;
   AUD.load();
@@ -490,12 +534,22 @@ function porAudio(id){
   AUD.oncanplay = () => {
     if(arranco) return;
     arranco = true;
+    // llamar a play() apenas se setea el src falla: el elemento todavia no
+    // tiene datos. Por eso se espera a que pueda reproducir.
     AUD.play().then(()=>{
       $('#player .pt').textContent = detalle;
-    }).catch(fallo);
+    }).catch(err => {
+      // el caso tipico es que Chrome exija un gesto del usuario
+      mostrar('Chrome bloqueó el audio (' + (err && err.name || 'play') + ')',
+              'tocá para reproducir');
+    });
   };
-  AUD.onerror = fallo;
-  setTimeout(()=>{ if(!arranco && AUD.readyState < 3) fallo(); }, 25000);
+  // No mirar AUD.error.code para decidir el mensaje: Chrome devuelve 4
+  // ("formato no soportado") TAMBIEN cuando el servidor esta caido o contesta
+  // un 502, porque el elemento no llega a encontrar una fuente usable. El
+  // codigo no distingue nada; hay que preguntarle al servidor.
+  AUD.onerror = porQueFallo;
+  setTimeout(()=>{ if(!arranco && AUD.readyState < 3) porQueFallo(); }, 25000);
 }
 
 function avisar(txt){
@@ -517,7 +571,7 @@ function reproducir(id){
   AUD.oncanplay = null; AUD.onerror = null;
   if(AUD.src){ AUD.removeAttribute('src'); AUD.load(); }
   if(yt && yt.stopVideo) try{ yt.stopVideo(); }catch(e){}
-  modo = noEmb[id] ? 'audio' : 'yt';
+  modo = marcadoNoEmb(id) ? 'audio' : 'yt';
   cola = [...document.querySelectorAll('#cuerpo tr[data-id]')].map(tr=>tr.dataset.id);
   iCola = cola.indexOf(id);
   iconoPlay(true);                      // arranca reproduciendo
@@ -549,7 +603,7 @@ function marcarSonando(){
   $$('#cuerpo tr').forEach(tr=>{
     const es = !!(sonando && tr.dataset.id===sonando.id);
     tr.classList.toggle('sonando', es);
-    tr.classList.toggle('noemb', !!noEmb[tr.dataset.id]);
+    tr.classList.toggle('noemb', marcadoNoEmb(tr.dataset.id));
     const c = tr.querySelector('td.cat');
     if(!c) return;
     if(es && !c.querySelector('.eq'))
