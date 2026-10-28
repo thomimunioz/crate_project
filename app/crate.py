@@ -11,12 +11,15 @@
     crate estado          que hay en la base, en una pantalla
     crate limpiar         saca canales de IA y arregla años de reedicion
     crate slsk            prende solo slskd (si se te cayo)
+    crate abrir           lo que usa el acceso directo: prende todo y abre
+    crate parar           apaga el servidor
 
 Cada subcomando es uno de los scripts de siempre: esto no agrega logica, solo
 evita tener que acordarse de cual era.
 """
 import os
 import socket
+import time
 import subprocess
 import sqlite3
 import sys
@@ -37,6 +40,7 @@ COMANDOS = {
 
 RAIZ = os.path.dirname(HERE)
 SLSKD = os.path.join(RAIZ, "slskd")
+PUERTO = 7777
 
 
 def puerto_abierto(puerto, host="127.0.0.1"):
@@ -65,6 +69,66 @@ def levantar_slskd():
         return "prendido (tarda ~10s en conectarse a la red)"
     except Exception as e:
         return "no pude prenderlo: %s" % str(e)[:60]
+
+
+def abrir():
+    """Lo que hace el acceso directo de la barra de tareas.
+
+    Tiene que servir tanto si no hay nada prendido como si la app ya esta
+    corriendo: en ese caso no levanta un segundo servidor, solo trae la
+    ventana. Y espera a que el puerto conteste antes de abrir el navegador,
+    porque si no Chrome muestra "no se puede acceder" y hay que recargar.
+    """
+    import webbrowser
+    levantar_slskd()
+    if not puerto_abierto(PUERTO):
+        pyw = os.path.join(os.path.dirname(PY), "pythonw.exe")
+        exe = pyw if os.path.exists(pyw) else PY       # sin consola negra
+        subprocess.Popen([exe, os.path.join(HERE, "crate_server.py"),
+                          "--sin-navegador"], cwd=HERE,
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        for _ in range(60):                            # hasta 15 s
+            if puerto_abierto(PUERTO):
+                break
+            time.sleep(0.25)
+        else:
+            print("el servidor no arranco")
+            return 1
+    webbrowser.open("http://127.0.0.1:%d/mi-crate.html" % PUERTO)
+    return 0
+
+
+def parar():
+    """Apaga el servidor y limpia cualquier resto.
+
+    No alcanza con mirar el puerto: pueden quedar procesos vivos que NO lo
+    tienen (paso el 28-oct, cinco a la vez). Si solo se mira el puerto y esta
+    cerrado, se contesta "no estaba prendido" y los huerfanos siguen ahi.
+    """
+    # Ojo con el filtro: si se busca solo por linea de comando, el PowerShell
+    # que hace la consulta TAMBIEN la contiene (esta en su propio comando) y
+    # se cuenta —y se intenta matar— a si mismo. Por eso se exige ademas que
+    # el proceso sea python. Costo media hora de numeros inflados el 28-oct.
+    ps = ("Get-CimInstance Win32_Process | Where-Object { "
+          "$_.Name -like 'python*' -and "
+          "$_.CommandLine -like '*crate_server*' } | "
+          "ForEach-Object { $_.ProcessId }")
+    antes = subprocess.run(["powershell", "-NoProfile", "-Command", ps],
+                           capture_output=True, text=True).stdout.split()
+    if not antes:
+        print("no habia nada prendido")
+        return 0
+    subprocess.run(["powershell", "-NoProfile", "-Command",
+                    ps + " | ForEach-Object { Stop-Process -Id $_ -Force }"],
+                   capture_output=True, text=True)
+    time.sleep(1.0)
+    quedan = subprocess.run(["powershell", "-NoProfile", "-Command", ps],
+                            capture_output=True, text=True).stdout.split()
+    print("apagados %d de %d" % (len(antes) - len(quedan), len(antes)))
+    if quedan:
+        print("  no pude con: %s" % ", ".join(quedan))
+        return 1
+    return 0
 
 
 def correr(script, resto):
@@ -109,6 +173,10 @@ def main():
         return estado()
     if cmd == "limpiar":
         return limpiar()
+    if cmd == "abrir":
+        return abrir()
+    if cmd in ("parar", "apagar", "stop"):
+        return parar()
     if cmd in ("slsk", "soulseek"):
         print("soulseek: %s" % levantar_slskd())
         return 0

@@ -53,3 +53,7 @@ crate.db.bak
 
 # ---- slskd (binario de 100 MB, se baja de github.com/slskd/slskd) ----
 slskd/
+
+# ---- accesos directos generados ----
+CRATE.lnk
+app/icono-*.png

@@ -489,6 +489,22 @@ def buscar(q):
     return pasan[:40], info
 
 
+class Servidor(ThreadingHTTPServer):
+    """Igual que ThreadingHTTPServer pero SIN reusar la direccion.
+
+    HTTPServer trae allow_reuse_address = 1. En Linux eso solo permite tomar
+    un puerto que quedo en TIME_WAIT, pero en Windows deja que DOS procesos se
+    aten al mismo puerto: el segundo arranca sin error, no recibe ni un
+    pedido, y queda colgado para siempre. Aparecieron dos servidores vivos el
+    28-oct justamente asi. Apagandolo, el segundo falla al atarse y se entera.
+    """
+    allow_reuse_address = False
+
+    # Un audio puede estar transmitiendo minutos: con un solo hilo la app
+    # quedaba trabada a los 5 o 6 temas.
+    daemon_threads = True
+
+
 def main():
     if not os.path.exists(DB):
         print("no encuentro %s" % DB); return 1
@@ -497,14 +513,24 @@ def main():
     # ThreadingHTTPServer y no HTTPServer: con un solo hilo, mientras transmite
     # un audio (que dura minutos) no puede atender ningun otro pedido, y a los
     # 5 o 6 temas la app quedaba trabada.
-    srv = ThreadingHTTPServer(("127.0.0.1", PUERTO), Handler)
+    try:
+        srv = Servidor(("127.0.0.1", PUERTO), Handler)
+    except OSError:
+        print("el puerto %d ya esta ocupado: la app ya esta prendida."
+              % PUERTO)
+        print("  abrila en http://127.0.0.1:%d/mi-crate.html" % PUERTO)
+        print("  o apagala con:  crate parar")
+        return 1
     srv.daemon_threads = True
     url = "http://127.0.0.1:%d/mi-crate.html" % PUERTO
     print("CRATE sirviendo en %s" % url)
     print("  escucha solo en 127.0.0.1, no sale de esta maquina")
     print("  lo que marques se guarda solo en crate.db")
     print("  Ctrl+C para cortar")
-    threading.Timer(0.7, lambda: webbrowser.open(url)).start()
+    # El acceso directo abre el navegador el mismo (ya esperando al puerto),
+    # asi que le pide al servidor que no abra otra pestaña encima.
+    if "--sin-navegador" not in sys.argv:
+        threading.Timer(0.7, lambda: webbrowser.open(url)).start()
     try:
         srv.serve_forever()
     except KeyboardInterrupt:
