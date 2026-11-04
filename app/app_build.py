@@ -77,6 +77,7 @@ DOC = """<!doctype html>
 <div id="tinder"><div class="tcaja">
   <div class="tcab">
     <span id="tpos">0 / 0</span>
+    <span id="tde" class="tde">del hotlist</span>
     <button id="tx" title="salir (Esc)">&#10005;</button>
   </div>
   <div class="tficha" id="tficha"></div>
@@ -86,7 +87,7 @@ DOC = """<!doctype html>
     <button class="tbtn si"  id="tsi"   title="guardar (→)">&#9733;</button>
   </div>
   <div class="testrellas" id="testrellas"></div>
-  <div class="tpie">← no va &nbsp;·&nbsp; → me lo guardo &nbsp;·&nbsp; 1-5 puntuás &nbsp;·&nbsp; espacio pausa</div>
+  <div class="tpie" id="tpie">← no va &nbsp;·&nbsp; → me lo guardo &nbsp;·&nbsp; 1-5 puntuás</div>
 </div></div>
 
 <div id="kpi"><div class="kcaja">

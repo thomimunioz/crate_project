@@ -19,6 +19,11 @@ JS = r"""
    MODO SESION ("tinder"): un tema por vez, decidir rapido
    ======================================================================= */
 let tCola = [], tPos = -1, tAbierto = false;
+/* De donde salio la cola. Cambia lo que significan los botones, que es lo
+   que confundia: en el hotlist estas DECIDIENDO si te lo quedas, y en el
+   crate el tema YA es tuyo —ahi "guardar" no quiere decir nada— y lo que
+   estas haciendo es ponerle nota o sacarlo. */
+let tOrigen = 'hotlist';
 
 /* El 0:00 de un tema no dice nada: las intros son todas parecidas y el hueco
    sampleable esta en el medio. Si hay duracion, se arranca al 45%. */
@@ -78,9 +83,17 @@ function tSiguiente(){
 
 function tAbrir(){
   if(!servidor){ flash('esto necesita el servidor'); return; }
-  const base = (modoBusqueda && BUSQUEDA.length) ? BUSQUEDA : D.filter(pasa);
+  const enCola = modoBusqueda && BUSQUEDA.length;
+  tOrigen = enCola ? 'hotlist' : 'crate';
+  const base = enCola ? BUSQUEDA : D.filter(pasa);
   tCola = base.filter(d => !(estrellasDe(d) > 0));   // lo ya puntuado no vuelve
-  if(!tCola.length){ flash('no hay nada sin puntuar en esta vista'); return; }
+  if(!tCola.length){
+    flash(tOrigen === 'crate'
+      ? 'ya puntuaste todo lo que estás viendo del crate'
+      : 'no hay nada sin puntuar en esta vista');
+    return;
+  }
+  tPintarModo();
   tPos = -1;
   tAbierto = true;
   $('#tinder').classList.add('on');
@@ -96,15 +109,46 @@ function tCerrar(){
 }
 
 $('#tx').onclick = tCerrar;
+/* Los botones dicen y hacen cosas distintas segun de donde salio la cola. */
+function tPintarModo(){
+  const enCrate = tOrigen === 'crate';
+  const no = $('#tno'), si = $('#tsi'), pie = $('#tpie'), de = $('#tde');
+  if(no) no.title = enCrate ? 'sacar del crate (←)' : 'no va (←)';
+  if(si) si.innerHTML = enCrate ? '&#10142;' : '&#9733;';
+  if(si) si.title = enCrate ? 'dejarlo como está y seguir (→)' : 'guardar (→)';
+  if(de) de.textContent = enCrate ? 'de tu crate · lo que no puntuaste'
+                                  : 'del hotlist · sugerencias sin escuchar';
+  if(pie) pie.innerHTML = enCrate
+    ? '← sacar del crate &nbsp;·&nbsp; → dejarlo y seguir &nbsp;·&nbsp; 1-5 le ponés nota'
+    : '← no va &nbsp;·&nbsp; → me lo guardo &nbsp;·&nbsp; 1-5 puntuás';
+}
+
 $('#tno').onclick = () => {
   const d = tCola[tPos];
-  if(d){ ponerEstrellas(d.id, 0); flash('no va'); }
+  if(d){
+    if(tOrigen === 'crate'){
+      // ya era tuyo: sale de las listas y queda marcado para que no vuelva
+      const i = D.findIndex(x => x.id === d.id);
+      if(i >= 0) D.splice(i, 1);
+      delete local[d.id];
+      guardarLocal();
+      aServidor('/api/sacar', {id: d.id});
+      flash('fuera del crate');
+    } else {
+      ponerEstrellas(d.id, 0);
+      flash('no va');
+    }
+  }
   tSiguiente();
 };
 $('#tsi').onclick = () => {
   const d = tCola[tPos];
-  if(d && !(estrellasDe(d) > 0)) ponerEstrellas(d.id, 4);
-  flash('guardado');
+  if(tOrigen === 'crate'){
+    flash('lo dejo como está');          // en el crate ya es tuyo: solo sigue
+  } else if(d && !(estrellasDe(d) > 0)){
+    ponerEstrellas(d.id, 4);
+    flash('guardado');
+  }
   tSiguiente();
 };
 $('#tplay').onclick = () => $('#pplay').click();
@@ -174,6 +218,8 @@ CSS = r"""
 .testrellas .s{color:var(--estrella)}
 .testrellas .s.off{color:transparent;-webkit-text-stroke:1.5px var(--suave)}
 .testrellas .s:hover{transform:scale(1.1)}
+.tde{font-family:var(--mono);font-size:.6rem;color:var(--acento);
+  letter-spacing:.06em}
 .tpie{font-family:var(--mono);font-size:.6rem;color:var(--suave);margin-top:16px}
 /* OJO: #tinder vive DENTRO de .wrap, asi que ocultar .wrap entero lo
    ocultaba tambien a el. El modo "funcionaba" —el DOM tenia todo— pero no se
