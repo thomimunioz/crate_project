@@ -16,6 +16,7 @@
     crate ui              barrido de la interfaz (necesita la app levantada)
     crate diggers         busca diggers NUEVOS que tengan tus joyas
     crate cavar-canal X   cava un canal descubierto
+    crate ig <cuenta>     lee una cuenta de IG que marca vetas (sin login)
 
 Cada subcomando es uno de los scripts de siempre: esto no agrega logica, solo
 evita tener que acordarse de cual era.
@@ -225,6 +226,11 @@ def main():
         return parar()
     if cmd == "ui":
         return barrido_ui()
+    if cmd in ("ig", "insta", "instagram"):
+        if not resto:
+            print("decime la cuenta:  crate ig offtherecordsamples")
+            return 1
+        return correr("insta.py", resto)
     if cmd == "diggers":
         return correr("diggers.py", resto or ["--guardar"])
     if cmd in ("cavar-canal", "cavarcanal"):

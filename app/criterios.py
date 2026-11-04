@@ -21,6 +21,21 @@ def rx(*trozos):
 # Thomas escribe una palabra; esto la convierte en varias busquedas que
 # apuntan a donde realmente aparece lo bueno.
 ESCENAS = {
+ # --- vetas que marco @offtherecordsamples (leidas de sus portadas, 4-nov) ---
+ # Confirma la del bloque del este que ya estaba identificada: la escuela de
+ # Camoflauge Monk y Alchemist. Cada una da año + pais + genero, que es mucho
+ # mas preciso que "soul" a secas.
+ "bloque del este": ["soviet jazz funk 1973 lp", "czech prog rock 1978 lp",
+          "bulgarian prog rock 1976 vinyl", "czech folk rock 1979 drums",
+          "polish jazz funk 1974 lp", "hungarian library music 1975",
+          "yugoslav prog rock 1977 vinyl", "soviet library music obscure"],
+ "euro prog": ["german prog rock 1979 lp", "german soundtrack 1982 library",
+          "italian pop 1976 vinyl rare", "french library music 1974 obscure",
+          "spanish prog rock 1975 lp"],
+ "latam": ["cuban latin 1975 lp rare", "peruvian cumbia 1974 vinyl",
+          "brazilian funk 1976 private press", "argentine jazz rock 1977 lp"],
+ "japon folk": ["japanese folk 1976 private press", "japanese funk rock 1980 lp",
+          "japanese psych folk 1975 obscure", "japanese soundtrack 1978 library"],
  "soul": ["rare soul 45", "sweet soul private press", "deep soul obscure",
           "modern soul unreleased", "soul instrumental 45", "philly soul rare"],
  "rnb":  ["modern soul boogie 80s", "rnb slow jam rare", "quiet storm obscure",
@@ -183,6 +198,16 @@ def genero_de(titulo, canal=None, veta=None):
     return None
 
 
+# Las vetas de paises del este arrastran clasico: buscar "hungarian" o
+# "soviet" trae la Rapsodia de Liszt tocada por una orquesta. No es
+# sampleable para lo que hace Thomas y ensucia la cola. (4-nov-2026)
+CLASICO = rx("symphony", "sinfonia", "concerto", "concierto", "sonata",
+             "rhapsody", "rapsodia", "opus", "philharmonic",
+             "filarmonica", "chamber orchestra", "string quartet", "cuarteto",
+             "beethoven", "mozart", "chopin", "liszt", "tchaikovsky", "bach",
+             "vivaldi", "brahms", "rachmaninoff", "dvorak", "prokofiev",
+             "shostakovich", "stravinsky", "opera", "aria", "requiem mass")
+
 # ------------------------------------------------------------------ descartes
 BASURA = re.compile(
     r"karaoke|tutorial|type beat|sample pack|reaction|how to|lyrics? video|megamix|"
@@ -261,6 +286,7 @@ def descartar(t, dur, views, canal=None, genero=None):
     if BASURA.search(t): return "basura"
     if PRACTICA.search(t): return "backing track moderno de practica"
     if SEIS_OCHO.search(t): return "6/8, no loopea en 4/4"
+    if CLASICO.search(t): return "clasico: no es sampleable para esto"
     if REGGAE.search(t) or DUB_GENERO.search(t): return "reggae (dub es otro genero ahi)"
     if CONOCIDOS.search(t): return "nombre conocido: el tema lo conoce todo el mundo"
     if HIPHOP.search(t): return "hiphop: material ya usado, no para samplear"

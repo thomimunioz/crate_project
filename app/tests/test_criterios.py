@@ -75,3 +75,37 @@ class TestQuitarTildes:
 
     def test_aguanta_vacio(self):
         assert criterios.quitar_tildes("") == ""
+
+
+class TestClasico:
+    """Las vetas del bloque del este arrastran clasico: buscar "hungarian" o
+    "soviet" trae la Rapsodia de Liszt por una orquesta. No es sampleable
+    para lo que hace Thomas. Aparecio el 4-nov cavando @offtherecordsamples.
+    """
+
+    def test_descarta_el_clasico(self):
+        for t in ("LISZT Hungarian Rhapsody No. 4 in D minor",
+                  "Berlin Philharmonic - Beethoven Symphony No 5",
+                  "Chopin Nocturne Op 9 - piano"):
+            m = criterios.descartar(t, 300, 2000, None)
+            assert m and "clasico" in m, t
+
+    def test_no_se_lleva_puesta_la_library_ni_el_prog(self):
+        """Una orquesta de radio tocando library NO es clasico, y es justo
+        lo que buscamos en esa veta."""
+        for t in ("Budapest Radio Orchestra - Alone in a Crowd [Library]",
+                  "Andrei Petrov - The Sea and the City (soviet library)",
+                  "The Blue Effect - Modry Efekt 1971"):
+            m = criterios.descartar(t, 300, 2000, None)
+            assert not (m and "clasico" in m), t
+
+
+class TestEscenasNuevas:
+    def test_las_vetas_del_bloque_del_este_existen(self):
+        for v in ("bloque del este", "euro prog", "latam", "japon folk"):
+            assert v in criterios.ESCENAS, v
+            assert len(criterios.ESCENAS[v]) >= 4
+
+    def test_expandir_las_devuelve(self):
+        qs = criterios.expandir("bloque del este")
+        assert any("soviet" in q for q in qs)
