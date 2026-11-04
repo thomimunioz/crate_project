@@ -684,6 +684,7 @@ function avisar(txt){
 const fmt = s => isFinite(s) ? Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0') : '0:00';
 
 function reproducir(id){
+  const antes = sonando && sonando.id;
   if(!servido){ avisar('abrí la app con crate_server.py para escuchar acá'); return false; }
   if(!YT_OK || !yt){ avisar('cargando reproductor…'); return false; }
   const d = tema(id);
@@ -712,6 +713,9 @@ function reproducir(id){
       .filter(Boolean).join(' · ');
   pintarEstrellasPlayer();
   marcarSonando();
+  // el sampler queda listo para ESTE tema: las marcas del anterior no
+  // significan nada aca y hacian saltar el loop a cualquier lado
+  if(typeof resetSampler === 'function' && (!antes || antes !== id)) resetSampler();
   clearInterval(reloj);
   reloj = setInterval(()=>{
     let t=0, dd=0;

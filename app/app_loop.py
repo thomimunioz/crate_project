@@ -125,6 +125,19 @@ function vigilarLoop(){
   }
 }
 
+/* Cambiar de tema con el sampler abierto dejaba las marcas del anterior:
+   el loop saltaba a un segundo que en el tema nuevo no significa nada y
+   quedaba glitchy. Thomas, 4-nov: "si toco otro tema ya tiene que estar
+   listo el sampler para loopear ese tema". Se limpia y queda esperando. */
+function resetSampler(){
+  loopA = loopB = null;
+  loopOn = false;
+  tono = 0;
+  aplicarTono();
+  pintarSampler();
+  pintarMarcas();
+}
+
 function abrirSampler(){
   if(!sonando){ flash('poné un tema primero'); return; }
   if(!servidor){ flash('esto necesita el servidor'); return; }
@@ -177,11 +190,11 @@ $('#sMas').onclick   = () => { tono = Math.min(12,  tono + 1); aplicarTono(); };
 $('#sCero').onclick  = () => { tono = 0; aplicarTono(); };
 $('#sPlato').onclick = () => {
   modoPlato = true; aplicarTono(); pintarSampler();
-  flash('como un plato: sin artefactos');
+  flash('vinyl: el tono sube con la velocidad, sin artefactos');
 };
 $('#sEstira').onclick = () => {
   modoPlato = false; aplicarTono(); pintarSampler();
-  flash('estirado: mantiene el tono pero puede sonar metálico');
+  flash('stretch: mantiene el tono pero puede sonar metálico');
 };
 
 document.addEventListener('keydown', e => {
@@ -201,11 +214,17 @@ CSS = r"""
 #pista .zonaloop{position:absolute;top:0;bottom:0;display:none;
   background:rgba(79,176,239,.22);pointer-events:none;border-radius:2px}
 #pista .zonaloop.activo{background:rgba(79,176,239,.38)}
-#pista .marca{position:absolute;top:-7px;display:none;width:15px;height:20px;
-  margin-left:-7px;border-radius:2px;background:var(--barranum);
-  color:var(--barra);font-family:var(--mono);font-size:.56rem;font-weight:700;
-  line-height:20px;text-align:center;cursor:ew-resize;z-index:3;
-  box-shadow:0 1px 4px rgba(0,0,0,.35)}
+/* Manijas grandes: con 15px eran casi imposibles de agarrar. La pastilla
+   visible mide 22x26 y ademas tiene una zona invisible de 44px alrededor
+   (::before), que es el minimo comodo para el mouse. */
+#pista .marca{position:absolute;top:-9px;display:none;width:22px;height:26px;
+  margin-left:-11px;border-radius:3px;background:var(--barranum);
+  color:var(--barra);font-family:var(--mono);font-size:.66rem;font-weight:700;
+  line-height:26px;text-align:center;cursor:ew-resize;z-index:3;
+  box-shadow:0 1px 5px rgba(0,0,0,.4);transition:transform .1s}
+#pista .marca::before{content:'';position:absolute;left:-11px;right:-11px;
+  top:-9px;bottom:-9px}
+#pista .marca:active{transform:scale(1.18)}
 #pista .marca:hover{background:var(--stxt)}
 #pista .marca.b{background:var(--acento2);color:var(--stxt)}
 #pista .marca.b:hover{background:var(--stxt);color:var(--acento2)}
@@ -267,13 +286,13 @@ HTML = """
     </div>
     <div id="sVel">1.00&times;</div>
     <div class="sfila" style="margin-top:10px">
-      <button class="b on" id="sPlato" title="tono y velocidad juntos, sin artefactos">como un plato</button>
-      <button class="b" id="sEstira" title="mantiene el tono, puede sonar metálico">estirado</button>
+      <button class="b on" id="sPlato" title="como un vinilo: tono y velocidad juntos, sin artefactos">vinyl</button>
+      <button class="b" id="sEstira" title="estira el tiempo: mantiene el tono, puede sonar metálico">stretch</button>
     </div>
     <div class="snota">
-      <b>como un plato</b> es resampleo puro: el tono sube con la velocidad,
+      <b>vinyl</b> es resampleo puro: el tono sube con la velocidad,
       igual que acelerar un vinilo. No tiene artefactos.<br>
-      <b>estirado</b> mantiene el tono inventando muestras — es lo que warpea
+      <b>stretch</b> mantiene el tono inventando muestras — es lo que warpea
       el audio en las extensiones de Chrome.
     </div>
   </div>
