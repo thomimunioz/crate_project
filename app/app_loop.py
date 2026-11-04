@@ -66,7 +66,9 @@ function pintarMarcas(dur){
     el.style.left = Math.max(0, Math.min(100, seg / d * 100)) + '%';
   };
   pon(mA, loopA); pon(mB, loopB);
-  if(typeof pintarSpots === 'function') pintarSpots(true);
+  // sin forzar: esto corre en cada tick del reloj y reconstruirlos
+  // siempre los desprende del DOM bajo el mouse
+  if(typeof pintarSpots === 'function') pintarSpots();
   if(loopA != null && loopB != null && d){
     z.style.display = 'block';
     z.style.left  = (loopA / d * 100) + '%';
@@ -83,13 +85,30 @@ function arrastrable(el, cual){
     ev.preventDefault(); ev.stopPropagation();
     const pista = document.getElementById('pista');
     mostrarOnda(true);
+    // ultima red: si todavia no hay onda, se pide ahora y se redibuja sola
+    if(sonando && !ONDAS.has(sonando.id)){
+      pedirOnda(sonando.id).then(() => dibujarOnda(cual === 'A' ? loopA : loopB));
+    }
     dibujarOnda(cual === 'A' ? (loopA || 0) : (loopB || 0));
+    const xIni = ev.clientX;
+    const segIni = (cual === 'A' ? loopA : loopB) || 0;
     const mover = e2 => {
       const r = pista.getBoundingClientRect();
-      const f = Math.max(0, Math.min(1, (e2.clientX - r.left) / r.width));
       const d = (modo === 'audio' ? AUD.duration : 0) || 0;
       if(!d) return;
-      const seg = f * d;
+      let seg;
+      const c = document.getElementById('onda');
+      if(ONDAS.has(sonando && sonando.id) && c){
+        // Con la onda a la vista el arrastre va a SU escala: la ventana son
+        // 8 segundos en 760 pixeles, o sea ~0,01 s por pixel. Sobre la barra
+        // entera serian 0,5 s por pixel — imposible cuadrar un kick. Es la
+        // diferencia entre afinar y adivinar.
+        seg = segIni + (e2.clientX - xIni) * (VENTANA_ONDA / c.width);
+        seg = Math.max(0, Math.min(d, seg));
+      } else {
+        const f = Math.max(0, Math.min(1, (e2.clientX - r.left) / r.width));
+        seg = f * d;
+      }
       if(cual === 'A'){ loopA = (loopB != null && seg >= loopB) ? loopB - 0.2 : seg; }
       else           { loopB = (loopA != null && seg <= loopA) ? loopA + 0.2 : seg; }
       pintarMarcas(d); pintarSampler();
@@ -126,6 +145,7 @@ arrastrable(document.getElementById('marcaB'), 'B');
    sin CORS. Con el iframe de YouTube seria imposible.
    ======================================================================= */
 const ONDAS = new Map();           // id -> Float32Array de picos
+const VENTANA_ONDA = 8;            // segundos a la vista en el lienzo
 let ondaPidiendo = null;
 
 async function pedirOnda(id){
@@ -176,10 +196,11 @@ function dibujarOnda(seg){
   if(!picos || !dur){
     ctx.fillStyle = 'rgba(247,246,233,.45)';
     ctx.font = '11px monospace';
-    ctx.fillText(ondaPidiendo ? 'leyendo el audio…' : 'sin onda', 12, H/2);
+    ctx.fillText(ondaPidiendo ? 'leyendo el audio, un segundo…'
+                              : 'preparando la onda…', 12, H/2);
     return;
   }
-  const VENTANA = 8;                       // segundos a la vista
+  const VENTANA = VENTANA_ONDA;
   const desde = Math.max(0, seg - VENTANA/2), hasta = Math.min(dur, seg + VENTANA/2);
   const i0 = Math.floor(desde / dur * picos.length);
   const i1 = Math.ceil(hasta / dur * picos.length);
@@ -253,7 +274,7 @@ async function guardarSpot(){
     if(j && j.ok){
       SPOTS[sonando.id] = j.spots;
       flash('sweetspot guardado · ' + (loopB - loopA).toFixed(1) + 's');
-      pintarSpots();
+      pintarSpots(true);              // aca si: acaba de cambiar la lista
       if(typeof pintar === 'function') pintar();
       if(typeof marcarSonando === 'function') marcarSonando();
     }
@@ -269,7 +290,12 @@ function pintarSpots(forzar){
   // El reloj corre 8 veces por segundo. Redibujar los pasajes en cada tick
   // los desprendia del DOM constantemente: parpadeaban y no se podia hacer
   // click en uno. Solo se rehacen si de verdad cambiaron.
-  const dur0 = (modo === 'audio' ? AUD.duration : 0) || 0;
+  // La firma tiene que mirar la MISMA duracion que usa el dibujo. Antes
+  // miraba solo AUD.duration, que en modo YouTube es siempre 0: si los
+  // pasajes se intentaban dibujar antes de que el reproductor reportara la
+  // duracion, se cacheaba un estado vacio y no se dibujaban NUNCA mas.
+  const dur0 = (modo === 'audio' ? AUD.duration
+                                 : (yt && yt.getDuration ? yt.getDuration() : 0)) || 0;
   const firma = (sonando ? sonando.id : '') + '|' + Math.round(dur0) + '|'
               + JSON.stringify(spotsDe(sonando ? sonando.id : ''));
   if(!forzar && firma === _spotsFirma) return;
@@ -287,6 +313,9 @@ function pintarSpots(forzar){
              + sp.hasta.toFixed(1) + 's · click para loopearlo';
     el.onclick = ev => {
       ev.stopPropagation();
+      // la onda se pide aca tambien: si entras al loop por un sweetspot
+      // guardado, nunca pasaste por el boton A y decia "sin onda"
+      pedirOnda(sonando.id);
       loopA = sp.desde; loopB = sp.hasta; loopOn = true;
       try{ AUD.currentTime = loopA; }catch(e){}
       document.getElementById('sampler').classList.add('on');
@@ -417,10 +446,13 @@ CSS = r"""
 
 /* marcas A y B sobre la barra del reproductor */
 #pista{position:relative;overflow:visible}
-#pista .spot{position:absolute;top:auto;bottom:-15px;height:6px;
+/* OJO: el hover NO puede cambiar la geometria. Al agrandarse, el borde se
+   movia bajo el mouse, el mouse "salia", volvia a achicarse, el mouse
+   "entraba"... y temblaba en bucle. Solo cambia el color. */
+#pista .spot{position:absolute;top:auto;bottom:-15px;height:7px;
   background:var(--acento2);border-radius:2px;cursor:pointer;z-index:2;
-  opacity:.85;transition:opacity .12s,height .12s}
-#pista .spot:hover{opacity:1;height:9px;bottom:-17px}
+  opacity:.8;transition:opacity .12s,background .12s}
+#pista .spot:hover{opacity:1;background:var(--barranum)}
 #sampler button.b.sweet{border-color:var(--acento2);color:var(--acento2)}
 #sampler button.b.sweet:hover{background:var(--acento2);color:var(--stxt)}
 #pista .zonaloop{position:absolute;top:0;bottom:0;display:none;

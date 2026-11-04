@@ -154,8 +154,11 @@ footer .apagar.preg{border-color:var(--estrella);color:var(--estrella);
 .meta2{display:flex;align-items:center;gap:6px;margin-top:3px}
 /* descartar del hotlist: invisible hasta que pasas el mouse, para que no
    compita con las estrellas, y rojo cuando pregunta */
-td.cat .spots{display:block;margin-top:3px;font-family:var(--mono);
-  font-size:.56rem;color:var(--acento2);letter-spacing:.04em}
+/* el contador de pasajes: chiquito pero legible. A .56rem era una mancha */
+td.cat .spots{display:inline-flex;align-items:center;gap:3px;margin-top:5px;
+  font-family:var(--mono);font-size:.7rem;font-weight:700;color:var(--stxt);
+  background:var(--acento2);border-radius:9px;padding:2px 7px;
+  letter-spacing:.02em;line-height:1.2}
 td.est .descartar{background:transparent;border:1px solid transparent;
   color:var(--suave);font-size:.78rem;line-height:1;cursor:pointer;padding:3px 6px;
   border-radius:2px;margin-right:4px;opacity:0;transition:opacity .12s,color .12s}
@@ -506,9 +509,9 @@ footer{margin-top:36px;padding-top:16px;border-top:1.5px solid var(--fuerte);
 .barra{flex:1;min-width:120px;display:flex;align-items:center;gap:10px}
 .pista{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.17);
   cursor:pointer;position:relative}
-.pista .av{position:absolute;left:0;top:0;bottom:0;border-radius:3px;
+.pista .av{position:absolute;left:0;top:0;bottom:0;border-radius:3px;;pointer-events:none}
   background:var(--acento);width:0}
-.pista .bolita{position:absolute;top:50%;width:11px;height:11px;border-radius:50%;
+.pista .bolita{position:absolute;top:50%;width:11px;height:11px;border-radius:50%;;pointer-events:none}
   background:var(--acento);transform:translate(-50%,-50%);left:0;
   opacity:0;transition:opacity .12s}
 .pista:hover .bolita{opacity:1}

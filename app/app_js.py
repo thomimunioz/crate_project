@@ -166,7 +166,7 @@ function insigniaSpots(id){
   if(!n) return '';
   return '<span class="spots" title="' + n + ' pasaje' + (n>1?'s':'')
        + ' marcado' + (n>1?'s':'') + ' — se ven en la barra al reproducirlo">'
-       + '◉' + n + '</span>';
+       + '◉ ' + n + '</span>';
 }
 
 function clasif(d){
