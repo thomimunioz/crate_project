@@ -19,3 +19,4 @@ datos/*.bak.json
 # Lo que baja el rastrillo de Instagram: portadas, hojas de contacto y el
 # registro. Se regenera con `crate ig` y son imagenes, no fuente.
 datos/instagram/
+datos/vocabulario.json
