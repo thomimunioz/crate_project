@@ -109,3 +109,21 @@ class TestEscenasNuevas:
     def test_expandir_las_devuelve(self):
         qs = criterios.expandir("bloque del este")
         assert any("soviet" in q for q in qs)
+
+
+class TestVideosDeEquipo:
+    """Las vetas de paises del este traen videos de gente probando la bandeja:
+    el disco es una excusa para mostrar el equipo. Aparecio el 4-nov."""
+
+    def test_descarta_el_video_del_equipo(self):
+        for t in ("VINYL HQ, Bee Gees night fever / 1976 Soviet Elektronika turntable",
+                  "Funky Vinyl Finds - USSR FUNK - Vinyl Community",
+                  "Technics SL-1200 sound test record"):
+            m = criterios.descartar(t, 300, 2000, None)
+            assert m and "equipo" in m, t
+
+    def test_no_se_lleva_puesto_el_disco(self):
+        for t in ("Melodiya Ensemble - Fiery River [1974] [Soviet jazz funk]",
+                  "The Blue Effect - Modry Efekt 1971"):
+            m = criterios.descartar(t, 300, 2000, None)
+            assert not (m and "equipo" in m), t

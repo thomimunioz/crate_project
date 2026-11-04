@@ -36,6 +36,16 @@ ESCENAS = {
           "brazilian funk 1976 private press", "argentine jazz rock 1977 lp"],
  "japon folk": ["japanese folk 1976 private press", "japanese funk rock 1980 lp",
           "japanese psych folk 1975 obscure", "japanese soundtrack 1978 library"],
+ # --- vetas leidas el 4-nov de @sovietfreestyle, @portal___records y
+ # @uptowndiggin (rastrillo de Instagram). Cada una salio de mirar las
+ # portadas que postean, no de adivinar. ---
+ "tailandia": ["thai funk 1975 lp", "luk thung 1977 vinyl rare",
+          "thai psych rock 1973 obscure", "molam thailand funk lp"],
+ "melodiya": ["melodiya soviet library 1975", "soviet funk melodiya lp",
+          "soviet soundtrack 1976 vinyl", "russian jazz funk obscure lp"],
+ "japon 70s": ["japanese kayokyoku 1975 lp", "japanese 70s groove rare vinyl",
+          "japanese jazz fusion 1978 lp", "japanese soundtrack bgm 1977 funk",
+          "japanese new music 1976 private"],
  "soul": ["rare soul 45", "sweet soul private press", "deep soul obscure",
           "modern soul unreleased", "soul instrumental 45", "philly soul rare"],
  "rnb":  ["modern soul boogie 80s", "rnb slow jam rare", "quiet storm obscure",
@@ -208,6 +218,14 @@ CLASICO = rx("symphony", "sinfonia", "concerto", "concierto", "sonata",
              "vivaldi", "brahms", "rachmaninoff", "dvorak", "prokofiev",
              "shostakovich", "stravinsky", "opera", "aria", "requiem mass")
 
+# Las vetas de paises del este traen videos de gente PROBANDO LA BANDEJA:
+# "1976 Soviet Elektronika turntable, Bee Gees night fever". El disco es una
+# excusa para mostrar el equipo, y encima suele ser un tema conocido. (4-nov)
+EQUIPO = rx("turntable", "tocadiscos", "record player", "gramophone",
+            "elektronika", "vertushka", "cartridge", "stylus", "tonearm",
+            "unboxing", "sound test", "test record", "hi-?fi setup",
+            "vinyl community", "now spinning")
+
 # ------------------------------------------------------------------ descartes
 BASURA = re.compile(
     r"karaoke|tutorial|type beat|sample pack|reaction|how to|lyrics? video|megamix|"
@@ -287,6 +305,7 @@ def descartar(t, dur, views, canal=None, genero=None):
     if PRACTICA.search(t): return "backing track moderno de practica"
     if SEIS_OCHO.search(t): return "6/8, no loopea en 4/4"
     if CLASICO.search(t): return "clasico: no es sampleable para esto"
+    if EQUIPO.search(t): return "video del equipo, no del disco"
     if REGGAE.search(t) or DUB_GENERO.search(t): return "reggae (dub es otro genero ahi)"
     if CONOCIDOS.search(t): return "nombre conocido: el tema lo conoce todo el mundo"
     if HIPHOP.search(t): return "hiphop: material ya usado, no para samplear"
