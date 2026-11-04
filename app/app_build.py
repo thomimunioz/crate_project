@@ -38,7 +38,7 @@ sello = time.strftime("%d-%m %H:%M")
 
 CLASE_G = {"SOUL": "g-soul", "80s": "g-80s", "R&B SOUL": "g-rnb", "DARK": "g-dark",
            "JAZZ FUSION": "g-fusion", "CITY POP": "g-citypop", "PIANO": "g-piano",
-           "FOLK": "g-folk"}
+           "FOLK": "g-folk", "BLOQUE ESTE": "g-este"}
 chips_pl = "".join('<span class="chip %s" data-f="pl:%s">%s</span>'
                    % (CLASE_G.get(p, ""), html.escape(p), html.escape(p))
                    for p in pls)

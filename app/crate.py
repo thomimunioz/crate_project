@@ -170,7 +170,8 @@ def barrido_ui():
         print("instalando playwright (una sola vez)...")
         subprocess.call("npm install --silent", cwd=d, shell=True)
     malas = 0
-    for prueba in ("barrido.mjs", "azar.mjs", "sesion.mjs", "kpi.mjs"):
+    for prueba in ("barrido.mjs", "azar.mjs", "sesion.mjs", "kpi.mjs",
+                   "descartar.mjs"):
         print()
         print("--- %s ---" % prueba)
         malas += bool(subprocess.call('node "%s"' % os.path.join(d, prueba),

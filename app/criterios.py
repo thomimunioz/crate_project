@@ -112,7 +112,7 @@ BASE = .36                                  # hit rate global
 # crema... lo que venimos trabajando es el fuerte"); PIANO, DARK y FOLK
 # todavia se estan poblando y entran como recomendacion, en minoria.
 FUERTES = ["SOUL", "R&B SOUL", "80s", "CITY POP", "JAZZ FUSION"]
-EN_FORMACION = ["PIANO", "DARK", "FOLK"]
+EN_FORMACION = ["PIANO", "DARK", "FOLK", "BLOQUE ESTE"]
 
 # De que sube cada canal. Sale de mirar sus uploads, no de adivinar.
 CANAL_GEN = {
@@ -166,6 +166,15 @@ def parte_tema(titulo):
     return partes[1] if len(partes) > 1 else t
 
 
+# Los paises del bloque del este tienen lista propia desde el 4-nov: Thomas
+# dijo "no se ni donde categorizarlas" y ya hay 23 esperando en la cola.
+_ESTE = rx("soviet", "sovietica", "ussr", "urss", "russian", "russia",
+           "melodiya", "melodia ensemble", "czech", "czechoslovak", "ceskoslovensk",
+           "slovak", "bulgarian", "bulgaria", "polish", "poland", "hungarian",
+           "hungary", "yugoslav", "yugoslavia", "romanian", "romania",
+           "east german", "ddr", "gdr")
+
+
 def genero_de(titulo, canal=None, veta=None):
     """A que lista de Thomas se parece esto. None si no se puede decir.
 
@@ -188,6 +197,10 @@ def genero_de(titulo, canal=None, veta=None):
     # un Fender. El japones es la excepcion: ahi el nombre del artista SI es
     # la pista que vale.
     nom = parte_tema(t)
+    # el pais manda sobre el genero: un jazz-funk sovietico va a BLOQUE ESTE,
+    # no a JAZZ FUSION, porque es la veta que Thomas quiere seguir
+    if _ESTE.search(t):
+        return "BLOQUE ESTE"
     if JAPON.search(t) or _JP_NOMBRE.search(t):
         return "CITY POP"
     if _80S.search(nom):

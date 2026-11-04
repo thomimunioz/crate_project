@@ -108,11 +108,11 @@ const estrellasDe = d => !d ? 0
 /* las listas donde puede ir un tema. Las cinco de siempre mas las que pidio
    el 27-oct: piano, folk y dark. */
 const LISTAS = ['80s','SOUL','R&B SOUL','CITY POP','JAZZ FUSION',
-                'PIANO','FOLK','DARK'];
+                'PIANO','FOLK','DARK','BLOQUE ESTE'];
 /* cada lista tiene su color; la clase lo aplica */
 const CLASE_G = {'SOUL':'g-soul','80s':'g-80s','R&B SOUL':'g-rnb','DARK':'g-dark',
                  'JAZZ FUSION':'g-fusion','CITY POP':'g-citypop','PIANO':'g-piano',
-                 'FOLK':'g-folk'};
+                 'FOLK':'g-folk','BLOQUE ESTE':'g-este'};
 const clg = L => CLASE_G[L] || '';
 
 function listasDe(d){
@@ -228,7 +228,11 @@ document.addEventListener('click', e => {
   // que cuando no hay artista es un guion de 10 pixeles.
   const fila = e.target.closest('tr[data-id]');
   if(fila && servidor && !e.ctrlKey && !e.metaKey && !e.shiftKey
-     && !e.target.closest('.estrellas, [data-quitar], .slsk, .clasif, a')){
+     // Todo control que viva DENTRO de la fila tiene que estar aca: este
+     // manejador corre primero y, si no se lo excluye, se come el click.
+     // Paso con [data-desc]: tocar el ✕ del hotlist reproducia el tema en
+     // vez de descartarlo.
+     && !e.target.closest('.estrellas, [data-quitar], [data-desc], .slsk, .clasif, a')){
     if(reproducir(fila.dataset.id)){ e.preventDefault(); return; }
   }
   const a = e.target.closest('a.art');

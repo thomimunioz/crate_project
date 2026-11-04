@@ -95,6 +95,7 @@ body[data-t="willisau"]{
    complementar el azul y el verde de la paleta sin copiarlos.
    Todos verificados: el texto crema encima da entre 4.5 y 7.9 de contraste.
    --------------------------------------------------------------- */
+.g-este       {--g:#8c5a2b}   /* siena quemado: checos, sovieticos, bulgaros */
 .g-soul       {--g:#b23a48}   /* carmin */
 .g-80s        {--g:#c0407e}   /* magenta nocturno */
 .g-rnb        {--g:#7a4a9e}   /* violeta */

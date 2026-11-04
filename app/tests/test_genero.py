@@ -45,6 +45,14 @@ class TestPrioridad:
     def test_la_veta_explicita_manda_sobre_todo(self):
         assert criterios.genero_de("X - Rare Soul 45", None, "DARK") == "DARK"
 
+    def test_el_pais_del_este_manda_sobre_el_genero(self):
+        """Un jazz-funk sovietico va a BLOQUE ESTE, no a JAZZ FUSION: es la
+        veta que Thomas quiere seguir, no el estilo."""
+        for t in ("Melodia Ensemble - V Lodke (soviet jazz-funk, 1973)",
+                  "Super-Robot by Ota Petrina - Czech Republic, 1978",
+                  "Shturcite - Bulgarian prog 1976"):
+            assert criterios.genero_de(t) == "BLOQUE ESTE", t
+
     def test_los_en_formacion_se_reconocen_cuando_no_hay_otro(self):
         assert criterios.genero_de("Luigi Maramotti - Piano Solo") == "PIANO"
         assert criterios.genero_de("X - Acid Folk Dream") == "FOLK"
@@ -66,7 +74,7 @@ class TestListas:
         sin color."""
         todas = set(criterios.FUERTES) | set(criterios.EN_FORMACION)
         assert todas == {"SOUL", "R&B SOUL", "80s", "CITY POP", "JAZZ FUSION",
-                         "PIANO", "DARK", "FOLK"}
+                         "PIANO", "DARK", "FOLK", "BLOQUE ESTE"}
 
     def test_los_canales_mapeados_apuntan_a_generos_validos(self):
         todas = set(criterios.FUERTES) | set(criterios.EN_FORMACION)
