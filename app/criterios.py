@@ -32,8 +32,13 @@ ESCENAS = {
  "euro prog": ["german prog rock 1979 lp", "german soundtrack 1982 library",
           "italian pop 1976 vinyl rare", "french library music 1974 obscure",
           "spanish prog rock 1975 lp"],
+ # Ojo: esta clave estaba DOS veces y la segunda pisaba a la primera en
+ # silencio, asi que media veta nunca se cavo. Lo encontro ruff el 4-nov.
+ # Van juntas las dos listas.
  "latam": ["cuban latin 1975 lp rare", "peruvian cumbia 1974 vinyl",
-          "brazilian funk 1976 private press", "argentine jazz rock 1977 lp"],
+          "brazilian funk 1976 private press", "argentine jazz rock 1977 lp",
+          "latin soul rare", "peru soul 70s", "colombia funk obscure",
+          "argentina fusion raro", "latin jazz private press"],
  "japon folk": ["japanese folk 1976 private press", "japanese funk rock 1980 lp",
           "japanese psych folk 1975 obscure", "japanese soundtrack 1978 library"],
  # --- vetas leidas el 4-nov de @sovietfreestyle, @portal___records y
@@ -75,8 +80,6 @@ ESCENAS = {
             "gospel funk instrumental"],
  "brasil": ["brazilian soul rare", "mpb obscure 70s", "samba jazz instrumental",
             "brazilian private press", "bossa instrumental rare"],
- "latam": ["latin soul rare", "peru soul 70s", "colombia funk obscure",
-           "argentina fusion raro", "latin jazz private press"],
 }
 def expandir(q):
     """Convierte lo que escribe en varias busquedas."""
@@ -373,7 +376,7 @@ def canal_sospechoso(titulos, canal=None):
         return True, "canal vetado: musica generada con IA"
     if len(titulos) < 40:
         return False, ""
-    arts = [re.split(r"\s+[-–—]\s+|\s*:\s+", t, 1)[0].strip().lower()[:28]
+    arts = [re.split(r"\s+[-–—]\s+|\s*:\s+", t, maxsplit=1)[0].strip().lower()[:28]
             for t in titulos]
     r = len(titulos) / max(1, len(set(arts)))
     if r >= RATIO_IA:

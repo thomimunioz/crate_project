@@ -45,7 +45,7 @@ def listar(p):
 
 todo = {}
 with ThreadPoolExecutor(max_workers=5) as ex:
-    for slug, got in ex.map(listar, PL):
+    for _slug, got in ex.map(listar, PL):
         for k, v in got.items():
             if k in todo:                       # el mismo video en dos listas
                 todo[k]["listas"] += v["listas"]

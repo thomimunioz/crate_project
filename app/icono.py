@@ -186,7 +186,7 @@ def main():
         ancho = sum(t + 16 for t in TAMANOS) + 16
         tira = Image.new("RGB", (ancho, 300), fondo)
         x = 16
-        for t, c in zip(TAMANOS, capas):
+        for t, c in zip(TAMANOS, capas, strict=True):
             tira.paste(c, (x, 150 - t // 2), c)
             x += t + 16
         p = os.path.join(HERE, "icono-%s.png" % nombre)

@@ -54,7 +54,7 @@ def listar(arg):
                         "dur": int(float(p[2])) if p[2] not in ("NA", "") else None,
                         "views": int(float(p[3])) if p[3] not in ("NA", "") else None})
         return nombre, out
-    except Exception as e:  # noqa: BLE001
+    except Exception:  # noqa: BLE001
         return nombre, []
 
 pool = {}

@@ -1,0 +1,61 @@
+# Configuracion de calidad de CRATE.
+#
+# Criterio para elegir reglas: solo las que CAZAN ERRORES o costaron tiempo
+# de verdad en este proyecto. Nada de peleas de estilo.
+#
+# Corriendo ruff por primera vez (4-nov-2026) aparecieron 766 avisos. De esos,
+# 760 eran preferencias —comillas, printf vs f-string, el orden de los
+# imports— y 6 eran problemas reales. Encender las 766 es la forma mas rapida
+# de que nadie vuelva a mirar el linter.
+#
+#   ruff check app backend/app      ver que hay
+#   ruff check --fix app            arreglar lo automatico
+#   pytest                          los tests
+#   crate ui                        los barridos de interfaz
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+extend-exclude = ["app/historico", "backend/.venv", "app/datos"]
+
+[tool.ruff.lint]
+select = [
+    "F",      # errores de verdad: variables sin usar, nombres inexistentes
+    "E9",     # errores de sintaxis
+    "B",      # bugs tipicos (mutable por defecto, comparaciones raras)
+    "PLE",    # errores de pylint
+    "S102",   # exec()
+    "S307",   # eval()
+    "S602",   # subprocess con shell=True y entrada variable
+    "ASYNC",  # async mal usado
+    "DTZ",    # fechas sin zona horaria
+]
+ignore = [
+    "B008",   # Depends() en el default es idiomatico en FastAPI
+    "F403",   # import * esta acotado y es deliberado
+]
+
+# Por que estas y no otras:
+#   F601  encontro que ESCENAS tenia "latam" dos veces y la segunda pisaba a
+#         la primera: media veta nunca se cavo, en silencio, durante dias.
+#   PLE2502 caracteres de control invisibles — primo hermano del bug de los
+#         heredocs que convirtieron cincuenta \b en el caracter 8.
+#   F841  variables asignadas y nunca usadas, que casi siempre son un error
+#         de copiar y pegar.
+#
+# Se dejan AFUERA a proposito:
+#   UP031 printf-string-formatting — 308 avisos. El proyecto usa "%s" en
+#         todos lados a proposito y es consistente; cambiarlo no arregla nada.
+#   SIM115 open sin context manager — 141. Son scripts de una corrida; vale
+#         la pena en el servidor, no en un script que termina y libera todo.
+#   BLE001 except Exception — 27. Varios son deliberados: una tapa de disco
+#         que falla no puede cortar un rastrillo de 16 cuentas. Los que
+#         importan ya tienen su mensaje.
+
+[tool.ruff.lint.per-file-ignores]
+"app/tests/*" = ["S101"]        # assert es el punto de pytest
+
+[tool.pytest.ini_options]
+testpaths = ["app/tests"]
+pythonpath = ["app"]
+addopts = "-q --tb=short"

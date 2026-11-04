@@ -32,7 +32,7 @@ MARCAS_IA = re.compile(
 
 def artista_de(titulo):
     t = re.sub(r"^\s*\[[^\]]*\]\s*", "", titulo or "")
-    return re.split(r"\s+[-–—]\s+|\s*:\s+|\s*♪", t, 1)[0].strip().lower()[:28]
+    return re.split(r"\s+[-–—]\s+|\s*:\s+|\s*♪", t, maxsplit=1)[0].strip().lower()[:28]
 
 
 def sospechoso(titulos, canal=None):
@@ -57,7 +57,7 @@ def sospechoso(titulos, canal=None):
 
 
 if __name__ == "__main__":
-    import json, os, sys
+    import json, os
     from collections import defaultdict
     HERE = os.path.dirname(os.path.abspath(__file__))
     por = defaultdict(list)

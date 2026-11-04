@@ -1,0 +1,34 @@
+# Antes de cada commit: el linter y los tests. Nada mas.
+#
+# Para activarlo, UNA sola vez:
+#     pip install pre-commit
+#     pre-commit install
+#
+# Despues corre solo en cada `git commit`. Para pasarlo por todo el repo:
+#     pre-commit run --all-files
+#
+# NO incluye los barridos de interfaz (`crate ui`) a proposito: necesitan la
+# app levantada y tardan minutos. Esos van a mano antes de dar algo por
+# terminado, no en cada commit.
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.3
+    hooks:
+      - id: ruff
+        args: [--fix]
+
+  - repo: local
+    hooks:
+      - id: pytest
+        name: los tests de Python
+        entry: python -m pytest -q
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: sin-secretos
+        name: que no se cuele un .env ni una clave
+        entry: python app/tests/sin_secretos.py
+        language: system
+        pass_filenames: false
+        always_run: true

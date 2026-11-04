@@ -23,6 +23,7 @@ Cada subcomando es uno de los scripts de siempre: esto no agrega logica, solo
 evita tener que acordarse de cual era.
 """
 import os
+import shutil
 import socket
 import time
 import subprocess
@@ -167,16 +168,22 @@ def barrido_ui():
     # ella se va la salida, que es justo lo unico que interesa de este
     # comando. Sirve para los procesos de fondo (slskd, yt-dlp), no para uno
     # que corres vos en una terminal para leer el resultado.
+    npm = shutil.which("npm") or shutil.which("npm.cmd")
+    node = shutil.which("node")
+    if not node:
+        print("falta node. Instalalo de nodejs.org y volve a probar")
+        return 1
     if not os.path.exists(os.path.join(d, "node_modules")):
         print("instalando playwright (una sola vez)...")
-        subprocess.call("npm install --silent", cwd=d, shell=True)
+        if not npm:
+            print("falta npm"); return 1
+        subprocess.call([npm, "install", "--silent"], cwd=d)
     malas = 0
     for prueba in ("barrido.mjs", "azar.mjs", "sesion.mjs", "kpi.mjs",
                    "descartar.mjs", "sacar.mjs", "sampler.mjs", "loop.mjs", "reset.mjs", "onda.mjs", "sweet.mjs", "precision.mjs"):
         print()
         print("--- %s ---" % prueba)
-        malas += bool(subprocess.call('node "%s"' % os.path.join(d, prueba),
-                                      cwd=d, shell=True))
+        malas += bool(subprocess.call([node, os.path.join(d, prueba)], cwd=d))
     return 1 if malas else 0
 
 

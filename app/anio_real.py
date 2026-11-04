@@ -12,7 +12,7 @@ Solucion: preguntarle a MusicBrainz, que tiene la fecha de la primera edicion.
 Es gratis, sin clave, y solo se consulta para los sospechosos (año >= 2000),
 respetando el limite de 1 pedido por segundo que pide su documentacion.
 """
-import json, os, sqlite3, sys, time, urllib.parse, urllib.request
+import json, sqlite3, sys, time, urllib.parse, urllib.request
 
 DB = r"G:\Thomi - Mi Carpeta\crate_project\crate.db"
 UA = "CRATE/1.0 (digging personal; contacto: thomas@contentboard.com.ar)"

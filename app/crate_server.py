@@ -567,7 +567,7 @@ def partir(t):
                r"version|remaster\w*|rare|obscure|unreleased|soul sample)\b", " ", s, flags=re.I)
     s = re.sub(r"\b(19|20)\d{2}\b", " ", s)
     s = re.sub(r"\s+", " ", s).strip(" -–—:.,")
-    m = re.split(r"\s+[-–—]\s+|\s*:\s+", s, 1)
+    m = re.split(r"\s+[-–—]\s+|\s*:\s+", s, maxsplit=1)
     if len(m) == 2 and 1 < len(m[0]) < 60 and len(m[1]) > 1:
         return m[0].strip(), m[1].strip()
     return None, s or None

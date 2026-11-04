@@ -11,7 +11,6 @@ al pasar, pero nunca los busque ni los guarde. Esto hace eso.
 Cada entrada salio de MIRAR la portada en la hoja de contacto, no de adivinar.
 """
 import json
-import os
 import sqlite3
 import sys
 import time

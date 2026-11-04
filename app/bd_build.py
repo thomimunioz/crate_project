@@ -8,7 +8,7 @@ ocultan videos, o lo que sea". Las playlists de YouTube son prestadas — 4 de s
 Guarda TODO lo que sabemos de cada tema, de modo que si el video muere el tema
 sigue siendo identificable y rastreable (por ejemplo en Soulseek).
 """
-import json, os, re, sqlite3, glob, unicodedata, time
+import json, os, re, sqlite3, glob, time
 HERE = os.path.dirname(os.path.abspath(__file__))
 DB = r"G:\Thomi - Mi Carpeta\crate_project\crate.db"
 
@@ -132,7 +132,7 @@ def partir(t):
     s = re.sub(r"\b(19|20)\d{2}\b", " ", s)
     s = re.sub(r"[\u266a\u2022|#]+", " ", s)
     s = re.sub(r"\s+", " ", s).strip(" -\u2013\u2014:.,")
-    m = re.split(r"\s+[-\u2013\u2014]\s+|\s*:\s+", s, 1)
+    m = re.split(r"\s+[-\u2013\u2014]\s+|\s*:\s+", s, maxsplit=1)
     if len(m) == 2 and 1 < len(m[0]) < 60 and len(m[1]) > 1:
         return m[0].strip(), m[1].strip()
     return None, s or None
