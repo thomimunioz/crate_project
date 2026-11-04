@@ -378,6 +378,26 @@ class Handler(SimpleHTTPRequestHandler):
             threading.Timer(0.4, lambda: SERVIDOR[0].shutdown()).start()
             return
 
+        if ruta == "/api/sacar":
+            # Sacar del crate de verdad: fuera de todas las listas y marcado
+            # como rechazado. El tema NO se borra de la base — si se borrara
+            # volveria a aparecer en la proxima cavada como si fuera nuevo.
+            # Queda anotado justamente para que no vuelva. Thomas, 27-oct:
+            # "los que fueron borrados sacalos de mi bd, ocultalos".
+            vid = datos.get("id")
+            if not vid:
+                return self._json({"ok": False}, 400)
+            con = db()
+            con.execute("DELETE FROM en_playlist WHERE id=?", (vid,))
+            con.execute("""INSERT INTO marca(id,estado,estrellas,tanda,fecha)
+                           VALUES(?,'rechazado',NULL,'app',?)
+                           ON CONFLICT(id,tanda) DO UPDATE SET
+                               estado='rechazado', estrellas=NULL""",
+                        (vid, hoy))
+            con.execute("UPDATE tema SET oculto=1 WHERE id=?", (vid,))
+            con.commit(); con.close()
+            return self._json({"ok": True, "id": vid})
+
         if ruta == "/api/playlist":
             vid = datos.get("id")
             lista = (datos.get("playlist") or "").strip()

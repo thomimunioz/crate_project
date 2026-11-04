@@ -52,6 +52,33 @@ function ponerEstrellas(id, n){
       else if(n) flash('puntuado ' + n + '★');
     }catch(e){}
   });
+  // Puntuar una sugerencia la archiva SOLA en la lista que propone la
+  // tarjeta. Antes caia al crate sin lista y habia que ir a buscarla ahi
+  // para categorizarla, que es el trabajo que la sugerencia ya hizo.
+  // Solo si de verdad te lo quedas (1★ o mas) y si no lo clasificaste vos.
+  if(n >= 1 && b && b.genero && !listasDe(b).length){
+    archivarEn(id, b.genero);
+  }
+}
+
+/* Mete el tema en una lista y lo refleja al toque en la tarjeta. */
+function archivarEn(id, lista){
+  const d = tema(id);
+  const mias = d ? listasDe(d) : [];
+  if(mias.includes(lista)) return;
+  local[id] = Object.assign({}, local[id], {listas: mias.concat([lista])});
+  guardarLocal();
+  const b = (BUSQUEDA||[]).find(x=>x.id===id);
+  aServidor('/api/playlist', Object.assign({id, playlist:lista},
+    b ? {titulo:b.titulo, canal:b.canal, dur:b.dur, views:b.views} : {}))
+    .then(async r => {
+      if(!r) return;
+      try{
+        const j = await r.json();
+        if(j && j.tema){ sumarACrate(j.tema); pintar(); marcarSonando(); }
+      }catch(e){}
+    });
+  flash('archivado en ' + lista);
 }
 
 /* avisito breve, para que sepas que quedó guardado */
@@ -218,7 +245,11 @@ function pintar(){
       + '<td class="dato">'+(d.tonalidad
             ? '<span class="v'+(d.menor?' men':'')+'">'+esc(d.tonalidad.replace(' minor','m').replace(' major',''))+'</span>'
             : '·')+'</td>'
-      + '<td class="est">'+clasif(d)+' '+rating(d.id, e)+'</td></tr>';
+      + '<td class="est">'
+        + '<button class="descartar" data-sacar="'+esc(d.id)+'" '
+        +   'title="sacar del crate">✕</button>'
+        + clasif(d) + ' ' + rating(d.id, e)
+      + '</td></tr>';
   }).join('') : '<tr><td colspan="6" class="vacio">nada con esos filtros</td></tr>';
 }
 
@@ -232,7 +263,7 @@ document.addEventListener('click', e => {
      // manejador corre primero y, si no se lo excluye, se come el click.
      // Paso con [data-desc]: tocar el ✕ del hotlist reproducia el tema en
      // vez de descartarlo.
-     && !e.target.closest('.estrellas, [data-quitar], [data-desc], .slsk, .clasif, a')){
+     && !e.target.closest('.estrellas, [data-quitar], [data-desc], [data-sacar], .slsk, .clasif, a')){
     if(reproducir(fila.dataset.id)){ e.preventDefault(); return; }
   }
   const a = e.target.closest('a.art');
@@ -323,6 +354,32 @@ document.addEventListener('click', e => {
     pintar();
     return;
   }
+  /* Sacar del crate. Distinto de descartar del hotlist: aca el tema YA es
+     tuyo, asi que sale de todas las listas y queda marcado para que no
+     vuelva a aparecer. No se borra de la base: si se borrara, la proxima
+     cavada lo traeria otra vez como si fuera nuevo. */
+  const sb = e.target.closest('[data-sacar]');
+  if(sb){
+    e.preventDefault(); e.stopPropagation();
+    if(!sb.classList.contains('preg')){
+      $$('.descartar.preg').forEach(x=>{ x.classList.remove('preg'); x.textContent='✕'; });
+      sb.classList.add('preg'); sb.textContent = '¿sacar del crate?';
+      clearTimeout(sb._t);
+      sb._t = setTimeout(()=>{ sb.classList.remove('preg'); sb.textContent='✕'; }, 3500);
+      return;
+    }
+    const id = sb.dataset.sacar;
+    const i = D.findIndex(x => x.id === id);
+    const nom = i >= 0 ? (D[i].nombre || D[i].titulo) : '';
+    if(i >= 0) D.splice(i, 1);
+    delete local[id];
+    guardarLocal();
+    aServidor('/api/sacar', {id});
+    flash('fuera del crate: ' + nom.slice(0, 34));
+    pintar(); marcarSonando();
+    return;
+  }
+
   /* Descartar del hotlist. El ✕ de siempre solo aparece cuando el tema YA
      tiene estrellas, asi que en la cola —donde nada esta puntuado— no habia
      forma de decir "esto no va". Dos clicks, como el resto de la app. */

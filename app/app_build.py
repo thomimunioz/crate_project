@@ -6,6 +6,7 @@ sys.path.insert(0, HERE)
 from app_css import CSS, FUENTES
 from app_js import JS
 from app_tinder import JS as JS_TINDER, CSS as CSS_TINDER
+from app_loop import JS as JS_LOOP, CSS as CSS_LOOP, HTML as HTML_LOOP
 
 DB = r"G:\Thomi - Mi Carpeta\crate_project\crate.db"
 OUT = r"G:\Thomi - Mi Carpeta\crate_project\mi-crate.html"
@@ -171,6 +172,37 @@ DOC = """<!doctype html>
   <div class="lista" id="slsklista"></div>
 </div>
 
+<div id="sampler">
+  <div class="cab"><b>Sampler</b><button id="sx" title="cerrar">&#10005;</button></div>
+  <div class="cuerpo">
+    <div class="stit">pasaje a loopear</div>
+    <div id="sMarcas">—  →  —</div>
+    <div class="sfila">
+      <button class="b" id="sA" title="marcar el principio (A)">A</button>
+      <button class="b" id="sB" title="marcar el final (B)">B</button>
+      <button class="b" id="sLoop" title="loop on/off (L)">LOOP</button>
+      <button class="b" id="sBorrar" title="borrar las marcas">&#10005;</button>
+    </div>
+    <div class="stit">tono</div>
+    <div class="stono">
+      <button id="sMenos" title="bajar un semitono (-)">&minus;</button>
+      <b id="sTono">0</b>
+      <button id="sMas" title="subir un semitono (+)">+</button>
+      <button id="sCero" title="volver a cero" style="width:auto;padding:0 9px;border-radius:2px;font-size:.6rem">0</button>
+    </div>
+    <div id="sVel">1.00&times;</div>
+    <div class="sfila" style="margin-top:10px">
+      <button class="b on" id="sPlato" title="tono y velocidad juntos, sin artefactos">como un plato</button>
+      <button class="b" id="sEstira" title="mantiene el tono, puede sonar metálico">estirado</button>
+    </div>
+    <div class="snota">
+      <b>como un plato</b> es resampleo puro: el tono sube con la velocidad,
+      igual que acelerar un vinilo. No tiene artefactos.<br>
+      <b>estirado</b> mantiene el tono inventando muestras — es lo que warpea
+      el audio en las extensiones de Chrome.
+    </div>
+  </div>
+</div>
 <div id="player">
   <div id="ytbox"><div id="yt"></div></div>
   <img id="cover" alt="">
@@ -178,6 +210,7 @@ DOC = """<!doctype html>
   <button class="pbtn" id="pprev" title="anterior (P)">&#9664;&#9664;</button>
   <button class="pbtn gde" id="pplay" title="play / pausa (espacio)">&#9654;</button>
   <button class="pbtn" id="pnext" title="siguiente (N)">&#9654;&#9654;</button>
+  <button class="pbtn" id="bsampler" title="loop y pitch (sampler)">◍</button>
   <button class="pbtn mez" id="pmez" title="al azar: cavá en tu propio crate (S)">
     <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
          stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -195,10 +228,10 @@ DOC = """<!doctype html>
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>const DATOS=%s;</script>
 <script>%s</script>
-</body></html>""" % (FUENTES, CSS + CSS_TINDER, hoy, sello, len(datos), "{:,}".format(tot).replace(",","."),
+</body></html>""" % (FUENTES, CSS + CSS_TINDER + CSS_LOOP, hoy, sello, len(datos), "{:,}".format(tot).replace(",","."),
                      med, n_est, chips_pl,
                      json.dumps(datos, ensure_ascii=False, separators=(",", ":")),
-                     JS + JS_TINDER)
+                     JS + JS_TINDER + JS_LOOP)
 
 open(OUT, "w", encoding="utf-8").write(DOC)
 print("%d temas -> %s  (%.0f KB)" % (len(datos), OUT, os.path.getsize(OUT) / 1024))
