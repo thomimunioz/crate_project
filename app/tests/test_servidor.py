@@ -101,3 +101,24 @@ class TestBajadasPlanas:
     def test_cola_vacia(self):
         assert srv.bajadas_planas([]) == []
         assert srv.bajadas_planas(None) == []
+
+
+class TestEstadoSegunPuntaje:
+    """El estado de una marca DEPENDE del puntaje.
+
+    Hasta el 4-nov el servidor escribia 'guardado' siempre, sin mirar las
+    estrellas: apretar "✕ no va" guardaba el tema como si Thomas se lo
+    quedara. Le ensuciaba el crate y le inflaba el hit rate del panel, que es
+    la unica metrica del proyecto (decia 65% cuando era 60%).
+    """
+
+    def estado(self, n):
+        return "guardado" if (n or 0) >= 1 else "rechazado"
+
+    def test_con_estrellas_se_guarda(self):
+        for n in (1, 2, 3, 4, 5):
+            assert self.estado(n) == "guardado"
+
+    def test_sin_estrellas_se_rechaza(self):
+        for n in (0, None):
+            assert self.estado(n) == "rechazado"

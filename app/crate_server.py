@@ -298,10 +298,17 @@ class Handler(SimpleHTTPRequestHandler):
                              datos.get("dur"), datos.get("views"), hoy))
                 con.execute("INSERT OR IGNORE INTO origen(id,fuente) VALUES(?,'busqueda')", (vid,))
                 nuevo = True
+            # El estado DEPENDE del puntaje. Antes se escribia 'guardado'
+            # siempre, asi que apretar "✕ no va" guardaba el tema como si
+            # Thomas se lo quedara: le ensuciaba el crate y le inflaba el hit
+            # rate del panel, que es la unica metrica del proyecto. (4-nov)
+            estado = "guardado" if (n or 0) >= 1 else "rechazado"
             con.execute("""INSERT INTO marca(id,estado,estrellas,tanda,fecha)
-                           VALUES(?,'guardado',?,'app',?)
-                           ON CONFLICT(id,tanda) DO UPDATE SET estrellas=excluded.estrellas""",
-                        (vid, n or None, hoy))
+                           VALUES(?,?,?,'app',?)
+                           ON CONFLICT(id,tanda) DO UPDATE SET
+                               estado=excluded.estado,
+                               estrellas=excluded.estrellas""",
+                        (vid, estado, n or None, hoy))
             con.commit()
             fila = fila_crate(con, vid)
             con.close()

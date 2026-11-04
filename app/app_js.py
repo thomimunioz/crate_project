@@ -145,7 +145,10 @@ function rating(id, e){
 function pasa(d){
   const q = norm($('#q').value);
   if(q){
-    const blob = norm([d.artista,d.nombre,d.titulo,d.canal,d.tonalidad,d.playlists,d.anio].join(' '));
+    // tambien la veta y el genero: en el hotlist es lo unico que distingue
+    // "cositas soviet" de un soul de Detroit, y es por donde Thomas busca
+    const blob = norm([d.artista,d.nombre,d.titulo,d.canal,d.tonalidad,
+                       d.playlists,d.anio,d.genero,(d.razones||[]).join(' ')].join(' '));
     if(!q.split(/\s+/).every(w => blob.includes(w))) return false;
   }
   const bmin=+$('#bmin').value||0, bmax=+$('#bmax').value||9999;
@@ -165,7 +168,17 @@ function pasa(d){
 }
 
 function pintar(){
-  if(modoBusqueda){ pintarBusqueda(BUSQUEDA); return; }
+  if(modoBusqueda){
+    // Antes esto dibujaba BUSQUEDA entera: en el hotlist el buscador y los
+    // filtros no hacian NADA, y con cien sugerencias no habia forma de
+    // encontrar una veta concreta.
+    const r = BUSQUEDA.filter(pasa);
+    pintarBusqueda(r);
+    const c = $('#conteo');
+    if(c) c.innerHTML = '<b>' + r.length + '</b> '
+        + (r.length === BUSQUEDA.length ? 'elegidos' : 'de ' + BUSQUEDA.length);
+    return;
+  }
   const r = D.filter(pasa);
   r.sort((a,b)=>{
     let x = orden==='estrellas' ? (estrellasDe(a)||0) : a[orden];
@@ -306,6 +319,29 @@ document.addEventListener('click', e => {
     pintar();
     return;
   }
+  /* Descartar del hotlist. El ✕ de siempre solo aparece cuando el tema YA
+     tiene estrellas, asi que en la cola —donde nada esta puntuado— no habia
+     forma de decir "esto no va". Dos clicks, como el resto de la app. */
+  const db = e.target.closest('[data-desc]');
+  if(db){
+    e.preventDefault(); e.stopPropagation();
+    if(!db.classList.contains('preg')){
+      $$('.descartar.preg').forEach(x=>{ x.classList.remove('preg'); x.textContent='✕'; });
+      db.classList.add('preg'); db.textContent = '¿descartar?';
+      clearTimeout(db._t);
+      db._t = setTimeout(()=>{ db.classList.remove('preg'); db.textContent='✕'; }, 3200);
+      return;
+    }
+    const id = db.dataset.desc;
+    ponerEstrellas(id, 0);                 // 0 estrellas = queda rechazado
+    // sale de la cola al toque: si siguiera ahi, no se sabe si quedo anotado
+    const i = (BUSQUEDA||[]).findIndex(x => x.id === id);
+    if(i >= 0) BUSQUEDA.splice(i, 1);
+    flash('descartado');
+    pintar(); marcarSonando();
+    return;
+  }
+
   const qb = e.target.closest('[data-quitar]');
   if(qb){
     e.preventDefault(); e.stopPropagation();
@@ -748,6 +784,8 @@ function pintarBusqueda(res){
     const e = estrellasDe(d)||0;
     const raz = (d.razones||[]).slice(0,2).join(' · ');
     const mias = listasDe(d);          // donde ya lo guardaste, si lo hiciste
+    // la veta de donde salio, para poder reconocerla y buscarla
+    const veta = ((d.razones||[]).find(r => r.startsWith('veta ')) || '').slice(5);
     return '<tr data-id="'+d.id+'" class="nuevo">'
       + '<td class="cat">+'+String(i+1).padStart(3,'0')+'</td>'
       + '<td>'
@@ -764,6 +802,7 @@ function pintarBusqueda(res){
         + '<button class="slsk" data-q="'+esc(limpiar(d.titulo))+'" data-id="'+esc(d.id)+'">⇩ slsk</button>'
         + '<div class="meta">'+esc(d.canal||'')+'</div>'
         + '<div class="meta2">'
+        +   (veta ? '<span class="pl veta">' + esc(veta) + '</span>' : '')
         +   (d.genero ? '<span class="sug">sugerido</span>'
                       + '<span class="pl '+clg(d.genero)+'">'+esc(d.genero)+'</span>' : '')
         +   (mias.length ? '<span class="sug ya">guardado en</span>'
@@ -789,7 +828,11 @@ function pintarBusqueda(res){
             ? '<span class="v">'+Math.floor(d.dur/60)+':'+String(d.dur%60).padStart(2,'0')
               +'</span><span class="u">largo</span>'
             : '·')+'</td>'
-      + '<td class="est">'+clasif(d)+' '+rating(d.id, e)+'</td></tr>';
+      + '<td class="est">'
+        + '<button class="descartar" data-desc="'+esc(d.id)+'" '
+        +   'title="no va: sacalo de la cola">✕</button>'
+        + clasif(d) + ' ' + rating(d.id, e)
+      + '</td></tr>';
   }).join('') : '<tr><td colspan="6" class="vacio">no quedo nada después de filtrar</td></tr>';
   marcarSonando();
 }

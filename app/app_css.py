@@ -151,6 +151,16 @@ footer .apagar.preg{border-color:var(--estrella);color:var(--estrella);
 /* la etiqueta de genero en el hotlist: misma pastilla de color que en el
    crate, para que se lea como el mismo idioma */
 .meta2{display:flex;align-items:center;gap:6px;margin-top:3px}
+/* descartar del hotlist: invisible hasta que pasas el mouse, para que no
+   compita con las estrellas, y rojo cuando pregunta */
+td.est .descartar{background:transparent;border:1px solid transparent;
+  color:var(--suave);font-size:.78rem;line-height:1;cursor:pointer;padding:3px 6px;
+  border-radius:2px;margin-right:4px;opacity:0;transition:opacity .12s,color .12s}
+tr:hover td.est .descartar{opacity:.75}
+td.est .descartar:hover{opacity:1;color:var(--estrella);border-color:var(--estrella)}
+td.est .descartar.preg{opacity:1;border-color:var(--estrella);color:var(--estrella);
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.06em;white-space:nowrap}
+.meta2 .pl.veta{background:var(--fuerte);color:var(--stxt)}
 .meta2 .sug.ya{color:var(--acento2)}
 .meta2 .sug{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;
   text-transform:uppercase;color:var(--suave)}
