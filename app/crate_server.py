@@ -64,6 +64,19 @@ if sys.platform == "win32":
     SIN_VENTANA = {"creationflags": 0x08000000}      # CREATE_NO_WINDOW
 
 
+ESQUEMA_SWEET = """
+CREATE TABLE IF NOT EXISTS sweetspot(
+  id      TEXT NOT NULL REFERENCES tema(id) ON DELETE CASCADE,
+  desde   REAL NOT NULL,     -- segundo donde entra el pasaje
+  hasta   REAL NOT NULL,     -- donde sale
+  nota    TEXT,
+  creado  TEXT,
+  PRIMARY KEY (id, desde)
+);
+CREATE INDEX IF NOT EXISTS ix_sweet_id ON sweetspot(id);
+"""
+
+
 def db():
     con = sqlite3.connect(DB, timeout=10)
     con.row_factory = sqlite3.Row
@@ -73,6 +86,14 @@ def db():
     # sin haberlos. (Auditoria del 27-oct.)
     con.execute("PRAGMA foreign_keys = ON")
     return con
+
+
+def asegurar_sweet(con):
+    """La tabla de pasajes. Es el dato mas valioso que puede juntar la app:
+    la ley de oro de Thomas es que un tema sirve si tiene huecos sin voz, y
+    hasta ahora el sistema no tenia NI IDEA de donde estaban. Cada pasaje que
+    marca es un ejemplo real."""
+    con.executescript(ESQUEMA_SWEET)
 
 
 COLS_CRATE = ("id", "titulo", "artista", "nombre", "canal", "anio", "bpm",
@@ -150,6 +171,14 @@ class Handler(SimpleHTTPRequestHandler):
                                "archivos": ordenar_archivos(d) if listo else []})
         if ruta.startswith("/api/audio/"):
             return self.servir_audio(ruta.rsplit("/", 1)[-1])
+        if ruta == "/api/sweet":
+            con = db(); asegurar_sweet(con)
+            d = {}
+            for i, de, ha, no in con.execute(
+                    "SELECT id,desde,hasta,nota FROM sweetspot ORDER BY id,desde"):
+                d.setdefault(i, []).append({"desde": de, "hasta": ha, "nota": no})
+            con.close()
+            return self._json({"ok": True, "spots": d})
         if ruta == "/api/hotlist":
             con = db()
             try:
@@ -377,6 +406,32 @@ class Handler(SimpleHTTPRequestHandler):
             self._json({"ok": True})
             threading.Timer(0.4, lambda: SERVIDOR[0].shutdown()).start()
             return
+
+        if ruta == "/api/sweet":
+            # guardar o borrar un pasaje
+            vid = datos.get("id")
+            desde, hasta = datos.get("desde"), datos.get("hasta")
+            if not vid or desde is None:
+                return self._json({"ok": False}, 400)
+            con = db(); asegurar_sweet(con)
+            if datos.get("borrar"):
+                con.execute("DELETE FROM sweetspot WHERE id=? AND abs(desde-?)<0.3",
+                            (vid, float(desde)))
+            else:
+                if hasta is None or float(hasta) <= float(desde):
+                    con.close()
+                    return self._json({"ok": False, "error": "rango invalido"}, 400)
+                con.execute("""INSERT OR REPLACE INTO
+                               sweetspot(id,desde,hasta,nota,creado)
+                               VALUES(?,?,?,?,?)""",
+                            (vid, float(desde), float(hasta),
+                             (datos.get("nota") or "")[:120], hoy))
+            con.commit()
+            spots = [{"desde": r[0], "hasta": r[1], "nota": r[2]} for r in
+                     con.execute("""SELECT desde,hasta,nota FROM sweetspot
+                                    WHERE id=? ORDER BY desde""", (vid,))]
+            con.close()
+            return self._json({"ok": True, "id": vid, "spots": spots})
 
         if ruta == "/api/sacar":
             # Sacar del crate de verdad: fuera de todas las listas y marcado

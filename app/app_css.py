@@ -154,6 +154,8 @@ footer .apagar.preg{border-color:var(--estrella);color:var(--estrella);
 .meta2{display:flex;align-items:center;gap:6px;margin-top:3px}
 /* descartar del hotlist: invisible hasta que pasas el mouse, para que no
    compita con las estrellas, y rojo cuando pregunta */
+td.cat .spots{display:block;margin-top:3px;font-family:var(--mono);
+  font-size:.56rem;color:var(--acento2);letter-spacing:.04em}
 td.est .descartar{background:transparent;border:1px solid transparent;
   color:var(--suave);font-size:.78rem;line-height:1;cursor:pointer;padding:3px 6px;
   border-radius:2px;margin-right:4px;opacity:0;transition:opacity .12s,color .12s}

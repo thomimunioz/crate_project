@@ -149,6 +149,26 @@ function listasDe(d){
 }
 const chr10 = String.fromCharCode(10);
 
+/* Los sweetspots en la tarjeta: SOLO un contador. Thomas pregunto como
+   mostrarlos "para que las tarjetas no queden tan cargadas" — y tiene razon,
+   ya tienen tema, artista, canal, genero, razones, año, bpm, tono y
+   estrellas. Asi que aca va un punto y un numero, y los pasajes de verdad se
+   ven en la barra del reproductor cuando ese tema suena, que es el unico
+   momento en que sirven. */
+function insigniaSpots(id){
+  // OJO con la guarda: spotsDe es una funcion declarada, asi que existe por
+  // hoisting desde el principio — pero la variable SPOTS que usa adentro es
+  // un `let` de otro archivo que se concatena DESPUES. Preguntar por la
+  // funcion no alcanza: al primer pintar() reventaba con "Cannot access
+  // SPOTS before initialization" y la tabla quedaba vacia.
+  let n = 0;
+  try{ n = spotsDe(id).length; }catch(e){ return ''; }
+  if(!n) return '';
+  return '<span class="spots" title="' + n + ' pasaje' + (n>1?'s':'')
+       + ' marcado' + (n>1?'s':'') + ' — se ven en la barra al reproducirlo">'
+       + '◉' + n + '</span>';
+}
+
 function clasif(d){
   const mias = listasDe(d);
   const et = mias.length ? mias.join(' · ') : '+ lista';
@@ -231,7 +251,7 @@ function pintar(){
     const gcls = mias.length ? clg(mias[0]) : '';   // la fila toma el color del 1er genero
     const ton = d.tonalidad ? '<span class="'+(d.menor?'men':'')+'">'+esc(d.tonalidad)+'</span>' : '·';
     return '<tr data-id="'+d.id+'" class="'+gcls+'">'
-      + '<td class="cat">'+d.cat+'</td>'
+      + '<td class="cat">'+d.cat+insigniaSpots(d.id)+'</td>'
       + '<td>'
         + (tiene(d) ? '<span class="bajado" title="ya está en el disco">EN DISCO</span>' : '')
         + '<span class="tem">'+esc(d.nombre || d.titulo)+'</span>'
@@ -857,7 +877,7 @@ function pintarBusqueda(res){
     // la veta de donde salio, para poder reconocerla y buscarla
     const veta = ((d.razones||[]).find(r => r.startsWith('veta ')) || '').slice(5);
     return '<tr data-id="'+d.id+'" class="nuevo">'
-      + '<td class="cat">+'+String(i+1).padStart(3,'0')+'</td>'
+      + '<td class="cat">+'+String(i+1).padStart(3,'0')+insigniaSpots(d.id)+'</td>'
       + '<td>'
         // Misma estructura que la tabla principal: el TEMA es un span grande y
         // clickeable (toda la fila reproduce), y el link a YouTube es solo la

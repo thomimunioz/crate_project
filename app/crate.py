@@ -172,7 +172,7 @@ def barrido_ui():
         subprocess.call("npm install --silent", cwd=d, shell=True)
     malas = 0
     for prueba in ("barrido.mjs", "azar.mjs", "sesion.mjs", "kpi.mjs",
-                   "descartar.mjs", "sacar.mjs", "sampler.mjs", "loop.mjs", "reset.mjs"):
+                   "descartar.mjs", "sacar.mjs", "sampler.mjs", "loop.mjs", "reset.mjs", "onda.mjs", "sweet.mjs"):
         print()
         print("--- %s ---" % prueba)
         malas += bool(subprocess.call('node "%s"' % os.path.join(d, prueba),
