@@ -722,7 +722,12 @@ function reproducir(id){
     const pc = dd ? (t/dd*100) : 0;
     $('#pista .av').style.width = pc+'%';
     $('#pista .bolita').style.left = pc+'%';
-  }, 250);
+    // el loop se vigila aca: es el unico reloj que corre siempre. Estaba
+    // definido pero no lo llamaba nadie, asi que solo loopeaba al apretar
+    // el boton, que es lo que Thomas reporto.
+    if(typeof vigilarLoop === 'function') vigilarLoop();
+    if(typeof pintarMarcas === 'function') pintarMarcas(dd);
+  }, 120);
   return true;
 }
 function marcarSonando(){

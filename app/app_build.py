@@ -219,7 +219,7 @@ DOC = """<!doctype html>
   </button>
   <div class="barra">
     <span class="ptiempo" id="ptact">0:00</span>
-    <div class="pista" id="pista"><div class="av"></div><div class="bolita"></div></div>
+    <div class="pista" id="pista"><div class="zonaloop" id="zonaloop"></div><div class="av"></div><div class="bolita"></div><div class="marca a" id="marcaA" title="principio del loop — arrastrame">A</div><div class="marca b" id="marcaB" title="final del loop — arrastrame">B</div></div>
     <span class="ptiempo" id="pttot">0:00</span>
   </div>
   <span class="pest"></span>

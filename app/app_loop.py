@@ -51,6 +51,60 @@ function aplicarTono(){
   if(v) v.textContent = modoPlato ? (r.toFixed(2) + '×') : '1.00×';
 }
 
+/* Las marcas A y B en la barra del reproductor: verlas y poder moverlas.
+   Thomas, 4-nov: "estaria bueno poder mover marquitas en el timeline (...)
+   sino hay que pegarle si o si con los botones A y B y no podes reajustar". */
+function pintarMarcas(dur){
+  const d = dur || (modo === 'audio' ? AUD.duration : 0) || 0;
+  const mA = document.getElementById('marcaA');
+  const mB = document.getElementById('marcaB');
+  const z  = document.getElementById('zonaloop');
+  if(!mA || !mB || !z) return;
+  const pon = (el, seg) => {
+    if(seg == null || !d){ el.style.display = 'none'; return; }
+    el.style.display = 'block';
+    el.style.left = Math.max(0, Math.min(100, seg / d * 100)) + '%';
+  };
+  pon(mA, loopA); pon(mB, loopB);
+  if(loopA != null && loopB != null && d){
+    z.style.display = 'block';
+    z.style.left  = (loopA / d * 100) + '%';
+    z.style.width = ((loopB - loopA) / d * 100) + '%';
+    z.classList.toggle('activo', loopOn);
+  } else { z.style.display = 'none'; }
+}
+
+/* Arrastrar una marca. Se mueve con el mouse y se suelta donde quede: asi se
+   ajusta el pasaje al oido en vez de tener que acertarle con el boton. */
+function arrastrable(el, cual){
+  if(!el) return;
+  el.addEventListener('mousedown', ev => {
+    ev.preventDefault(); ev.stopPropagation();
+    const pista = document.getElementById('pista');
+    const mover = e2 => {
+      const r = pista.getBoundingClientRect();
+      const f = Math.max(0, Math.min(1, (e2.clientX - r.left) / r.width));
+      const d = (modo === 'audio' ? AUD.duration : 0) || 0;
+      if(!d) return;
+      const seg = f * d;
+      if(cual === 'A'){ loopA = (loopB != null && seg >= loopB) ? loopB - 0.2 : seg; }
+      else           { loopB = (loopA != null && seg <= loopA) ? loopA + 0.2 : seg; }
+      pintarMarcas(d); pintarSampler();
+    };
+    const soltar = () => {
+      document.removeEventListener('mousemove', mover);
+      document.removeEventListener('mouseup', soltar);
+      if(loopA != null && loopB != null && loopOn){
+        try{ AUD.currentTime = loopA; }catch(e){}
+      }
+    };
+    document.addEventListener('mousemove', mover);
+    document.addEventListener('mouseup', soltar);
+  });
+}
+arrastrable(document.getElementById('marcaA'), 'A');
+arrastrable(document.getElementById('marcaB'), 'B');
+
 function pintarSampler(){
   const d = $('#sMarcas');
   if(!d) return;
@@ -98,23 +152,25 @@ $('#bsampler').onclick = abrirSampler;
 $('#sA').onclick = () => {
   loopA = AUD.currentTime;
   if(loopB != null && loopB <= loopA) loopB = null;
-  pintarSampler();
+  pintarSampler(); pintarMarcas();
 };
 $('#sB').onclick = () => {
   const t = AUD.currentTime;
   if(loopA == null){ flash('marcá primero el principio (A)'); return; }
   if(t <= loopA){ flash('el final tiene que ir después del principio'); return; }
   loopB = t;
-  loopOn = true;
-  pintarSampler();
+  loopOn = true;              // marcar el final YA deja el pasaje girando
+  pintarSampler(); pintarMarcas();
+  flash('loopeando ' + (loopB - loopA).toFixed(1) + 's');
 };
 $('#sLoop').onclick = () => {
   if(loopA == null || loopB == null){ flash('marcá A y B primero'); return; }
   loopOn = !loopOn;
   if(loopOn) try{ AUD.currentTime = loopA; }catch(e){}
-  pintarSampler();
+  pintarSampler(); pintarMarcas();
 };
-$('#sBorrar').onclick = () => { loopA = loopB = null; loopOn = false; pintarSampler(); };
+$('#sBorrar').onclick = () => { loopA = loopB = null; loopOn = false;
+  pintarSampler(); pintarMarcas(); };
 
 $('#sMenos').onclick = () => { tono = Math.max(-12, tono - 1); aplicarTono(); };
 $('#sMas').onclick   = () => { tono = Math.min(12,  tono + 1); aplicarTono(); };
@@ -140,6 +196,20 @@ document.addEventListener('keydown', e => {
 """
 
 CSS = r"""
+/* marcas A y B sobre la barra del reproductor */
+#pista{position:relative;overflow:visible}
+#pista .zonaloop{position:absolute;top:0;bottom:0;display:none;
+  background:rgba(79,176,239,.22);pointer-events:none;border-radius:2px}
+#pista .zonaloop.activo{background:rgba(79,176,239,.38)}
+#pista .marca{position:absolute;top:-7px;display:none;width:15px;height:20px;
+  margin-left:-7px;border-radius:2px;background:var(--barranum);
+  color:var(--barra);font-family:var(--mono);font-size:.56rem;font-weight:700;
+  line-height:20px;text-align:center;cursor:ew-resize;z-index:3;
+  box-shadow:0 1px 4px rgba(0,0,0,.35)}
+#pista .marca:hover{background:var(--stxt)}
+#pista .marca.b{background:var(--acento2);color:var(--stxt)}
+#pista .marca.b:hover{background:var(--stxt);color:var(--acento2)}
+
 /* =============== SAMPLER: loop y pitch =============== */
 #sampler{position:fixed;right:16px;bottom:104px;width:330px;z-index:58;
   display:none;flex-direction:column;background:var(--sobre);border-radius:4px;
